@@ -13,9 +13,9 @@ import holidayData from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/ui/menu";
 
-import tamapLogo from "../../public/images/tamap_logo.png"
-import mapImage from "../../public/images/Map.png"
-import arrowImage from "../../public/images/arrow.png"
+import tamapLogo from "../../public/images/tamap_logo.webp"
+import mapImage from "../../public/images/Map.webp"
+import arrowImage from "../../public/images/arrow.webp"
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -301,7 +301,7 @@ export default function Home() {
           {/* 割引ボタン */}
           <Link
             to="/discount"
-            className="block bg-gradient-to-r from-red-500 to-blue-500 shadow-lg md:m-0 my-2 p-3 border-2 border-white/30 rounded-full w-full font-bold text-white text-3xl text-center"
+            className="block bg-gradient-to-r from-red-500 to-blue-500 shadow-lg md:m-0 my-2 p-3 border border-white/30 rounded-full w-full font-bold text-white text-3xl text-center"
             ref={waribikiRef}>
             飲食店割引はこちら
           </Link>

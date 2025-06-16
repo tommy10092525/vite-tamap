@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
-import logo from "../../../public/images/tamap_logo.png"
+import logo from "../../../public/images/tamap_logo.webp"
 import StoreCard from '../../components/ui/store-card'
-import fujiImage from "../../../public/images/fuji.jpg"
-import hicheeseImage from "../../../public/images/hicheese.jpg"
-import kokuterudouImage from "../../../public/images/kokuterudou.jpg"
+import fujiImage from "../../../public/images/fuji.webp"
+import hicheeseImage from "../../../public/images/hicheese.webp"
+import kokuterudouImage from "../../../public/images/kokuterudou.webp"
 const page = () => {
   return (
     <div className='bg-zinc-100 dark:bg-zinc-950 min-h-screen text-black dark:text-white'>
@@ -17,7 +17,7 @@ const page = () => {
         {[
           { storeName: '藤', storeImage: fujiImage, storeDescription: 'めじろ台　うどん屋', url: '/fuji', children: <p>普通盛り50円引き<br />大盛無料</p> },
           { storeName: 'ハイチーズ', storeImage: hicheeseImage, storeDescription: '八王子　チーズ料理', url: '/hicheese', children: <p>ランチソフトドリンク無料<br />コースディナー500円引き<br />飲み放題30分延長</p> },
-          // { storeName: '吾衛門', storeImage: '/goemon.jpg', storeDescription: '西八王子　ラーメン店', url: '/discount/goemon', children: <p>大盛無料</p> },
+          // { storeName: '吾衛門', storeImage: '/goemon.jpg', storeDescription: '西八王子ラーメン店', url: '/discount/goemon', children: <p>大盛無料</p> },
           { storeName: 'コクテル堂', storeImage: kokuterudouImage, storeDescription: '橋本　カフェ', url: '/kokuterudo', children: <p>ケーキ×ドリンクのセット<br />さらに100円引き</p> }
         ].map((store, index) => (
           <StoreCard key={index} {...store} />
