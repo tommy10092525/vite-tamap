@@ -10,7 +10,7 @@ import { ThemeProvider } from "./components/theme-provider"
 const App = () => {
   return (
     <ThemeProvider>
-      <BrowserRouter basename="/">
+      <BrowserRouter basename="/vite-test">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="discount" element={<Discount />} />

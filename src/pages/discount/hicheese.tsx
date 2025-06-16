@@ -1,12 +1,12 @@
 import { Link } from "react-router-dom"
-
+import hicheeseImage from "../../../public/images/hicheese.jpg"
 
 const page = () => {
   return (
     <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
       <Link to="/discount" className='top-4 left-4 fixed p-2 border-2 border-rose-500 rounded-lg font-semibold text-lg'>戻る</Link>
       <div className='dark:bg-zinc-900 shadow-lg mx-auto mt-10 rounded-lg max-w-xl'>
-        <img src="images/hicheese.jpg" alt="ハイチーズの画像" width={500} height={500} className='rounded-t-lg w-full' />
+        <img src={hicheeseImage} alt="ハイチーズの画像" width={500} height={500} className='rounded-t-lg w-full' />
         <div className='px-5 py-4'>
           <p className='mt-2 font-bold text-2xl text-center'>ハイチーズ Hi Cheese!</p>
           <p className='mt-4'>肉料理やチーズ料理が盛りだくさん！食べ放題＆飲み放題が揃っているので様々な用途にご利用いただけます！サークルでの飲み会にもどうぞ。</p>

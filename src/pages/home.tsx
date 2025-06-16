@@ -13,6 +13,10 @@ import holidayData from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/ui/menu";
 
+import tamapLogo from "../../public/images/tamap_logo.png"
+import mapImage from "../../public/images/Map.png"
+import arrowImage from "../../public/images/arrow.png"
+
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
@@ -197,13 +201,13 @@ export default function Home() {
   return (
     <>
       <Menu/>
-      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 w-full p-3 md:p-7 min-h-[125vh] text-black dark:text-white">
+      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-[125vh] text-black dark:text-white">
         {/* 時計 */}
-        <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl text-black dark:text-white w-1/3">
+        <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl w-1/3 text-black dark:text-white">
           <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{`${typeof window !== "undefined" ? `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}` : "----/--/--"}`}</p>
           <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{`${typeof window !== "undefined" ? `${new Date().getHours().toString()}:${new Date().getMinutes().toString().padStart(2, '0')}:${new Date().getSeconds().toString().padStart(2, '0')}` : "--:--:--"}`}</p>
         </div>
-        <img alt="たまっぷのロゴ" src="images/tamap_logo.png" height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
+        <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
           {/* 一つ目のカード */}
           <Card>
@@ -243,8 +247,8 @@ export default function Home() {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
               <span className="ml-2 w-auto" ref={arrowsRef}>
-                <img src="images/arrow.png" alt="矢印" width={32} height={32} className="w-8 h-6" />
-                <img src="images/arrow.png" alt="矢印" width={32} height={32} className="-mt-3 w-8 h-6 rotate-180" />
+                <img src={arrowImage} alt="矢印" width={32} height={32} className="w-8 h-6" />
+                <img src={arrowImage} alt="矢印" width={32} height={32} className="-mt-3 w-8 h-6 rotate-180" />
               </span>
               <span className="mt-1 w-full font-semibold text-lg">左右切替</span>
             </button>
@@ -253,7 +257,7 @@ export default function Home() {
           {/* 二つ目のカード */}
           <Card>
             <div className="relative font-semibold text-lg text-center">
-              <img src="images/Map.png" alt="地図のイラスト" width={300} className="opacity-70 mx-auto h-48 object-cover" height={300} />
+              <img src={mapImage} alt="地図のイラスト" width={300} className="opacity-70 mx-auto h-48 object-cover" height={300} />
               <Card className="top-0 left-0 absolute w-1/3 h-16">
                 経済
                 <span className="block" ref={times.economics}>{overlay.economics}</span>
