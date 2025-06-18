@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom"
 import kokuterudouImage from "/images/kokuterudou.webp"
+import { Undo2 } from "lucide-react"
 
 const page = () => {
   return (
     <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
-      <Link to="/discount" className='top-4 left-4 fixed p-2 border border-rose-500 rounded-lg font-semibold text-lg'>戻る</Link>
+      <Link to="/discount" className='top-2 left-2 fixed backdrop-blur-xs p-4 border-2 border-rose-500 rounded-full font-semibold text-lg'><Undo2></Undo2></Link>
       <div className='dark:bg-zinc-900 shadow-lg mx-auto mt-10 rounded-lg max-w-xl'>
         <img src={kokuterudouImage} alt="コクテル堂の画像" width={500} height={500} className='rounded-t-lg w-full' />
         <div className='px-5 py-4'>
