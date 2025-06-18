@@ -2,7 +2,7 @@
 import type { State, Timetable } from "../utils/types";
 import { useEffect, useRef, useState } from "react";
 import { dayIndices, findNextBuses, minutesToTime } from "../utils/timeHandlers";
-import { buildings } from "../utils/constants";
+import { buildings, majorStations } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
@@ -226,39 +226,45 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <div className="" ref={timesContainer}>
-              <Accordion type="single" className="" collapsible>
+              <Accordion type="single" className="" collapsible defaultValue={JSON.stringify(futureBuses[0])}>
                 {previousBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 -my-1 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
+                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
                       <AccordionTrigger className="p-2">
-                        <p className="mx-auto text-xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
-                        <p className="mx-auto text-xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
+                        <p className="mx-auto text-xl">{minutesToTime(item.leaveHour * 60 + item.leaveMinute)}</p>
+                        <p className="mx-auto text-xl">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
                       </AccordionTrigger>
-                      <AccordionContent className="grid grid-cols-3">
-                        {item.busStopList.map(i=>{
-                          return(<>
-                            <p className="col-span-2 -my-1">{i.busStop}</p>
-                            <p className="-my-1">{i.hour.toString()}:{i.minute.toString().padStart(2,"0")}</p>
-                          </>
-                          )
-                        })}
-                        </AccordionContent>
+                      <AccordionContent className="">
+                        {item.busStopList.map(i => {
+                          return (majorStations.find(j=>j==i.busStop)?
+                            <div className="grid grid-cols-3 border-white/20 border-t last:border-b text-lg">
+                              <p className="col-span-2 bg-white/10 m-1 border border-white/30 rounded-md">{i.busStop}</p>
+                              <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
+                            </div>:<div className="grid grid-cols-3 pt-1 border-t last:border-b text-white">
+                              <p className="col-span-2 -my-1">{i.busStop}</p>
+                              <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
+                            </div>
+                          )})}
+                      </AccordionContent>
                     </AccordionItem>)
                 })}
                 {futureBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="-my-1 dark:border-white-500/50 border-black/20 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
+                    <AccordionItem value={JSON.stringify(item)} className="-my-1 dark:border-white/50 border-black/20 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
                       <AccordionTrigger className="p-2">
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
                       </AccordionTrigger>
-                      <AccordionContent className="grid grid-cols-3">{item.busStopList.map(i=>{
-                          return(<>
-                            <p className="col-span-2 -my-1 text-lg">{i.busStop}</p>
-                            <p className="-my-1 text-lg">{i.hour.toString()}:{i.minute.toString().padStart(2,"0")}</p>
-                          </>
-                          )
-                        })}</AccordionContent>
+                      <AccordionContent className="">{item.busStopList.map(i => {
+                        return (majorStations.find(j=>j==i.busStop) ? <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-xl">
+                          <p className="col-span-2 bg-white/20 border rounded-md">{i.busStop}</p>
+                          <p className="text-2xl">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
+                        </div> :<div className="grid grid-cols-3 border-white/20 border-t last:border-b">
+                          <p className="col-span-2">{i.busStop}</p>
+                          <p className="-my-1 text-lg">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
+                        </div>
+                        )
+                      })}</AccordionContent>
                     </AccordionItem>
                   )
                 })}
