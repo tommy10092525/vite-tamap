@@ -21,7 +21,7 @@ function isHoliday({ date, holidayData }: { date: Date, holidayData: HolidayData
     console.log("祝日データがpending状態です！！！")
     return false
   }
-  return holidayData.hasOwnProperty(formattedDate)
+  return Object.prototype.hasOwnProperty.call(holidayData, formattedDate)
 }
 
 // 平日かどうかを判定
