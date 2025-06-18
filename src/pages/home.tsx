@@ -229,7 +229,7 @@ export default function Home() {
               <Accordion type="single" className="" collapsible>
                 {previousBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 -my-1 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
+                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 -my-1 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
                       <AccordionTrigger className="p-2">
                         <p className="mx-auto text-xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
                         <p className="mx-auto text-xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
@@ -247,7 +247,7 @@ export default function Home() {
                 })}
                 {futureBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="-my-1 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
+                    <AccordionItem value={JSON.stringify(item)} className="-my-1 dark:border-white-500/50 border-black/20 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
                       <AccordionTrigger className="p-2">
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
