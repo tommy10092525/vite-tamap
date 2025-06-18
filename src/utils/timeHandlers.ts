@@ -1,4 +1,4 @@
-import type{ Timetable, HolidayData } from "./types"
+import type { Timetable, HolidayData } from "./types"
 
 const dayIndices = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const equationOfTime = 9
@@ -67,10 +67,19 @@ function findNextBuses({
   })
   const nextBuses = []
   // 現在の曜日のバスを取得
-  timeTable=timeTable.filter(item=>item.station===station&&item.isComingToHosei===isComingToHosei).sort((a,b)=>a.arriveHour*60+a.arriveMinute-b.arriveHour*60+b.arriveMinute)
-  if(length<=-1){
-    timeTable.reverse()
+  let newTimeTable = timeTable.slice()
+  newTimeTable = newTimeTable.filter(item => item.station === station && item.isComingToHosei === isComingToHosei)
+  newTimeTable = newTimeTable.sort((a, b) => {
+    if (a.leaveHour * 60 + a.leaveMinute > b.leaveHour * 60 + b.leaveMinute) {
+      return 1
+    } else {
+      return -1
+    }
+  })
+  if (length <= -1) {
+    newTimeTable.reverse()
   }
+  console.log("並び替えた時刻表", newTimeTable)
   let dayToCheck: string
   if (isHoliday({
     date: currentDate,
@@ -83,8 +92,8 @@ function findNextBuses({
   const dateToCheck = currentDate
   // バスが見つかるまで次の日に進む
   for (let i = 0; i < 7; i++) {
-    const busesForDay = timeTable.filter(bus =>
-      bus.day === dayToCheck || (isWeekday(dayToCheck) && bus.day === "weekday")
+    const busesForDay = newTimeTable.slice().filter(bus =>
+      bus.day === dayToCheck || (isWeekday(dayToCheck) && bus.day === "Weekday")
     )
     for (const bus of busesForDay) {
       const busLeaveTime = toMinutes({
@@ -134,13 +143,13 @@ function findNextBuses({
 }
 
 // `hh:mm` を分単位に変換する関数
-function timeToMinutes(time:string) {
+function timeToMinutes(time: string) {
   const [hours, minutes] = time.split(":").map(Number)
   return hours * 60 + minutes
 }
 
 // 分単位を `hh:mm` に戻す関数
-function minutesToTime(minutes:number) {
+function minutesToTime(minutes: number) {
   const hours = String(Math.floor(minutes / 60))
   const mins = String(minutes % 60).padStart(2, "0")
   return `${hours}:${mins}`
