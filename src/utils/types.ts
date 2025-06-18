@@ -1,18 +1,21 @@
-type HolidayData={date:string,holiday:string}[]
+type HolidayData=Record<string,string>
 type Timetable={
-  day:"weekday"|"Sunday"|"Saturday",
+  day:string,
   isComingToHosei:boolean,
   station:string,
   leaveHour:number,
   leaveMinute:number,
   arriveHour:number,
   arriveMinute:number,
-  otherInforMation:string
+  busStopList:{
+    hour:number,
+    minute:number,
+    busStop:string
+  }[]
 }[]
 type State={
   station:string,
   isComingToHosei:boolean,
-  menuOpened:boolean
 }
 
 
