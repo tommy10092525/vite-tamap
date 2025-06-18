@@ -18,6 +18,7 @@ import mapImage from "/images/Map.webp"
 import arrowImage from "/images/arrow.webp"
 import { toast, Toaster } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
+import { ScrollArea } from "../components/ui/scroll-area";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -225,7 +226,7 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-            <div className="" ref={timesContainer}>
+            <ScrollArea className="h-96" ref={timesContainer}>
               <Accordion type="single" className="" collapsible defaultValue={JSON.stringify(futureBuses[0])}>
                 {previousBuses.map((item, i) => {
                   return (
@@ -269,7 +270,7 @@ export default function Home() {
                   )
                 })}
               </Accordion>
-            </div>
+            </ScrollArea>
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
