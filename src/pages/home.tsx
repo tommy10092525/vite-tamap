@@ -126,9 +126,9 @@ export default function Home() {
     })
 
   }
-  useGSAP(() => {
-    gsap.fromTo(waribikiRef.current, { scale: 0.95, duration: 1 }, { scale: 1.05, duration: 1, yoyo: true, repeat: -1, ease: "power1.out" });
-  }, []);
+  // useGSAP(() => {
+  //   gsap.fromTo(waribikiRef.current, { scale: 0.95, duration: 1 }, { scale: 1.05, duration: 1, yoyo: true, repeat: -1, ease: "power1.out" });
+  // }, []);
   useGSAP(() => {
     animateText()
   }, [state.isComingToHosei, state.station])
