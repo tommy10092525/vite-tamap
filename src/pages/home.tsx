@@ -15,10 +15,12 @@ import Menu from "../components/ui/menu";
 
 import tamapLogo from "/images/tamap_logo.webp"
 import mapImage from "/images/Map.webp"
-import arrowImage from "/images/arrow.webp"
+// import arrowImage from "/images/arrow.webp"
 import { toast, Toaster } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { ScrollArea } from "../components/ui/scroll-area";
+
+import { ArrowLeftRight } from "lucide-react";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -230,22 +232,23 @@ export default function Home() {
               <Accordion type="single" className="" collapsible>
                 {previousBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
+                    <AccordionItem value={JSON.stringify(item)} className="dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
                       <AccordionTrigger className="p-2">
                         <p className="mx-auto text-xl">{minutesToTime(item.leaveHour * 60 + item.leaveMinute)}</p>
                         <p className="mx-auto text-xl">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
                       </AccordionTrigger>
                       <AccordionContent className="">
                         {item.busStopList.map(i => {
-                          return (majorStations.find(j=>j==i.busStop)?
-                            <div className="grid grid-cols-3 border-white/20 border-t last:border-b text-lg">
+                          return (majorStations.find(j => j == i.busStop) ?
+                            <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-lg">
                               <p className="col-span-2 bg-white/10 m-1 border border-white/30 rounded-md">{i.busStop}</p>
                               <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
-                            </div>:<div className="grid grid-cols-3 pt-1 border-t last:border-b text-white">
+                            </div> : <div className="grid grid-cols-3 pt-1 border-t border-black/20 last:border-b dark:text-white">
                               <p className="col-span-2 -my-1">{i.busStop}</p>
                               <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
                             </div>
-                          )})}
+                          )
+                        })}
                       </AccordionContent>
                     </AccordionItem>)
                 })}
@@ -257,10 +260,10 @@ export default function Home() {
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
                       </AccordionTrigger>
                       <AccordionContent className="">{item.busStopList.map(i => {
-                        return (majorStations.find(j=>j==i.busStop) ? <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-xl">
+                        return (majorStations.find(j => j == i.busStop) ? <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-xl">
                           <p className="col-span-2 bg-white/20 border rounded-md">{i.busStop}</p>
                           <p className="text-2xl">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
-                        </div> :<div className="grid grid-cols-3 border-white/20 border-t last:border-b">
+                        </div> : <div className="grid grid-cols-3 border-white/20 border-t last:border-b">
                           <p className="col-span-2">{i.busStop}</p>
                           <p className="-my-1 text-lg">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
                         </div>
@@ -274,11 +277,8 @@ export default function Home() {
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
-              <span className="ml-2 w-auto" ref={arrowsRef}>
-                <img src={arrowImage} alt="矢印" width={32} height={32} className="w-8 h-6" />
-                <img src={arrowImage} alt="矢印" width={32} height={32} className="-mt-3 w-8 h-6 rotate-180" />
-              </span>
-              <span className="mt-1 w-full font-semibold text-lg">左右切替</span>
+              <ArrowLeftRight ref={arrowsRef} className="mt-[10px] ml-3 rotate-x-180"/>
+              <span className="mx-auto my-2 font-semibold text-lg text-center">左右切替</span>
             </button>
           </Card>
 
