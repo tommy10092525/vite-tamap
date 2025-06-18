@@ -79,7 +79,6 @@ function findNextBuses({
   if (length <= -1) {
     newTimeTable.reverse()
   }
-  console.log("並び替えた時刻表", newTimeTable)
   let dayToCheck: string
   if (isHoliday({
     date: currentDate,
