@@ -208,7 +208,7 @@ export default function Home() {
     <>
       <Toaster />
       <Menu />
-      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-[125vh] text-black dark:text-white">
+      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full text-black dark:text-white">
         {/* 時計 */}
         <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl w-1/3 text-black dark:text-white">
           <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{`${typeof window !== "undefined" ? `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}` : "----/--/--"}`}</p>
