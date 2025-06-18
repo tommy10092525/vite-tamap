@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom"
-import logo from "../../../public/images/tamap_logo.webp"
+import logo from "/images/tamap_logo.webp"
 import StoreCard from '../../components/ui/store-card'
-import fujiImage from "../../../public/images/fuji.webp"
-import hicheeseImage from "../../../public/images/hicheese.webp"
-import kokuterudouImage from "../../../public/images/kokuterudou.webp"
+import fujiImage from "/images/fuji.webp"
+import hicheeseImage from "/images/hicheese.webp"
+import kokuterudouImage from "/images/kokuterudou.webp"
 const page = () => {
   return (
     <div className='bg-zinc-100 dark:bg-zinc-950 min-h-screen text-black dark:text-white'>

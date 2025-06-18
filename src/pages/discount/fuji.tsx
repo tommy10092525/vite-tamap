@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import fujiImage from "../../../public/images/fuji.webp"
+import fujiImage from "/images/fuji.webp"
 const page = () => {
   return (
     <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>

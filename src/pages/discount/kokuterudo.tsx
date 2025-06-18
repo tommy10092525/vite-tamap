@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import kokuterudouImage from "../../../public/images/kokuterudou.webp"
+import kokuterudouImage from "/images/kokuterudou.webp"
 
 const page = () => {
   return (

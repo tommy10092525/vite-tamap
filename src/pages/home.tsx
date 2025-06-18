@@ -13,9 +13,11 @@ import holidayData from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/ui/menu";
 
-import tamapLogo from "../../public/images/tamap_logo.webp"
-import mapImage from "../../public/images/Map.webp"
-import arrowImage from "../../public/images/arrow.webp"
+import tamapLogo from "/images/tamap_logo.webp"
+import mapImage from "/images/Map.webp"
+import arrowImage from "/images/arrow.webp"
+import { toast, Toaster } from "sonner";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -23,10 +25,9 @@ gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
 export default function Home() {
-  const [state, setState] = useState<State>({ station: "", isComingToHosei: true, menuOpened: false });
+  const [state, setState] = useState<State>({ station: "nishihachioji", isComingToHosei: true });
   const [now, setNow] = useState(new Date());
   const initUserInput = () => {
-    console.log(localStorage.getItem("station"))
     console.log("init")
     localStorage.clear();
     localStorage.setItem("firstAccessed", "false");
@@ -34,7 +35,6 @@ export default function Home() {
       return {
         station: "nishihachioji",
         isComingToHosei: true,
-        menuOpened: false,
       };
     });
   }
@@ -64,9 +64,11 @@ export default function Home() {
   });
   const waribikiRef = useRef(null);
   useEffect(() => {
-    if (localStorage.getItem("firstAccessed") !== "false") {
+    if (!localStorage.getItem("firstAccessed")) {
+      console.log("firstAccessedが空だから初期化する")
       initUserInput()
     } else {
+      console.log("空でないので内容を復元する")
       const station = localStorage.getItem("station")
       const isComingToHosei = localStorage.getItem("isComingToHosei") === "true"
       if (station) {
@@ -74,10 +76,10 @@ export default function Home() {
           return {
             station: station,
             isComingToHosei: isComingToHosei,
-            menuOpened: false,
           }
         })
       } else {
+        console.log("復元エラー")
         initUserInput()
       }
     }
@@ -86,6 +88,9 @@ export default function Home() {
         return new Date()
       })
     }, 1000)
+    setTimeout(() => {
+      toast(<div className="bg-black/60 shadow-lg px-8 py-3 rounded-md font-semibold text-white">たまっぷが新しくなりました!</div>, { unstyled: true })
+    }, 500);
   }, [])
 
   useEffect(() => {
@@ -155,10 +160,10 @@ export default function Home() {
   const currentHour = now.getHours()
   const currentMinutes = now.getMinutes()
   previousBuses = findNextBuses({
-    timeTable: JSON.parse(JSON.stringify(timetable)),
+    timeTable: timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
-    holidayData: JSON.parse(JSON.stringify(holidayData)),
+    holidayData: holidayData,
     currentDay,
     currentHour,
     currentMinutes,
@@ -166,10 +171,10 @@ export default function Home() {
     length: -2
   })
   futureBuses = findNextBuses({
-    timeTable: JSON.parse(JSON.stringify(timetable)),
+    timeTable: timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
-    holidayData: JSON.parse(JSON.stringify(holidayData)),
+    holidayData: holidayData,
     currentDay,
     currentHour,
     currentMinutes,
@@ -200,7 +205,8 @@ export default function Home() {
 
   return (
     <>
-      <Menu/>
+      <Toaster />
+      <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-[125vh] text-black dark:text-white">
         {/* 時計 */}
         <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl w-1/3 text-black dark:text-white">
@@ -220,28 +226,43 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <div className="" ref={timesContainer}>
-              {previousBuses.length > 0 ? previousBuses.map((item, i) => {
-                return <div className="grid grid-cols-2 opacity-50 -my-1 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
-                  <p className="mx-auto">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
-                  <p className="mx-auto">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
-                </div>
-              }) : Array.from({ length: 2 }).map((_, i) => {
-                return <div className="grid grid-cols-2 opacity-50 -my-1 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
-                  <p className="mx-auto">--:--</p>
-                  <p className="mx-auto">--:--</p>
-                </div>
-              })}
-              {futureBuses.length > 0 ? futureBuses.map((item, i) => {
-                return <div className="grid grid-cols-2 -my-1 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
-                  <p className="mx-auto">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
-                  <p className="mx-auto">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
-                </div>
-              }) : Array.from({ length: 3 }).map((_, i) => {
-                return <div className="grid grid-cols-2 -my-1 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
-                  <p className="mx-auto">--:--</p>
-                  <p className="mx-auto">--:--</p>
-                </div>
-              })}
+              <Accordion type="single" className="" collapsible>
+                {previousBuses.map((item, i) => {
+                  return (
+                    <AccordionItem value={JSON.stringify(item)} className="opacity-50 -my-1 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
+                      <AccordionTrigger className="p-2">
+                        <p className="mx-auto text-xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
+                        <p className="mx-auto text-xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
+                      </AccordionTrigger>
+                      <AccordionContent className="grid grid-cols-3">
+                        {item.busStopList.map(i=>{
+                          return(<>
+                            <p className="col-span-2 -my-1">{i.busStop}</p>
+                            <p className="-my-1">{i.hour.toString()}:{i.minute.toString().padStart(2,"0")}</p>
+                          </>
+                          )
+                        })}
+                        </AccordionContent>
+                    </AccordionItem>)
+                })}
+                {futureBuses.map((item, i) => {
+                  return (
+                    <AccordionItem value={JSON.stringify(item)} className="-my-1 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
+                      <AccordionTrigger className="p-2">
+                        <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
+                        <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
+                      </AccordionTrigger>
+                      <AccordionContent className="grid grid-cols-3">{item.busStopList.map(i=>{
+                          return(<>
+                            <p className="col-span-2 -my-1 text-lg">{i.busStop}</p>
+                            <p className="-my-1 text-lg">{i.hour.toString()}:{i.minute.toString().padStart(2,"0")}</p>
+                          </>
+                          )
+                        })}</AccordionContent>
+                    </AccordionItem>
+                  )
+                })}
+              </Accordion>
             </div>
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()

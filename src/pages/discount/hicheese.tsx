@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import hicheeseImage from "../../../public/images/hicheese.webp"
+import hicheeseImage from "/images/hicheese.webp"
 
 const page = () => {
   return (
