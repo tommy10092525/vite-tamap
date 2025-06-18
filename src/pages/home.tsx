@@ -227,7 +227,7 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <ScrollArea className="h-96" ref={timesContainer}>
-              <Accordion type="single" className="" collapsible defaultValue={JSON.stringify(futureBuses[0])}>
+              <Accordion type="single" className="" collapsible>
                 {previousBuses.map((item, i) => {
                   return (
                     <AccordionItem value={JSON.stringify(item)} className="opacity-50 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
