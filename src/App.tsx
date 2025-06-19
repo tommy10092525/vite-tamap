@@ -9,7 +9,7 @@ import { ThemeProvider } from "./components/theme-provider"
 
 const App = () => {
   return (
-    <ThemeProvider>
+    <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
       <BrowserRouter basename="/tamap">
         <Routes>
           <Route path="/" element={
