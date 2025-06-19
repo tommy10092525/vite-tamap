@@ -1,7 +1,7 @@
 "use client"
 import type { State, Timetable } from "../utils/types";
 import { useEffect, useRef, useState } from "react";
-import { dayIndices, findNextBuses, minutesToTime } from "../utils/timeHandlers";
+import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
 import { buildings, majorStations } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
@@ -19,7 +19,7 @@ import mapImage from "/images/Map.webp"
 import { toast, Toaster } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
 import { ScrollArea } from "../components/ui/scroll-area";
-
+import { cn } from "../lib/utils";
 import { ArrowLeftRight } from "lucide-react";
 
 gsap.registerPlugin(useGSAP);
@@ -213,8 +213,8 @@ export default function Home() {
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full text-black dark:text-white">
         {/* 時計 */}
         <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl w-1/3 text-black dark:text-white">
-          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{`${typeof window !== "undefined" ? `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}` : "----/--/--"}`}</p>
-          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{`${typeof window !== "undefined" ? `${new Date().getHours().toString()}:${new Date().getMinutes().toString().padStart(2, '0')}:${new Date().getSeconds().toString().padStart(2, '0')}` : "--:--:--"}`}</p>
+          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString()}</p>
+          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{getTimeString()}</p>
         </div>
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
@@ -232,20 +232,18 @@ export default function Home() {
               <Accordion type="single" className="" collapsible>
                 {previousBuses.map((item, i) => {
                   return (
-                    <AccordionItem value={JSON.stringify(item)} className="dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
-                      <AccordionTrigger className="p-2">
-                        <p className="mx-auto text-xl">{minutesToTime(item.leaveHour * 60 + item.leaveMinute)}</p>
-                        <p className="mx-auto text-xl">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
+                    <AccordionItem value={JSON.stringify(item)} className="opacity-70 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
+                      <AccordionTrigger className="p-2 text-xl">
+                        <p className="mx-auto">{minutesToTime(item.leaveHour * 60 + item.leaveMinute)}</p>
+                        <p className="mx-auto">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
                       </AccordionTrigger>
                       <AccordionContent className="">
-                        {item.busStopList.map(i => {
-                          return (majorStations.find(j => j == i.busStop) ?
-                            <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-lg">
-                              <p className="col-span-2 bg-white/10 m-1 border border-white/30 rounded-md">{i.busStop}</p>
-                              <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
-                            </div> : <div className="grid grid-cols-3 pt-1 border-t border-black/20 last:border-b dark:text-white">
-                              <p className="col-span-2 -my-1">{i.busStop}</p>
-                              <p className="my-auto">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
+                        {item.busStopList.map(bStp => {
+                          return (
+                            <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20",
+                              majorStations.find(j => j === bStp.busStop) ? "p-1 text-lg" : "pt-1")}>
+                              <p className={cn("col-span-2",majorStations.find(mjrSta=>mjrSta===bStp.busStop)?"m-1 border dark:border-white/30 dark:bg-white/20 rounded-md not-dark:border-black/20 not-dark:bg-black/5":"-my-1")}>{bStp.busStop}</p>
+                              <p className="my-auto">{minutesToTime(bStp.hour * 60 + bStp.minute)}</p>
                             </div>
                           )
                         })}
@@ -259,14 +257,12 @@ export default function Home() {
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
                         <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
                       </AccordionTrigger>
-                      <AccordionContent className="">{item.busStopList.map(i => {
-                        return (majorStations.find(j => j == i.busStop) ? <div className="grid grid-cols-3 p-1 border-white/20 border-t last:border-b text-xl">
-                          <p className="col-span-2 bg-white/20 border rounded-md">{i.busStop}</p>
-                          <p className="text-2xl">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
-                        </div> : <div className="grid grid-cols-3 border-white/20 border-t last:border-b">
-                          <p className="col-span-2">{i.busStop}</p>
-                          <p className="-my-1 text-lg">{i.hour.toString()}:{i.minute.toString().padStart(2, "0")}</p>
-                        </div>
+                      <AccordionContent className="">{item.busStopList.map(busStop=>{
+                        return(
+                          <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20",majorStations.find(majorSt=>majorSt===busStop.busStop) ? "text-lg":"")}>
+                            <p className={cn("col-span-2",majorStations.find(majorSt=>majorSt===busStop.busStop)?"dark:bg-white/20 not-dark:bg-black/10 border not-dark:border-black/20 rounded-md m-1":"")}>{busStop.busStop}</p>
+                            <p className={cn(majorStations.find(majorSt=>majorSt===busStop.busStop)?"text-2xl mt-1":"-my-1 text-lg")}>{minutesToTime(busStop.hour*60+busStop.minute)}</p>
+                          </div>
                         )
                       })}</AccordionContent>
                     </AccordionItem>
@@ -277,7 +273,7 @@ export default function Home() {
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
-              <ArrowLeftRight ref={arrowsRef} className="mt-[10px] ml-3 rotate-x-180"/>
+              <ArrowLeftRight ref={arrowsRef} className="mt-[10px] ml-3 rotate-x-180" />
               <span className="mx-auto my-2 font-semibold text-lg text-center">左右切替</span>
             </button>
           </Card>

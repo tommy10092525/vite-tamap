@@ -1,4 +1,5 @@
 import React from 'react'
+import { cn } from '../../lib/utils'
 type StationButtonProps = {
   station: string
   selectedStation: string
@@ -11,7 +12,7 @@ const StationButton = React.forwardRef<HTMLButtonElement, StationButtonProps>(({
     <button 
       onClick={onClick} 
       ref={ref} 
-      className={station === selectedStation ? 'bg-black/80 dark:bg-white/80 shadow-lg rounded-xl p-2 text-white dark:text-black scale-110 transition-all' : 'bg-black/50 dark:bg-white/50 shadow-lg rounded-xl text-white dark:text-black p-2 transition-all'}
+      className={cn("shadow-lg rounded-xl p-2 transition-all",station === selectedStation ? 'bg-black/80 dark:bg-white/80 text-white dark:text-black scale-110' : 'bg-black/50 dark:bg-white/50 text-white dark:text-black')}
       aria-pressed={station === selectedStation}
       aria-label={station}
       type="button"
