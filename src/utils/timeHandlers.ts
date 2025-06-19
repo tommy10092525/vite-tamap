@@ -154,6 +154,14 @@ function minutesToTime(minutes: number) {
   return `${hours}:${mins}`
 }
 
+function getDateString(){
+  return `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}`
+}
+
+function getTimeString(){
+  return `${new Date().getHours().toString()}:${new Date().getMinutes().toString().padStart(2, '0')}:${new Date().getSeconds().toString().padStart(2, '0')}`
+}
+
 export {
   toMinutes,
   timeDifference,
@@ -164,5 +172,7 @@ export {
   timeToMinutes,
   minutesToTime,
   dayIndices,
-  equationOfTime
+  equationOfTime,
+  getDateString,
+  getTimeString
 }
