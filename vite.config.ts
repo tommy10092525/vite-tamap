@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite"
 import {  VitePWA } from 'vite-plugin-pwa'
+import {ViteImageOptimizer} from "vite-plugin-image-optimizer"
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -40,6 +41,11 @@ export default defineConfig({
             purpose: 'maskable'
           }
         ]
+      }
+    }),ViteImageOptimizer({
+      webp:{
+        quality:10,
+        
       }
     })
   ],
