@@ -2,7 +2,7 @@
 import type { State, Timetable } from "../utils/types";
 import { useEffect, useRef, useState } from "react";
 import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
-import { buildings, majorStations } from "../utils/constants";
+import { buildings} from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
@@ -11,16 +11,14 @@ import Card from "../components/ui/card"
 import timetable from "../utils/TimeTable.json"
 import holidayData from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
-import Menu from "../components/ui/menu";
+import Menu from "../components/menu";
 
 import tamapLogo from "/images/tamap_logo.webp"
 import mapImage from "/images/Map.webp"
 // import arrowImage from "/images/arrow.webp"
 import { toast, Toaster } from "sonner";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "../components/ui/accordion";
-import { ScrollArea } from "../components/ui/scroll-area";
-import { cn } from "../lib/utils";
 import { ArrowLeftRight } from "lucide-react";
+import AccordionArea from "../components/AccordionArea";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -110,14 +108,6 @@ export default function Home() {
     })
   }
 
-  // const handleMenuButtonClicked = () => {
-  //   setState(prev => {
-  //     return {
-  //       ...prev,
-  //       menuOpened: !prev.menuOpened
-  //     }
-  //   })
-  // }
 
   const handleStationButtonClicked = (station: string) => {
     // animateStationButton(station)
@@ -129,9 +119,6 @@ export default function Home() {
     })
 
   }
-  // useGSAP(() => {
-  //   gsap.fromTo(waribikiRef.current, { scale: 0.95, duration: 1 }, { scale: 1.05, duration: 1, yoyo: true, repeat: -1, ease: "power1.out" });
-  // }, []);
   useGSAP(() => {
     animateText()
   }, [state.isComingToHosei, state.station])
@@ -228,48 +215,9 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-            <ScrollArea className="h-96" ref={timesContainer}>
-              <Accordion type="single" className="" collapsible>
-                {previousBuses.map((item, i) => {
-                  return (
-                    <AccordionItem value={JSON.stringify(item)} className="opacity-70 dark:border-white/50 border-black/20 font-sans font-semibold text-lg md:text-2xl text-center" key={i}>
-                      <AccordionTrigger className="p-2 text-xl">
-                        <p className="mx-auto">{minutesToTime(item.leaveHour * 60 + item.leaveMinute)}</p>
-                        <p className="mx-auto">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
-                      </AccordionTrigger>
-                      <AccordionContent className="">
-                        {item.busStopList.map(bStp => {
-                          return (
-                            <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20",
-                              majorStations.find(j => j === bStp.busStop) ? "p-1 text-lg" : "pt-1")}>
-                              <p className={cn("col-span-2",majorStations.find(mjrSta=>mjrSta===bStp.busStop)?"m-1 border dark:border-white/30 dark:bg-white/20 rounded-md not-dark:border-black/20 not-dark:bg-black/5":"-my-1")}>{bStp.busStop}</p>
-                              <p className="my-auto">{minutesToTime(bStp.hour * 60 + bStp.minute)}</p>
-                            </div>
-                          )
-                        })}
-                      </AccordionContent>
-                    </AccordionItem>)
-                })}
-                {futureBuses.map((item, i) => {
-                  return (
-                    <AccordionItem value={JSON.stringify(item)} className="-my-1 dark:border-white/50 border-black/20 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
-                      <AccordionTrigger className="p-2">
-                        <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
-                        <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
-                      </AccordionTrigger>
-                      <AccordionContent className="">{item.busStopList.map(busStop=>{
-                        return(
-                          <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20",majorStations.find(majorSt=>majorSt===busStop.busStop) ? "text-lg":"")}>
-                            <p className={cn("col-span-2",majorStations.find(majorSt=>majorSt===busStop.busStop)?"dark:bg-white/20 not-dark:bg-black/10 border not-dark:border-black/20 rounded-md m-1":"")}>{busStop.busStop}</p>
-                            <p className={cn(majorStations.find(majorSt=>majorSt===busStop.busStop)?"text-2xl mt-1":"-my-1 text-lg")}>{minutesToTime(busStop.hour*60+busStop.minute)}</p>
-                          </div>
-                        )
-                      })}</AccordionContent>
-                    </AccordionItem>
-                  )
-                })}
-              </Accordion>
-            </ScrollArea>
+
+            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
+
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>

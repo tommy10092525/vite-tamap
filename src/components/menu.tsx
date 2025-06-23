@@ -1,8 +1,8 @@
 // import React from 'react'
-import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './sheet';
+import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
 import { Link } from 'react-router-dom';
 import { Menu as MenuImg, Send, Share, Info, Instagram, Sun, Moon } from "lucide-react"
-import { useTheme } from "../theme-provider"
+import { useTheme } from "./theme-provider"
 
 const Menu = () => {
   const { setTheme, theme } = useTheme()
