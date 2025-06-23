@@ -1,5 +1,6 @@
 type HolidayData=Record<string,string>
 type Timetable={
+  id:string,
   day:string,
   isComingToHosei:boolean,
   station:string,
