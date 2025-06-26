@@ -1,31 +1,48 @@
 "use client"
-import type { State, Timetable } from "../utils/types";
-import { useEffect, useRef, useState } from "react";
+import type { HolidayData, Timetable } from "../utils/types";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
-import { buildings} from "../utils/constants";
+import { buildings } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
-import StationButton from "..//components/ui/station-button";
 import Card from "../components/ui/card"
-import timetable from "../utils/TimeTable.json"
-import holidayData from "../utils/Holidays.json"
+import timetableJSON from "../utils/TimeTable.json"
+import holidayDataJSON from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/menu";
+import { timetableSchema, holidayDataSchema,stationSchema, type State} from "../utils/types";
 
+import StationButton from "..//components/ui/station-button";
 import tamapLogo from "/images/tamap_logo.webp"
 import mapImage from "/images/Map.webp"
-// import arrowImage from "/images/arrow.webp"
 import { toast, Toaster } from "sonner";
-import { ArrowLeftRight } from "lucide-react";
 import AccordionArea from "../components/AccordionArea";
+import { ArrowLeftRight } from "lucide-react";
+
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
+let timetable: Timetable = [];
+let holidayData: HolidayData = {};
 export default function Home() {
+  try {
+    timetable = useMemo(()=>timetableSchema.parse(timetableJSON),[]);
+    // timetable = timetableJSON;
+  } catch (e) {
+    console.error("Invalid timetable data:", e);
+    throw new Error("Invalid timetable data");
+  }
+  try {
+    holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
+    // holidayData = holidayDataJSON;
+  } catch (e) {
+    console.error("Invalid holiday data:", e);
+    throw new Error("Invalid holiday data");
+  }
   const [state, setState] = useState<State>({ station: "nishihachioji", isComingToHosei: true });
   const [now, setNow] = useState(new Date());
   const initUserInput = () => {
@@ -52,7 +69,6 @@ export default function Home() {
   });
   const timesContainer = useRef(null);
   const directionContainer = useRef(null);
-  // const overlayContainer = useRef(null);
   const times = {
     economics: useRef(null),
     health: useRef(null),
@@ -70,7 +86,12 @@ export default function Home() {
       initUserInput()
     } else {
       console.log("空でないので内容を復元する")
-      const station = localStorage.getItem("station")
+      let station: "nishihachioji" | "mejirodai" | "aihara" | null = null;
+      try {
+        station = stationSchema.parse(localStorage.getItem("station"));
+      } catch (e) {
+        console.error("Invalid station data:", e)
+      }
       const isComingToHosei = localStorage.getItem("isComingToHosei") === "true"
       if (station) {
         setState(() => {
@@ -97,7 +118,7 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("station", state.station)
     localStorage.setItem("isComingToHosei", state.isComingToHosei ? "true" : "false")
-  }, [state])
+  }, [state.station, state.isComingToHosei])
 
   const handleDirectionButtonClicked = () => {
     setState(prev => {
@@ -108,9 +129,7 @@ export default function Home() {
     })
   }
 
-
-  const handleStationButtonClicked = (station: string) => {
-    // animateStationButton(station)
+  const handleStationButtonClicked = (station: "nishihachioji" | "mejirodai" | "aihara") => {
     setState(prev => {
       return {
         ...prev,
@@ -143,7 +162,7 @@ export default function Home() {
     sport: "--:--",
     gym: "--:--"
   }
-  let previousBuses: Timetable = []
+  let previousBuses: Timetable = [] 
   let futureBuses: Timetable = []
   const currentDayIndex = now.getDay()
   const currentDay = dayIndices[currentDayIndex]
@@ -172,6 +191,7 @@ export default function Home() {
     length: 3
   })
   const [nextBus] = futureBuses
+
   if (state.station == "nishihachioji") {
     departure = "西八王子"
   } else if (state.station == "mejirodai") {
@@ -179,7 +199,7 @@ export default function Home() {
   } else if (state.station == "aihara") {
     departure = "相原"
   } else {
-    departure = "西八王子"
+    throw new Error("Invalid station selected: " + state.station);
   }
   destination = "法政大学"
   if (!state.isComingToHosei) {
@@ -215,9 +235,7 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-
-            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
-
+            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer}/>
             <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
