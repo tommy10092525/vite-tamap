@@ -1,4 +1,5 @@
-import type { Timetable, HolidayData } from "./types"
+import * as z from "zod/v4"
+import type { holidayDataSchema, timetableSchema } from "./types"
 
 const dayIndices = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const equationOfTime = 9
@@ -12,7 +13,7 @@ function timeDifference({ nowInMinutes, busInMinutes }: { nowInMinutes: number, 
 }
 
 // 日付が祝日かどうかを判定
-function isHoliday({ date, holidayData }: { date: Date, holidayData: HolidayData }) {
+function isHoliday({ date, holidayData }: { date: Date, holidayData:  z.infer<typeof holidayDataSchema>}) {
   // 日本時間と標準時の差を足す。
   // 文字列としてみた際に日本の日付になるようにする。
   date.setHours(date.getHours() + equationOfTime)
@@ -30,7 +31,7 @@ function isWeekday(day: string) {
 }
 
 // 次の曜日を取得する関数（祝日も「日曜日」として扱う）
-function getNextDay({ currentDay, currentDate, holidayData }: { currentDay: string, currentDate: Date, holidayData: HolidayData }) {
+function getNextDay({ currentDay, currentDate, holidayData }: { currentDay: string, currentDate: Date, holidayData: z.infer<typeof holidayDataSchema> }) {
   const nextDate = new Date(currentDate)
   nextDate.setDate(nextDate.getDate() + 1)
   if (isHoliday({
@@ -43,7 +44,7 @@ function getNextDay({ currentDay, currentDate, holidayData }: { currentDay: stri
   return dayIndices[nextDayIndex]
 }
 
-function getPreviousDay({ currentDay, currentDate, holidayData }: { currentDay: string, currentDate: Date, holidayData: HolidayData }) {
+function getPreviousDay({ currentDay, currentDate, holidayData }: { currentDay: string, currentDate: Date, holidayData: z.infer<typeof holidayDataSchema> }) {
   const previousDate = new Date(currentDate)
   previousDate.setDate(previousDate.getDate() - 1)
   if (isHoliday({
@@ -58,18 +59,18 @@ function getPreviousDay({ currentDay, currentDate, holidayData }: { currentDay: 
 
 // 次のバスを検索
 function findNextBuses({
-  timeTable, holidayData, currentDay, currentHour, currentMinutes, currentDate, length, isComingToHosei, station }: {
-    timeTable: Timetable, holidayData: HolidayData, currentDay: string, currentHour: number, currentMinutes: number, currentDate: Date, length: number, isComingToHosei: boolean, station: string
+  timetable, holidayData, currentDay, currentHour, currentMinutes, currentDate, length, isComingToHosei, station }: {
+    timetable: z.infer<typeof timetableSchema>, holidayData: z.infer<typeof holidayDataSchema>, currentDay: string, currentHour: number, currentMinutes: number, currentDate: Date, length: number, isComingToHosei: boolean, station: string
   }) {
   const nowInMinutes = toMinutes({
     hour: currentHour,
     minutes: currentMinutes
   })
-  const nextBuses = []
+  const returnBuses = []
   // 現在の曜日のバスを取得
-  let newTimeTable = timeTable.slice()
-  newTimeTable = newTimeTable.filter(item => item.station === station && item.isComingToHosei === isComingToHosei)
-  newTimeTable = newTimeTable.sort((a, b) => {
+  let newTimetable = timetable.slice()
+  newTimetable = newTimetable.filter(item => item.station === station && item.isComingToHosei === isComingToHosei)
+  newTimetable = newTimetable.sort((a, b) => {
     if (a.leaveHour * 60 + a.leaveMinute > b.leaveHour * 60 + b.leaveMinute) {
       return 1
     } else {
@@ -77,7 +78,7 @@ function findNextBuses({
     }
   })
   if (length <= -1) {
-    newTimeTable.reverse()
+    newTimetable.reverse()
   }
   let dayToCheck: string
   if (isHoliday({
@@ -91,7 +92,7 @@ function findNextBuses({
   const dateToCheck = currentDate
   // バスが見つかるまで次の日に進む
   for (let i = 0; i < 7; i++) {
-    const busesForDay = newTimeTable.slice().filter(bus =>
+    const busesForDay = newTimetable.slice().filter(bus =>
       bus.day === dayToCheck || (isWeekday(dayToCheck) && bus.day === "Weekday")
     )
     for (const bus of busesForDay) {
@@ -104,21 +105,21 @@ function findNextBuses({
           nowInMinutes,
           busInMinutes: busLeaveTime
         }) >= 0) {
-          nextBuses.push(bus)
+          returnBuses.push(bus)
         }
       } else {
         if (i > 0 || timeDifference({
           nowInMinutes,
           busInMinutes: busLeaveTime
         }) < 0) {
-          nextBuses.push(bus)
+          returnBuses.push(bus)
         }
       }
-      if (nextBuses.length >= Math.abs(length)) {
+      if (returnBuses.length >= Math.abs(length)) {
         if (length >= 0) {
-          return nextBuses
+          return returnBuses
         } else {
-          return nextBuses.reverse()
+          return returnBuses.reverse()
         }
       } // 2本のバスを見つけたら返す
     }
@@ -138,7 +139,7 @@ function findNextBuses({
       dateToCheck.setDate(dateToCheck.getDate() - 1)
     }
   }
-  return nextBuses
+  return returnBuses
 }
 
 // `hh:mm` を分単位に変換する関数
