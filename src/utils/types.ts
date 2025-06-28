@@ -1,24 +1,8 @@
-import * as z from "zod";
+import * as z from "zod/v4";
 
-type HolidayData = Record<string, string>
 const holidayDataSchema = z.record(
   z.string(),
   z.string())
-type Timetable = {
-  id: string,
-  day: string,
-  isComingToHosei: boolean,
-  station: string,
-  leaveHour: number,
-  leaveMinute: number,
-  arriveHour: number,
-  arriveMinute: number,
-  busStopList: {
-    hour: number,
-    minute: number,
-    busStop: string
-  }[]
-}[]
 
 const timetableSchema = z.array(
   z.object({
@@ -48,6 +32,7 @@ const timetableSchema = z.array(
   })
 )
 
+
 const stateSchema = z.object({
   station: z.union([
     z.literal("nishihachioji"),
@@ -63,11 +48,6 @@ const stationSchema = z.union([
   z.literal("aihara"),
 ]);
 
-type State = {
-  station: "nishihachioji" | "mejirodai" | "aihara";
-  isComingToHosei: boolean;
-}
 
 
-export type { HolidayData, Timetable, State }
-export { holidayDataSchema, timetableSchema, stateSchema, stationSchema };
+export { holidayDataSchema, timetableSchema, stationSchema ,stateSchema};

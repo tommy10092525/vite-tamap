@@ -1,5 +1,4 @@
 "use client"
-import type { HolidayData, Timetable } from "../utils/types";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
 import { buildings } from "../utils/constants";
@@ -11,7 +10,7 @@ import timetableJSON from "../utils/TimeTable.json"
 import holidayDataJSON from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/menu";
-import { timetableSchema, holidayDataSchema,stationSchema, type State} from "../utils/types";
+import { timetableSchema, holidayDataSchema,stateSchema} from "../utils/types";
 
 import StationButton from "..//components/ui/station-button";
 import tamapLogo from "/images/tamap_logo.webp"
@@ -19,43 +18,30 @@ import mapImage from "/images/Map.webp"
 import { toast, Toaster } from "sonner";
 import AccordionArea from "../components/AccordionArea";
 import { ArrowLeftRight } from "lucide-react";
-
+import useUserInput from "../utils/useUserInput";
+import * as z from "zod/v4";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
-let timetable: Timetable = [];
-let holidayData: HolidayData = {};
+let timetable:z.infer<typeof timetableSchema>  = [];
+let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
   try {
     timetable = useMemo(()=>timetableSchema.parse(timetableJSON),[]);
-    // timetable = timetableJSON;
   } catch (e) {
     console.error("Invalid timetable data:", e);
     throw new Error("Invalid timetable data");
   }
   try {
     holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
-    // holidayData = holidayDataJSON;
   } catch (e) {
     console.error("Invalid holiday data:", e);
     throw new Error("Invalid holiday data");
   }
-  const [state, setState] = useState<State>({ station: "nishihachioji", isComingToHosei: true });
   const [now, setNow] = useState(new Date());
-  const initUserInput = () => {
-    console.log("init")
-    localStorage.clear();
-    localStorage.setItem("firstAccessed", "false");
-    setState(() => {
-      return {
-        station: "nishihachioji",
-        isComingToHosei: true,
-      };
-    });
-  }
   const mainContainer = useRef(null);
   const arrowsRef = useRef(null);
   const departureRef = useRef(null);
@@ -79,32 +65,9 @@ export default function Home() {
     gsap.fromTo(timesContainer.current, { opacity: 0, y: 10 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
     gsap.fromTo(Object.values(times).map(ref => ref.current), { opacity: 0, y: 5 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
   });
+  const {setState,state}=useUserInput()
   const waribikiRef = useRef(null);
   useEffect(() => {
-    if (!localStorage.getItem("firstAccessed")) {
-      console.log("firstAccessedが空だから初期化する")
-      initUserInput()
-    } else {
-      console.log("空でないので内容を復元する")
-      let station: "nishihachioji" | "mejirodai" | "aihara" | null = null;
-      try {
-        station = stationSchema.parse(localStorage.getItem("station"));
-      } catch (e) {
-        console.error("Invalid station data:", e)
-      }
-      const isComingToHosei = localStorage.getItem("isComingToHosei") === "true"
-      if (station) {
-        setState(() => {
-          return {
-            station: station,
-            isComingToHosei: isComingToHosei,
-          }
-        })
-      } else {
-        console.log("復元エラー")
-        initUserInput()
-      }
-    }
     setInterval(() => {
       setNow(() => {
         return new Date()
@@ -122,19 +85,19 @@ export default function Home() {
 
   const handleDirectionButtonClicked = () => {
     setState(prev => {
-      return {
+      return stateSchema.parse({
         ...prev,
         isComingToHosei: !prev.isComingToHosei
-      }
+      })
     })
   }
 
   const handleStationButtonClicked = (station: "nishihachioji" | "mejirodai" | "aihara") => {
     setState(prev => {
-      return {
+      return stateSchema.parse({
         ...prev,
         station
-      }
+      })
     })
 
   }
@@ -162,8 +125,8 @@ export default function Home() {
     sport: "--:--",
     gym: "--:--"
   }
-  let previousBuses: Timetable = [] 
-  let futureBuses: Timetable = []
+  let previousBuses: z.infer<typeof timetableSchema> = []
+  let futureBuses: z.infer<typeof timetableSchema> = []
   const currentDayIndex = now.getDay()
   const currentDay = dayIndices[currentDayIndex]
   const currentHour = now.getHours()
@@ -236,7 +199,7 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer}/>
-            <button className="flex bg-black/50 dark:bg-white/50 shadow-lg mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
+            <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
               <ArrowLeftRight ref={arrowsRef} className="mt-[10px] ml-3 rotate-x-180" />
@@ -247,20 +210,20 @@ export default function Home() {
           {/* 二つ目のカード */}
           <Card>
             <div className="relative font-semibold text-lg text-center">
-              <img src={mapImage} alt="地図のイラスト" width={300} className="opacity-70 mx-auto h-48 object-cover" height={300} />
-              <Card className="top-0 left-0 absolute w-1/3 h-16">
+              <img src={mapImage} alt="地図のイラスト" width={300} className="mx-auto h-48 object-cover" height={300} />
+              <Card className="top-0 left-0 absolute rounded-lg w-1/3 h-16">
                 経済
                 <span className="block" ref={times.economics}>{overlay.economics}</span>
               </Card>
-              <Card className="top-0 right-0 absolute w-1/3 h-16">
+              <Card className="top-0 right-0 absolute rounded-lg w-1/3 h-16">
                 社・現福
                 <span className="block" ref={times.health}>{overlay.health}</span>
               </Card>
-              <Card className="bottom-0 left-0 absolute w-1/3 h-16">
+              <Card className="bottom-0 left-0 absolute rounded-lg w-1/3 h-16">
                 体育館
                 <span className="block" ref={times.gym}>{overlay.gym}</span>
               </Card>
-              <Card className="right-0 bottom-0 absolute w-1/3 h-16">
+              <Card className="right-0 bottom-0 absolute rounded-lg w-1/3 h-16">
                 スポ健康
                 <span className="block" ref={times.sport}>{overlay.sport}</span>
               </Card>

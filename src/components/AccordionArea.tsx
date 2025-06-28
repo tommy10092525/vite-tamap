@@ -4,11 +4,12 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './
 import { cn } from '../lib/utils'
 import { majorStations } from '../utils/constants'
 import { minutesToTime } from '../utils/timeHandlers'
-import type { Timetable } from '../utils/types'
+import * as z from 'zod/v4'
+import type { timetableSchema } from '../utils/types'
 
 type Props = {
-  previousBuses: Timetable,
-  futureBuses: Timetable,
+  previousBuses: z.infer<typeof timetableSchema>,
+  futureBuses: z.infer<typeof timetableSchema>,
   timesContainer: React.RefObject<HTMLDivElement|null>
 }
 
