@@ -1,12 +1,12 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react";
 import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
-import { buildings } from "../utils/constants";
+import { buildings, stationNames } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
 import Card from "../components/ui/card"
-import timetableJSON from "../utils/TimeTable.json"
+import timetableJSON from "../utils/Timetable.json"
 import holidayDataJSON from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/menu";
@@ -132,7 +132,7 @@ export default function Home() {
   const currentHour = now.getHours()
   const currentMinutes = now.getMinutes()
   previousBuses = findNextBuses({
-    timeTable: timetable,
+    timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
@@ -143,7 +143,7 @@ export default function Home() {
     length: -2
   })
   futureBuses = findNextBuses({
-    timeTable: timetable,
+    timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
@@ -154,16 +154,7 @@ export default function Home() {
     length: 3
   })
   const [nextBus] = futureBuses
-
-  if (state.station == "nishihachioji") {
-    departure = "西八王子"
-  } else if (state.station == "mejirodai") {
-    departure = "めじろ台"
-  } else if (state.station == "aihara") {
-    departure = "相原"
-  } else {
-    throw new Error("Invalid station selected: " + state.station);
-  }
+  departure=stationNames[state.station]
   destination = "法政大学"
   if (!state.isComingToHosei) {
     [departure, destination] = [destination, departure]
@@ -182,8 +173,11 @@ export default function Home() {
       <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full text-black dark:text-white">
         {/* 時計 */}
-        <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow p-5 rounded-xl w-1/3 text-black dark:text-white">
+        <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow backdrop-blur-sm p-5 rounded-full w-1/3 text-black dark:text-white">
           <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString()}</p>
+          <p suppressHydrationWarning={false} className="w-auto h-7 font-mono text-lg text-center">{(()=>{
+            return dayIndices[new Date().getDay()]
+          })()}</p>
           <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{getTimeString()}</p>
         </div>
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
@@ -211,19 +205,19 @@ export default function Home() {
           <Card>
             <div className="relative font-semibold text-lg text-center">
               <img src={mapImage} alt="地図のイラスト" width={300} className="mx-auto h-48 object-cover" height={300} />
-              <Card className="top-0 left-0 absolute rounded-lg w-1/3 h-16">
+              <Card className="top-0 left-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
                 経済
                 <span className="block" ref={times.economics}>{overlay.economics}</span>
               </Card>
-              <Card className="top-0 right-0 absolute rounded-lg w-1/3 h-16">
+              <Card className="top-0 right-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
                 社・現福
                 <span className="block" ref={times.health}>{overlay.health}</span>
               </Card>
-              <Card className="bottom-0 left-0 absolute rounded-lg w-1/3 h-16">
+              <Card className="bottom-0 left-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
                 体育館
                 <span className="block" ref={times.gym}>{overlay.gym}</span>
               </Card>
-              <Card className="right-0 bottom-0 absolute rounded-lg w-1/3 h-16">
+              <Card className="right-0 bottom-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
                 スポ健康
                 <span className="block" ref={times.sport}>{overlay.sport}</span>
               </Card>
