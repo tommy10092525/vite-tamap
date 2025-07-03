@@ -1,54 +1,18 @@
-# React + TypeScript + Vite
-
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
-
-Currently, two official plugins are available:
-
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
-
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
-
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+# たまっぷ(Vite+React+TypeScript)
+## はじめに
+旧たまっぷ(Flask)をリプレイスしました。旧たまっぷではアクセスに応じてロリポップサーバーのPythonを動かしてHTMLを返していたため、大量のアクセスに弱いという弱点がありましたが、この構成ではサーバーサイドで言語を動かすことなく静的なファイルを返す構成(Jamstack)なので大量のアクセスに強いという特徴があります。  
+この構成では開発時にはTypeScript JSXやjsonなどの大量のファイルを扱っていますが、Viteを使ってbuildすると最終的に一つのJavaScriptのファイルにまとめることができます。  
+`npm run build`でJSXなどからJavaScriptとCSSを出力することができます。`dist`フォルダに出力され、この中身をそのままサーバーにアップロードすることで、たまっぷを公開することができます。
+## 開発環境の構築
+1. Node.jsをインストールします。
+2. このリポジトリをクローンします。
+3. `npm install`を実行して依存関係をインストールします。
+4. `npm run dev`を実行して開発サーバーを起動します。
+5. ブラウザで`http://localhost:5173`にアクセスして動作を確認します。
+## ビルド
+`npm run build`を実行すると、`dist`フォルダにビルドされたファイルが出力されます。す。
+## 開発
+開発時には、`npm run dev`を実行して開発サーバーを起動します。これにより、ホットリロードが有効になり、コードの変更が即座にブラウザに反映されます。
+開発サーバーはデフォルトで`http://localhost:5173`で起動します。ブラウザでこのURLにアクセスして、アプリケーションの動作を確認できます。
+## デプロイ
+現在利用しているロリポップサーバーでは、`dist`フォルダの中身をそのままアップロードすることで公開できます。

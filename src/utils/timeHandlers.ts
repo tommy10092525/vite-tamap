@@ -1,5 +1,5 @@
 import * as z from "zod/v4"
-import type { holidayDataSchema, timetableSchema } from "./types"
+import { ekitanSchema, holidayDataSchema, timetableSchema } from "./types"
 
 const dayIndices = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"]
 const equationOfTime = 9
@@ -13,14 +13,13 @@ function timeDifference({ nowInMinutes, busInMinutes }: { nowInMinutes: number, 
 }
 
 // 日付が祝日かどうかを判定
-function isHoliday({ date, holidayData }: { date: Date, holidayData:  z.infer<typeof holidayDataSchema>}) {
+function isHoliday({ date, holidayData }: { date: Date, holidayData: z.infer<typeof holidayDataSchema> }) {
   // 日本時間と標準時の差を足す。
   // 文字列としてみた際に日本の日付になるようにする。
   date.setHours(date.getHours() + equationOfTime)
   const formattedDate = date.toISOString().split('T')[0]
   if (!holidayData) {
-    console.log("祝日データがpending状態です！！！")
-    return false
+    throw new Error("Holiday data is not provided")
   }
   return Object.prototype.hasOwnProperty.call(holidayData, formattedDate)
 }
@@ -62,6 +61,7 @@ function findNextBuses({
   timetable, holidayData, currentDay, currentHour, currentMinutes, currentDate, length, isComingToHosei, station }: {
     timetable: z.infer<typeof timetableSchema>, holidayData: z.infer<typeof holidayDataSchema>, currentDay: string, currentHour: number, currentMinutes: number, currentDate: Date, length: number, isComingToHosei: boolean, station: string
   }) {
+  // console.log(`${currentDate}から${length>=1 ? "未来方向に":"過去方向に"}検索を開始する`)
   const nowInMinutes = toMinutes({
     hour: currentHour,
     minutes: currentMinutes
@@ -105,14 +105,56 @@ function findNextBuses({
           nowInMinutes,
           busInMinutes: busLeaveTime
         }) >= 0) {
-          returnBuses.push(bus)
+          let newBus
+          returnBuses.push({
+            date: (() => {
+              const newDate = new Date(dateToCheck)
+              newDate.setHours(bus.leaveHour, bus.leaveMinute, 0, 0)
+              newBus = {
+                ...bus, busStopList: bus.busStopList.map(stop => {
+                  const stopDate = new Date(newDate)
+                  stopDate.setHours(stop.hour, stop.minute, 0, 0)
+                  return {
+                    // date: stopDate.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
+                    date: stopDate,
+                    hour: stopDate.getHours(),
+                    minute: stopDate.getMinutes(),
+                    busStop: stop.busStop
+                  }
+                })
+              } // バス停の日時を設定
+              // console.log(`発見したバスの日時：${newDate}`)
+              return newDate
+            })(), ...newBus
+          })
         }
       } else {
         if (i > 0 || timeDifference({
           nowInMinutes,
           busInMinutes: busLeaveTime
         }) < 0) {
-          returnBuses.push(bus)
+          let newBus
+          returnBuses.push({
+            date: (() => {
+              const newDate = new Date(dateToCheck)
+              newDate.setHours(bus.leaveHour, bus.leaveMinute, 0, 0)
+              newBus = {
+                ...bus, busStopList: bus.busStopList.map(stop => {
+                  const stopDate = new Date(newDate)
+                  stopDate.setHours(stop.hour, stop.minute, 0, 0)
+                  return {
+                    // date: stopDate.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" }),
+                    date: stopDate,
+                    hour: stopDate.getHours(),
+                    minute: stopDate.getMinutes(),
+                    busStop: stop.busStop
+                  }
+                })
+              } // バス停の日時を設定
+              // console.log(`発見したバスの日時：${newDate}`)
+              return newDate
+            })(), ...newBus
+          })
         }
       }
       if (returnBuses.length >= Math.abs(length)) {
@@ -155,13 +197,56 @@ function minutesToTime(minutes: number) {
   return `${hours}:${mins}`
 }
 
-function getDateString(){
+function getDateString() {
   return `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}`
 }
 
-function getTimeString(){
+function getTimeString() {
   return `${new Date().getHours().toString()}:${new Date().getMinutes().toString().padStart(2, '0')}:${new Date().getSeconds().toString().padStart(2, '0')}`
 }
+
+
+function findNextTrains({ ekitanData, station, holidayData, date }: { ekitanData: z.infer<typeof ekitanSchema>, station: string, holidayData: z.infer<typeof holidayDataSchema>, date: Date }) {
+  // console.log(`駅: ${station}、日付: ${date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} から次の電車を検索します。`)
+  const currentHour = date.getHours();
+  const currentMinutes = date.getMinutes();
+  let currentDay = dayIndices[date.getDay()];
+  const nextTrains: {
+    day: "Weekday" | "Sunday" | "Saturday";
+    station: "西八王子駅" | "めじろ台駅" | "相原駅" | "八王子駅" | "橋本駅";
+    trainType: string;
+    destination: string;
+    direction: string;
+    line: string;
+    hour: number;
+    minute: number,
+    date: Date
+  }[] = []
+  const currentDate = date
+  for (let i = 0; i < 7; i++) {
+    ekitanData.filter(item => item.station === station && (item.day === currentDay || isWeekday(currentDay) && item.day === "Weekday")).sort((a, b) => {
+      return a.hour * 60 + a.minute - (b.hour * 60 + b.minute);
+    }).map(item => {
+      const itemTime = item.hour * 60 + item.minute;
+      const nowTime = currentHour * 60 + currentMinutes;
+      if (itemTime >= nowTime || i > 0) {
+        nextTrains.push({ date: currentDate, ...item });
+      }
+    });
+    currentDay = getNextDay({
+      currentDay,
+      currentDate: date,
+      holidayData
+    });
+    if (nextTrains.length >= 15) {
+      break
+    }
+    currentDate.setDate(currentDate.getDate() + 1)
+  }
+
+  return [...nextTrains.slice(0, 15)];
+}
+
 
 export {
   toMinutes,
@@ -175,5 +260,6 @@ export {
   dayIndices,
   equationOfTime,
   getDateString,
-  getTimeString
+  getTimeString,
+  findNextTrains,
 }

@@ -11,7 +11,7 @@ const stationNames = {
   "aihara": "相原",
 }
 
-const majorStations=["相原駅西口","法政大学（町田市）","橋本駅北口","法政大学","めじろ台駅","西八王子駅南口","八王子駅南口"]
+const majorStations=["相原駅西口","橋本駅北口","めじろ台駅","西八王子駅南口","八王子駅南口"]
 
 export {buildings,stationNames,majorStations
 }

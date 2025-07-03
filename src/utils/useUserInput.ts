@@ -13,7 +13,7 @@ export default function useUserInput() {
           return { station, isComingToHosei }
         })
       } catch (e) {
-        console.log("Invalide localStorage data:", e)
+        console.error("Invalide localStorage data:", e)
       }
     }
   },[])

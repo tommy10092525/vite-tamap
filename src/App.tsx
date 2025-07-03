@@ -10,9 +10,9 @@ import { ThemeProvider } from "./components/theme-provider"
 const App = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
-      <BrowserRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
+      <BrowserRouter basename={import.meta.env.PROD ? "/tamap/" : ""}>
         <Routes>
-          <Route path="" element={
+          <Route path="/" element={
             <Home />
           } />
           <Route path="discount" element={<Discount />} />

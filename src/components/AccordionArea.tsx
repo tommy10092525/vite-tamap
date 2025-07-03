@@ -1,21 +1,57 @@
 import React from 'react'
 import { ScrollArea } from './ui/scroll-area'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { cn } from '../lib/utils'
+import { cn, resolveStationName } from '../lib/utils'
 import { majorStations } from '../utils/constants'
-import { minutesToTime } from '../utils/timeHandlers'
-import * as z from 'zod/v4'
-import type { timetableSchema } from '../utils/types'
+import { findNextTrains, minutesToTime } from '../utils/timeHandlers'
+import ekitanDataJSON from "../utils/ekitan.json"
+import holidayData from "../utils/Holidays.json"
+import { ekitanSchema } from '../utils/types'
+import TrainSheet from '../components/ui/TrainSheet'
 
 type Props = {
-  previousBuses: z.infer<typeof timetableSchema>,
-  futureBuses: z.infer<typeof timetableSchema>,
-  timesContainer: React.RefObject<HTMLDivElement|null>
+  previousBuses: {
+    id: string;
+    day: "Weekday" | "Sunday" | "Saturday";
+    isComingToHosei: boolean;
+    station: "nishihachioji" | "mejirodai" | "aihara";
+    leaveHour: number;
+    leaveMinute: number;
+    arriveHour: number;
+    arriveMinute: number;
+    busStopList: {
+      hour: number,
+      minute: number,
+      busStop: string,
+      date: Date
+    }[];
+    date: Date
+  }[],
+  futureBuses: {
+    id: string;
+    day: "Weekday" | "Sunday" | "Saturday";
+    isComingToHosei: boolean;
+    station: "nishihachioji" | "mejirodai" | "aihara";
+    leaveHour: number;
+    leaveMinute: number;
+    arriveHour: number;
+    arriveMinute: number;
+    busStopList: {
+      hour: number,
+      minute: number,
+      busStop: string,
+      date: Date
+    }[];
+    date: Date
+  }[],
+  timesContainer: React.RefObject<HTMLDivElement | null>
 }
 
+const ekitanData = ekitanSchema.parse(ekitanDataJSON)
 const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) => {
   return (
     <ScrollArea className="h-96" ref={timesContainer}>
+
       <Accordion type="single" className="" collapsible>
         {previousBuses.map((item, i) => {
           return (
@@ -25,12 +61,15 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                 <p className="mx-auto">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
               </AccordionTrigger>
               <AccordionContent className="">
-                {item.busStopList.map(bStp => {
+                {item.busStopList.map(busStop => {
                   return (
-                    <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20",
-                      majorStations.find(j => j === bStp.busStop) ? "p-1 text-lg" : "pt-1")}>
-                      <p className={cn("col-span-2", majorStations.find(mjrSta => mjrSta === bStp.busStop) ? "m-1 border dark:border-white/30 dark:bg-white/20 rounded-md not-dark:border-black/20 not-dark:bg-black/5" : "-my-1")}>{bStp.busStop}</p>
-                      <p className="my-auto">{minutesToTime(bStp.hour * 60 + bStp.minute)}</p>
+                    <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
+                      majorStations.find(j => j === busStop.busStop) ? "p-1 text-lg" : "pt-1 justify-between")}>
+                      {majorStations.find(mjrSta => mjrSta === busStop.busStop) ? <TrainSheet trains={findNextTrains({ date: busStop.date, ekitanData:ekitanData, holidayData, station: resolveStationName(busStop.busStop) })} hour={busStop.hour} minute={busStop.minute} busStopName={busStop.busStop}/> :
+                        <div className='grid grid-cols-3'>
+                          <p className="col-span-2">{busStop.busStop}</p>
+                          <p className="">{minutesToTime(busStop.hour * 60 + busStop.minute)}</p>
+                        </div>}
                     </div>
                   )
                 })}
@@ -46,9 +85,13 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
               </AccordionTrigger>
               <AccordionContent className="">{item.busStopList.map(busStop => {
                 return (
-                  <div className={cn("grid grid-cols-3 border-t last:border-b dark:border-white/20 not-dark:border-black/20", majorStations.find(majorSt => majorSt === busStop.busStop) ? "text-lg" : "")}>
-                    <p className={cn("col-span-2", majorStations.find(majorSt => majorSt === busStop.busStop) ? "dark:bg-white/20 not-dark:bg-black/10 border not-dark:border-black/20 rounded-md m-1" : "")}>{busStop.busStop}</p>
-                    <p className={cn(majorStations.find(majorSt => majorSt === busStop.busStop) ? "text-2xl mt-1" : "-my-1 text-lg")}>{minutesToTime(busStop.hour * 60 + busStop.minute)}</p>
+                  <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
+                    majorStations.find(j => j === busStop.busStop) ? "p-1 text-lg" : "pt-1")}>
+                    {majorStations.find(mjrSta => mjrSta === busStop.busStop) ? <TrainSheet trains={findNextTrains({ date: busStop.date, ekitanData:ekitanData, holidayData, station: resolveStationName(busStop.busStop) })} hour={busStop.hour} minute={busStop.minute} busStopName={busStop.busStop}/> : 
+                    <div className='grid grid-cols-3'>
+                      <p className="col-span-2">{busStop.busStop}</p>
+                      <p className="">{minutesToTime(busStop.hour * 60 + busStop.minute)}</p>
+                    </div>}
                   </div>
                 )
               })}</AccordionContent>

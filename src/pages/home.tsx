@@ -1,6 +1,6 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react";
-import { dayIndices, findNextBuses, getDateString, getTimeString, minutesToTime } from "../utils/timeHandlers";
+import { dayIndices, findNextBuses, minutesToTime } from "../utils/timeHandlers";
 import { buildings, stationNames } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
@@ -10,27 +10,29 @@ import timetableJSON from "../utils/Timetable.json"
 import holidayDataJSON from "../utils/Holidays.json"
 import { Link } from "react-router-dom";
 import Menu from "../components/menu";
-import { timetableSchema, holidayDataSchema,stateSchema} from "../utils/types";
+import { timetableSchema, holidayDataSchema, stateSchema, } from "../utils/types";
 
 import StationButton from "..//components/ui/station-button";
 import tamapLogo from "/images/tamap_logo.webp"
 import mapImage from "/images/Map.webp"
 import { toast, Toaster } from "sonner";
 import AccordionArea from "../components/AccordionArea";
-import { ArrowLeftRight } from "lucide-react";
 import useUserInput from "../utils/useUserInput";
 import * as z from "zod/v4";
+import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
+import Clock from "../components/ui/Clock";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
-let timetable:z.infer<typeof timetableSchema>  = [];
+let timetable: z.infer<typeof timetableSchema> = [];
 let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
+  console.log("レンダリング")
   try {
-    timetable = useMemo(()=>timetableSchema.parse(timetableJSON),[]);
+    timetable = useMemo(() => timetableSchema.parse(timetableJSON), []);
   } catch (e) {
     console.error("Invalid timetable data:", e);
     throw new Error("Invalid timetable data");
@@ -41,6 +43,11 @@ export default function Home() {
     console.error("Invalid holiday data:", e);
     throw new Error("Invalid holiday data");
   }
+  // try {
+  // } catch (e) {
+  //   console.error("Invalid ekitan data:", e)
+  //   throw new Error("Invalid ekitan data")
+  // }
   const [now, setNow] = useState(new Date());
   const mainContainer = useRef(null);
   const arrowsRef = useRef(null);
@@ -65,13 +72,14 @@ export default function Home() {
     gsap.fromTo(timesContainer.current, { opacity: 0, y: 10 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
     gsap.fromTo(Object.values(times).map(ref => ref.current), { opacity: 0, y: 5 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
   });
-  const {setState,state}=useUserInput()
+  const { setState, state } = useUserInput()
   const waribikiRef = useRef(null);
   useEffect(() => {
+    setNow(new Date())
     setInterval(() => {
-      setNow(() => {
-        return new Date()
-      })
+      if(new Date().getSeconds() === 0) {
+        setNow(new Date())
+      }
     }, 1000)
     setTimeout(() => {
       toast(<div className="bg-black/60 shadow-lg px-8 py-3 rounded-md font-semibold text-white">たまっぷが新しくなりました!</div>, { unstyled: true })
@@ -125,8 +133,40 @@ export default function Home() {
     sport: "--:--",
     gym: "--:--"
   }
-  let previousBuses: z.infer<typeof timetableSchema> = []
-  let futureBuses: z.infer<typeof timetableSchema> = []
+  let previousBuses: {
+    id: string;
+    day: "Weekday" | "Sunday" | "Saturday";
+    isComingToHosei: boolean;
+    station: "nishihachioji" | "mejirodai" | "aihara";
+    leaveHour: number;
+    leaveMinute: number;
+    arriveHour: number;
+    arriveMinute: number;
+    date:Date,
+    busStopList: {
+      hour: number,
+      minute: number,
+      busStop: string,
+      date:Date
+    }[];
+  }[] = []
+  let futureBuses: {
+    id: string;
+    day: "Weekday" | "Sunday" | "Saturday";
+    isComingToHosei: boolean;
+    station: "nishihachioji" | "mejirodai" | "aihara";
+    leaveHour: number;
+    leaveMinute: number;
+    arriveHour: number;
+    arriveMinute: number;
+    date:Date,
+    busStopList: {
+      hour: number,
+      minute: number,
+      busStop: string,
+      date:Date
+    }[];
+  }[] = []
   const currentDayIndex = now.getDay()
   const currentDay = dayIndices[currentDayIndex]
   const currentHour = now.getHours()
@@ -154,7 +194,7 @@ export default function Home() {
     length: 3
   })
   const [nextBus] = futureBuses
-  departure=stationNames[state.station]
+  departure = stationNames[state.station]
   destination = "法政大学"
   if (!state.isComingToHosei) {
     [departure, destination] = [destination, departure]
@@ -173,13 +213,7 @@ export default function Home() {
       <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full text-black dark:text-white">
         {/* 時計 */}
-        <div className="top-3 left-3 z-10 fixed bg-white/70 dark:bg-black/60 shadow backdrop-blur-sm p-5 rounded-full w-1/3 text-black dark:text-white">
-          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString()}</p>
-          <p suppressHydrationWarning={false} className="w-auto h-7 font-mono text-lg text-center">{(()=>{
-            return dayIndices[new Date().getDay()]
-          })()}</p>
-          <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{getTimeString()}</p>
-        </div>
+        <Clock />
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
           {/* 一つ目のカード */}
@@ -192,11 +226,11 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer}/>
+            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
             <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
-              <ArrowLeftRight ref={arrowsRef} className="mt-[10px] ml-3 rotate-x-180" />
+              <ArrowsCounterClockwiseIcon size={28} ref={arrowsRef} className="mt-[8px] ml-3 rotate-x-180"/>
               <span className="mx-auto my-2 font-semibold text-lg text-center">左右切替</span>
             </button>
           </Card>
@@ -255,6 +289,8 @@ export default function Home() {
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>
+        <div className="text-black">
+        </div>
       </div>
 
     </>
