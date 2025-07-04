@@ -14,10 +14,11 @@ function timeDifference({ nowInMinutes, busInMinutes }: { nowInMinutes: number, 
 
 // 日付が祝日かどうかを判定
 function isHoliday({ date, holidayData }: { date: Date, holidayData: z.infer<typeof holidayDataSchema> }) {
+  const newDate=structuredClone(date)
   // 日本時間と標準時の差を足す。
   // 文字列としてみた際に日本の日付になるようにする。
-  date.setHours(date.getHours() + equationOfTime)
-  const formattedDate = date.toISOString().split('T')[0]
+  newDate.setHours(newDate.getHours() + equationOfTime)
+  const formattedDate = newDate.toISOString().split('T')[0]
   if (!holidayData) {
     throw new Error("Holiday data is not provided")
   }
@@ -61,12 +62,11 @@ function findNextBuses({
   timetable, holidayData, currentDay, currentHour, currentMinutes, currentDate, length, isComingToHosei, station }: {
     timetable: z.infer<typeof timetableSchema>, holidayData: z.infer<typeof holidayDataSchema>, currentDay: string, currentHour: number, currentMinutes: number, currentDate: Date, length: number, isComingToHosei: boolean, station: string
   }) {
-  // console.log(`${currentDate}から${length>=1 ? "未来方向に":"過去方向に"}検索を開始する`)
-  const nowInMinutes = toMinutes({
-    hour: currentHour,
-    minutes: currentMinutes
-  })
-  const returnBuses = []
+    const nowInMinutes = toMinutes({
+      hour: currentHour,
+      minutes: currentMinutes
+    })
+    const returnBuses = []
   // 現在の曜日のバスを取得
   let newTimetable = timetable.slice()
   newTimetable = newTimetable.filter(item => item.station === station && item.isComingToHosei === isComingToHosei)
@@ -89,7 +89,7 @@ function findNextBuses({
   } else {
     dayToCheck = currentDay
   }
-  const dateToCheck = currentDate
+  const dateToCheck = structuredClone(currentDate)
   // バスが見つかるまで次の日に進む
   for (let i = 0; i < 7; i++) {
     const busesForDay = newTimetable.slice().filter(bus =>
@@ -207,7 +207,6 @@ function getTimeString() {
 
 
 function findNextTrains({ ekitanData, station, holidayData, date }: { ekitanData: z.infer<typeof ekitanSchema>, station: string, holidayData: z.infer<typeof holidayDataSchema>, date: Date }) {
-  // console.log(`駅: ${station}、日付: ${date.toLocaleString("ja-JP", { timeZone: "Asia/Tokyo" })} から次の電車を検索します。`)
   const currentHour = date.getHours();
   const currentMinutes = date.getMinutes();
   let currentDay = dayIndices[date.getDay()];
