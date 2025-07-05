@@ -212,7 +212,7 @@ function findNextTrains({ ekitanData, station, holidayData, date }: { ekitanData
   let currentDay = dayIndices[date.getDay()];
   const nextTrains: {
     day: "Weekday" | "Sunday" | "Saturday";
-    station: "西八王子駅" | "めじろ台駅" | "相原駅" | "八王子駅" | "橋本駅";
+    station: "西八王子駅" | "めじろ台駅" | "相原駅" | "JR八王子駅/京王八王子駅" | "橋本駅";
     trainType: string;
     destination: string;
     direction: string;

@@ -24,7 +24,7 @@ export function typeColor({line, trainType}:{line:string,trainType:string}){
     }else {
       trainTypeStyles="bg-transparent"
     }
-  }else if(line==="京王高尾線"||line==="京王相模原線"){
+  }else if(line==="京王高尾線"||line==="京王相模原線"||line==="京王線"){
     lineStyles="bg-pink-600"
     if(trainType==="各駅停車"){
       trainTypeStyles="bg-transparent"
@@ -32,9 +32,9 @@ export function typeColor({line, trainType}:{line:string,trainType:string}){
       trainTypeStyles="bg-blue-600"
     }else if(trainType==="区間急行"){
       trainTypeStyles="bg-lime-300"
-    }else if(trainType==="急行" || trainType==="急行・新線新宿から各駅停車本八幡行き"){
+    }else if(trainType==="急行" || trainType==="急行・新線新宿から各停"||trainType=="各停・高幡不動から急行"){
       trainTypeStyles="bg-green-500"
-    }else if(trainType==="特急" || trainType==="各駅停車・京王多摩センターから特急新宿行き"){
+    }else if(trainType==="特急" || trainType==="各停・京王多摩センターから特急"||trainType=="各停・高幡不動から特急"){
       trainTypeStyles="bg-red-500"
     }else if(trainType==="京王ライナー"){
       trainTypeStyles="bg-pink-600"

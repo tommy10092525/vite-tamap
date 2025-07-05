@@ -71,7 +71,7 @@ const ekitanSchema=z.array(
       z.literal("西八王子駅"),
       z.literal("めじろ台駅"),
       z.literal("相原駅"),
-      z.literal("八王子駅"),
+      z.literal("JR八王子駅/京王八王子駅"),
       z.literal("橋本駅"),
     ]),
     trainType:z.string(),

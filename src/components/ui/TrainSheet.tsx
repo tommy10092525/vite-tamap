@@ -12,7 +12,7 @@ import TrainDetail from './TrainDetail';
 type Props = {
   trains: {
     day: "Weekday" | "Saturday" | "Sunday";
-    station: "相原駅" | "めじろ台駅" | "西八王子駅" | "八王子駅" | "橋本駅";
+    station: "相原駅" | "めじろ台駅" | "西八王子駅" | "JR八王子駅/京王八王子駅" | "橋本駅";
     trainType: string;
     destination: string;
     direction: string;
