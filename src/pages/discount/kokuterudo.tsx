@@ -1,10 +1,15 @@
 import { Link } from "react-router-dom"
+import { Helmet } from "react-helmet-async";
 import kokuterudouImage from "/images/kokuterudou.webp"
 import { Undo2 } from "lucide-react"
 
 const page = () => {
   return (
     <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
+      <Helmet>
+        <title>コクテル堂 - たまっぷ提携店舗</title>
+        <meta name="description" content="橋本駅近くのカフェ「コクテル堂」。法政大学の学生証提示で、「ケーキ×ドリンクのセット」がさらに100円割引になります。" />
+      </Helmet>
       <Link to="/discount" className='top-2 left-2 fixed backdrop-blur-xs p-4 border-2 border-rose-500 rounded-full font-semibold text-lg'><Undo2></Undo2></Link>
       <div className='dark:bg-zinc-900 shadow-lg mx-auto mt-10 rounded-lg max-w-xl'>
         <img src={kokuterudouImage} alt="コクテル堂の画像" width={500} height={500} className='rounded-t-lg w-full' />
