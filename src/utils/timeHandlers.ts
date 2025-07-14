@@ -22,7 +22,7 @@ function isHoliday({ date, holidayData }: { date: Date, holidayData: z.infer<typ
   if (!holidayData) {
     throw new Error("Holiday data is not provided")
   }
-  return Object.prototype.hasOwnProperty.call(holidayData, formattedDate)
+  return holidayData[formattedDate]
 }
 
 // 平日かどうかを判定
@@ -95,9 +95,17 @@ function findNextBuses({
   const dateToCheck = structuredClone(currentDate)
   // バスが見つかるまで次の日に進む
   for (let i = 0; i < 7; i++) {
-    const busesForDay = newTimetable.slice().filter(bus =>
-      bus.day === dayToCheck || (isWeekday(dayToCheck) && bus.day === "Weekday")
+    let busesForDay = newTimetable.slice().filter(bus =>
+    bus.day === dayToCheck || (isWeekday(dayToCheck) && bus.day === "Weekday")
     )
+    // 2025年7月21日の京王バスだけ特別対応
+    if(currentDate.getFullYear() === 2025 && currentDate.getMonth() === 7-1 && currentDate.getDate() === 21 && (station==="nishihachioji"||station==="mejirodai")) {
+        busesForDay=newTimetable.slice().filter(bus=>{
+          console.log(bus.busStopList.length)
+          return bus.day==="Sunday"||bus.busStopList.length<=5 && bus.day==="Weekday"}
+        )
+    }
+
     for (const bus of busesForDay) {
       const busLeaveTime = toMinutes({
         hour: bus.leaveHour,
@@ -200,19 +208,19 @@ function minutesToTime(minutes: number) {
   return `${hours}:${mins}`
 }
 
-function getDateString() {
-  return `${new Date().getFullYear().toString().padStart(4, '0')}/${(new Date().getMonth() + 1).toString().padStart(2, '0')}/${new Date().getDate().toString().padStart(2, '0')}`
+function getDateString(now:Date) {
+  return `${now.getFullYear().toString().padStart(4, '0')}/${(now.getMonth() + 1).toString().padStart(2, '0')}/${now.getDate().toString().padStart(2, '0')}`
 }
 
-function getTimeString() {
-  return `${new Date().getHours().toString()}:${new Date().getMinutes().toString().padStart(2, '0')}:${new Date().getSeconds().toString().padStart(2, '0')}`
+function getTimeString(now:Date) {
+  return `${now.getHours().toString()}:${now.getMinutes().toString().padStart(2, '0')}:${now.getSeconds().toString().padStart(2, '0')}`
 }
 
 
 function findNextTrains({ ekitanData, station, holidayData, date }: { ekitanData: z.infer<typeof ekitanSchema>, station: string, holidayData: z.infer<typeof holidayDataSchema>, date: Date }) {
   const currentHour = date.getHours();
   const currentMinutes = date.getMinutes();
-  let currentDay = dayIndices[date.getDay()];
+  let currentDay = isHoliday({ date, holidayData }) ? "Sunday" : dayIndices[date.getDay()];
   const nextTrains: {
     day: "Weekday" | "Sunday" | "Saturday";
     station: "西八王子駅" | "めじろ台駅" | "相原駅" | "JR八王子駅/京王八王子駅" | "橋本駅";
