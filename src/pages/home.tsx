@@ -1,7 +1,7 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Helmet } from "react-helmet-async";
-import { dayIndices, findNextBuses, minutesToTime } from "../utils/timeHandlers";
+import { findNextBuses, minutesToTime } from "../utils/timeHandlers";
 import { buildings, stationNames } from "../utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
@@ -44,11 +44,6 @@ export default function Home() {
     console.error("Invalid holiday data:", e);
     throw new Error("Invalid holiday data");
   }
-  // try {
-  // } catch (e) {
-  //   console.error("Invalid ekitan data:", e)
-  //   throw new Error("Invalid ekitan data")
-  // }
   const [now, setNow] = useState(new Date());
   const mainContainer = useRef(null);
   const arrowsRef = useRef(null);
@@ -78,7 +73,7 @@ export default function Home() {
   useEffect(() => {
     setNow(new Date())
     setInterval(() => {
-      if(new Date().getSeconds() === 0) {
+      if(now.getMinutes()!==new Date().getMinutes()||now.getHours()!==new Date().getHours()) {
         setNow(new Date())
       }
     }, 1000)
@@ -168,18 +163,11 @@ export default function Home() {
       date:Date
     }[];
   }[] = []
-  const currentDayIndex = now.getDay()
-  const currentDay = dayIndices[currentDayIndex]
-  const currentHour = now.getHours()
-  const currentMinutes = now.getMinutes()
   previousBuses = findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
-    currentDay,
-    currentHour,
-    currentMinutes,
     currentDate: new Date(),
     length: -2
   })
@@ -188,9 +176,6 @@ export default function Home() {
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
-    currentDay,
-    currentHour,
-    currentMinutes,
     currentDate: new Date(),
     length: 3
   })

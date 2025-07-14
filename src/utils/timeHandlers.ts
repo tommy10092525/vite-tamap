@@ -59,9 +59,12 @@ function getPreviousDay({ currentDay, currentDate, holidayData }: { currentDay: 
 
 // 次のバスを検索
 function findNextBuses({
-  timetable, holidayData, currentDay, currentHour, currentMinutes, currentDate, length, isComingToHosei, station }: {
-    timetable: z.infer<typeof timetableSchema>, holidayData: z.infer<typeof holidayDataSchema>, currentDay: string, currentHour: number, currentMinutes: number, currentDate: Date, length: number, isComingToHosei: boolean, station: string
+  timetable, holidayData, currentDate, length, isComingToHosei, station }: {
+    timetable: z.infer<typeof timetableSchema>, holidayData: z.infer<typeof holidayDataSchema>, currentDate: Date, length: number, isComingToHosei: boolean, station: string
   }) {
+    const currentHour=currentDate.getHours()
+    const currentMinutes=currentDate.getMinutes()
+    const currentDay=dayIndices[currentDate.getDay()]
     const nowInMinutes = toMinutes({
       hour: currentHour,
       minutes: currentMinutes
