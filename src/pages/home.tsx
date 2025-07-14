@@ -73,18 +73,16 @@ export default function Home() {
   useEffect(() => {
     setNow(new Date())
     setInterval(() => {
-      if(now.getMinutes()!==new Date().getMinutes()||now.getHours()!==new Date().getHours()) {
-        setNow(new Date())
-      }
+      setNow(new Date())
     }, 1000)
-    setTimeout(() => {
-      toast(<div className="bg-black/60 shadow-lg px-8 py-3 rounded-md font-semibold text-white">たまっぷが新しくなりました!</div>, { unstyled: true })
-    }, 500);
   }, [])
 
   useEffect(() => {
     localStorage.setItem("station", state.station)
     localStorage.setItem("isComingToHosei", state.isComingToHosei ? "true" : "false")
+    if (now >= new Date("2025/7/20 21:00:00") && now < new Date("2025/7/21 21:00:00") &&state.station!=="aihara") {
+      toast("2025年7月21日京王バスは特別ダイヤです(祝日の各停+平日の急行)")
+    }
   }, [state.station, state.isComingToHosei])
 
   const handleDirectionButtonClicked = () => {
@@ -121,6 +119,8 @@ export default function Home() {
     }
   }, [state.station])
 
+
+
   let departure = "";
   let destination = "";
   const overlay = {
@@ -138,12 +138,12 @@ export default function Home() {
     leaveMinute: number;
     arriveHour: number;
     arriveMinute: number;
-    date:Date,
+    date: Date,
     busStopList: {
       hour: number,
       minute: number,
       busStop: string,
-      date:Date
+      date: Date
     }[];
   }[] = []
   let futureBuses: {
@@ -155,12 +155,12 @@ export default function Home() {
     leaveMinute: number;
     arriveHour: number;
     arriveMinute: number;
-    date:Date,
+    date: Date,
     busStopList: {
       hour: number,
       minute: number,
       busStop: string,
-      date:Date
+      date: Date
     }[];
   }[] = []
   previousBuses = findNextBuses({
@@ -168,7 +168,7 @@ export default function Home() {
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
-    currentDate: new Date(),
+    currentDate: now,
     length: -2
   })
   futureBuses = findNextBuses({
@@ -176,7 +176,7 @@ export default function Home() {
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
-    currentDate: new Date(),
+    currentDate: now,
     length: 3
   })
   const [nextBus] = futureBuses
@@ -201,9 +201,9 @@ export default function Home() {
       </Helmet>
       <Toaster />
       <Menu />
-      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full text-black dark:text-white">
+      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-screen text-black dark:text-white">
         {/* 時計 */}
-        <Clock />
+        <Clock now={now} />
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
           {/* 一つ目のカード */}
@@ -216,11 +216,11 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
+            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} now={now} />
             <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
-              <ArrowsCounterClockwiseIcon size={28} ref={arrowsRef} className="mt-[8px] ml-3 rotate-x-180"/>
+              <ArrowsCounterClockwiseIcon size={28} ref={arrowsRef} className="mt-[8px] ml-3 rotate-x-180" />
               <span className="mx-auto my-2 font-semibold text-lg text-center">左右切替</span>
             </button>
           </Card>
