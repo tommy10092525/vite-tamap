@@ -9,6 +9,9 @@ export default defineConfig({
   plugins: [react(),
     tailwindcss(),
     VitePWA({
+      workbox:{
+        maximumFileSizeToCacheInBytes:5000000
+      },
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png',"robots.txt"],
       injectRegister:"auto",
