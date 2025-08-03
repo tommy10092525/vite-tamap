@@ -1,15 +1,12 @@
 import { Link } from "react-router-dom"
-import { Helmet } from "react-helmet-async";
 import hicheeseImage from "/images/hicheese.webp"
 import { Undo2 } from "lucide-react"
 
 const page = () => {
   return (
     <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
-      <Helmet>
         <title>ハイチーズ Hi Cheese! - たまっぷ提携店舗</title>
         <meta name="description" content="八王子駅近くのチーズ料理店「ハイチーズ Hi Cheese!」。法政大学の学生証提示で、ランチはソフトドリンク1杯無料、ディナーはコース価格100円引きまたは飲み放題30分延長の特典があります。" />
-      </Helmet>
       <Link to="/discount" className='top-2 left-2 fixed backdrop-blur-xs p-4 border-2 border-rose-500 rounded-full font-semibold text-lg'><Undo2></Undo2></Link>
       <div className='dark:bg-zinc-900 shadow-lg mx-auto mt-10 rounded-lg max-w-xl'>
         <img src={hicheeseImage} alt="ハイチーズの画像" width={500} height={500} className='rounded-t-lg w-full' />

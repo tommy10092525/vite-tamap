@@ -1,6 +1,5 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { findNextBuses, minutesToTime } from "../utils/timeHandlers";
 import { buildings, stationNames } from "../utils/constants";
 import gsap from "gsap"
@@ -195,10 +194,8 @@ export default function Home() {
 
   return (
     <>
-      <Helmet>
         <title>たまっぷ - 法政大学多摩キャンパス向けバス時刻アプリ</title>
         <meta name="description" content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。" />
-      </Helmet>
       <Toaster />
       <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-screen text-black dark:text-white">
