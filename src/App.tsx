@@ -27,7 +27,7 @@ const TrackPageViews = () => {
 const App = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
-      <BrowserRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
+      <BrowserRouter basename="">
         <TrackPageViews />
         <Routes>
           <Route
