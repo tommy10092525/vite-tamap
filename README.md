@@ -59,7 +59,7 @@
     - `isComingToHosei`: 大学行きかどうかのフラグ (`true`/`false`)
     - `leaveHour`, `leaveMinute`: 出発時刻
     - `arriveHour`, `arriveMinute`: 到着時刻
-    - `busStopList`: 主要なバス停ごとの到着予測時刻
+    - `busStops`: 主要なバス停ごとの到着予測時刻
 
 - **`Holidays.json`**
   - 日本の祝日を定義したデータです。

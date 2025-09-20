@@ -32,10 +32,11 @@ let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
   console.log("レンダリング")
   try {
+    console.log({timetableJSON})
     timetable = useMemo(() => timetableSchema.parse(timetableJSON), []);
   } catch (e) {
+    throw e;
     console.error("Invalid timetable data:", e);
-    throw new Error("Invalid timetable data");
   }
   try {
     holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
@@ -138,7 +139,7 @@ export default function Home() {
     arriveHour: number;
     arriveMinute: number;
     date: Date,
-    busStopList: {
+    busStops: {
       hour: number,
       minute: number,
       busStop: string,
@@ -155,7 +156,7 @@ export default function Home() {
     arriveHour: number;
     arriveMinute: number;
     date: Date,
-    busStopList: {
+    busStops: {
       hour: number,
       minute: number,
       busStop: string,

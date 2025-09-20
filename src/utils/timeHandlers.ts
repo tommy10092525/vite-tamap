@@ -101,9 +101,9 @@ function findNextBuses({
     // 2025年7月21日の京王バスだけ特別対応
     if(currentDate.getFullYear() === 2025 && currentDate.getMonth() === 7-1 && currentDate.getDate() === 21 && (station==="nishihachioji"||station==="mejirodai")) {
         busesForDay=newTimetable.slice().filter(bus=>{
-          console.log(bus.busStopList.length)
-          return bus.day==="Sunday"||bus.busStopList.length<=5 && bus.day==="Weekday"}
-        )
+          console.log(bus.busStops.length)
+          return bus.day==="Sunday"||bus.busStops.length<=5 && bus.day==="Weekday"
+        })
     }
 
     for (const bus of busesForDay) {
@@ -122,7 +122,7 @@ function findNextBuses({
               const newDate = new Date(dateToCheck)
               newDate.setHours(bus.leaveHour, bus.leaveMinute, 0, 0)
               newBus = {
-                ...bus, busStopList: bus.busStopList.map(stop => {
+                ...bus, busStops: bus.busStops.map(stop => {
                   const stopDate = new Date(newDate)
                   stopDate.setHours(stop.hour, stop.minute, 0, 0)
                   return {
@@ -150,7 +150,7 @@ function findNextBuses({
               const newDate = new Date(dateToCheck)
               newDate.setHours(bus.leaveHour, bus.leaveMinute, 0, 0)
               newBus = {
-                ...bus, busStopList: bus.busStopList.map(stop => {
+                ...bus, busStops: bus.busStops.map(stop => {
                   const stopDate = new Date(newDate)
                   stopDate.setHours(stop.hour, stop.minute, 0, 0)
                   return {

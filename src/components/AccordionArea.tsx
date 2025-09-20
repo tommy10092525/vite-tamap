@@ -19,7 +19,7 @@ type Props = {
     leaveMinute: number;
     arriveHour: number;
     arriveMinute: number;
-    busStopList: {
+    busStops: {
       hour: number,
       minute: number,
       busStop: string,
@@ -36,7 +36,7 @@ type Props = {
     leaveMinute: number;
     arriveHour: number;
     arriveMinute: number;
-    busStopList: {
+    busStops: {
       hour: number,
       minute: number,
       busStop: string,
@@ -61,7 +61,7 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                 <p className="mx-auto">{minutesToTime(item.arriveHour * 60 + item.arriveMinute)}</p>
               </AccordionTrigger>
               <AccordionContent className="">
-                {item.busStopList.map(busStop => {
+                {item.busStops.map(busStop => {
                   return (
                     <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
                       majorStations.find(j => j === busStop.busStop) ? "p-1 text-lg" : "pt-1 justify-between")}>
@@ -83,9 +83,9 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                 <p className="mx-auto text-3xl">{item ? minutesToTime(item.leaveHour * 60 + item.leaveMinute) : "--:--"}</p>
                 <p className="mx-auto text-3xl">{item ? minutesToTime(item.arriveHour * 60 + item.arriveMinute) : "--:--"}</p>
               </AccordionTrigger>
-              <AccordionContent className="">{item.busStopList.map(busStop => {
+              <AccordionContent className="">{item.busStops.map(busStop => {
                 return (
-                  <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
+                  <div key={`${busStop.busStop}-${busStop.hour}:${busStop.minute}`} className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
                     majorStations.find(j => j === busStop.busStop) ? "p-1 text-lg" : "pt-1")}>
                     {majorStations.find(mjrSta => mjrSta === busStop.busStop) ? <TrainSheet trains={findNextTrains({ date: busStop.date, ekitanData:ekitanData, holidayData, station: resolveStationName(busStop.busStop) })} hour={busStop.hour} minute={busStop.minute} busStopName={busStop.busStop}/> : 
                     <div className='grid grid-cols-3'>

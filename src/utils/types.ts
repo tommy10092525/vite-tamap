@@ -22,7 +22,7 @@ const timetableSchema = z.array(
     leaveMinute: z.number(),
     arriveHour: z.number(),
     arriveMinute: z.number(),
-    busStopList: z.array(
+    busStops: z.array(
       z.object({
         hour: z.number(),
         minute: z.number(),
@@ -50,7 +50,7 @@ const BusSchema=z.object({
     leaveMinute: z.number(),
     arriveHour: z.number(),
     arriveMinute: z.number(),
-    busStopList: z.array(
+    busStops: z.array(
       z.object({
         hour: z.number(),
         minute: z.number(),
