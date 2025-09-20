@@ -2,22 +2,12 @@ import { JSDOM } from "jsdom"
 import * as z from "zod"
 import fs from "fs"
 
-
-function compareTime(a: { hour: number, minute: number }, b: { hour: number, minute: number }) {
-    if (a.hour * 60 + a.minute > b.hour * 60 + b.minute) {
-        return 1
-    } else {
-        return -1
-    }
-}
-
 async function getKeioBusStops({ url }: { url: string }) {
     try {
         const dom = await JSDOM.fromURL(url);
         const document = dom.window.document
         const trs = [...document.querySelectorAll("#railroad-matrix>center>div")]
         const busStops = trs.map(tr => {
-            // console.log(tr.querySelector("span")?.textContent)
             const hour = parseInt(z.string().parse((tr.querySelector("span")?.textContent.match(/(\d{2}:)/)?.[0].slice(0, 2))))
             const minute = parseInt(z.string().parse(tr.querySelector("span")?.textContent.match(/(:\d{2})/)?.[0].slice(1, 3)))
 
@@ -26,7 +16,6 @@ async function getKeioBusStops({ url }: { url: string }) {
         })
         return busStops
     } catch (e) {
-        console.log({ url })
         throw e
     }
 }
@@ -44,7 +33,6 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
             if (r) {
                 leaveHour = parseInt(r)
             } else {
-                console.error("")
             }
             for (const week in wkDict) {
                 const day = tr.querySelector(`td.${week}`)
@@ -57,7 +45,6 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
                             leaveMinute = parseInt(time.textContent)
                         }
                         const url = "https://transfer.navitime.biz" + item.querySelector("a")?.getAttribute("href")
-                        console.log({ url, leaveHour, leaveMinute, day: wkDict[week as keyof typeof wkDict] })
                         urls.push({ url, leaveHour, leaveMinute, day: wkDict[week as keyof typeof wkDict] })
                     }
                 }
@@ -69,7 +56,6 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
         }))
         return results
     } catch (e) {
-        console.log({ url })
         throw e
         return []
     }
@@ -107,7 +93,6 @@ async function getKanachuTimetable({ url }: { url: string }) {
 async function getKanachuBusStops({ url }: { url: string }) {
     const data = await fetch(url)
     const text = await data.text()
-    // console.log({url,text})
     const dom = new JSDOM(text);
     const document = dom.window.document;
     const busStops: { hour: number, minute: number, busStop: string }[] = []
@@ -117,9 +102,7 @@ async function getKanachuBusStops({ url }: { url: string }) {
         for (const li of lis) {
 
             const [hour, minute] = li.querySelector("a")?.textContent?.slice(0, 5).split(":").map(s => parseInt(s)) || [-1, -1]
-            if(hour===undefined||minute===undefined){
-                console.log(li.querySelector("a")?.textContent)
-                console.log({hour,minute,url})
+            if (hour === undefined || minute === undefined) {
                 // throw new Error("Failed to parse time")
                 continue
             }
@@ -245,39 +228,105 @@ async function getAllTimetables() {
         }
     }
     const keioTimetable = hoseiToMejirodai.concat(hoseiToNishihachioji).concat(mejirodaiToHosei).concat(nishihachiojiToHosei).filter(bus => bus.arriveHour)
-    console.log({ keioTimetable })
-    console.log({ kanachuTimetable })
     const allTimetable = kanachuTimetable.concat(keioTimetable)
-    console.log({ allTimetable })
-    const timetableSchema = z.array(
-        z.object({
-            id: z.string(),
-            day: z.union([
-                z.literal("Weekday"),
-                z.literal("Sunday"),
-                z.literal("Saturday"),
-            ]),
-            isComingToHosei: z.boolean(),
-            station: z.union([
-                z.literal("nishihachioji"),
-                z.literal("mejirodai"),
-                z.literal("aihara"),
-            ]),
-            leaveHour: z.number(),
-            leaveMinute: z.number(),
-            arriveHour: z.number(),
-            arriveMinute: z.number(),
-            busStops: z.array(
-                z.object({
-                    hour: z.number(),
-                    minute: z.number(),
-                    busStop: z.string()
-                })
-            )
-        })
-    )
-    timetableSchema.parse(allTimetable)
-    fs.writeFileSync("src/utils/Timetable.json", JSON.stringify(allTimetable))
+    fs.writeFileSync("src/utils/Timetable.json", JSON.stringify(allTimetable, null, 2))
 }
 
+
+
+async function getEkitan({ url }: { url: string }) {
+    const days = ["Weekday", "Saturday", "Sunday"]
+    const result: { hour: number, minute: number, trainType: string, destination: string, direction: string, station: string, line: string, day: string }[] = []
+    await Promise.all(days.map(async (day, idx) => {
+        const dom = await JSDOM.fromURL(`${url}?view=list&dw=${idx}`, {
+            referrer: "https://ekitan.com/",
+            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+        })
+        const document = dom.window.document
+        const directions = document.querySelectorAll("li.ek-direction_tab > a")
+        const line = z.string().parse(document.querySelector("li.line-name a")?.textContent)
+        const station = z.string().parse(document.querySelector("div.station-name a")?.textContent.replace(/\(神奈川\)/, ""));
+        [...document.querySelectorAll("div.tab-content-inner")].map((d, idx) => {
+            for (const el of d.querySelectorAll("li.ek-narrow")) {
+                let time = ""
+                try {
+                    time = z.string().parse(el.querySelector("span.dep-time")?.textContent)
+                } catch {
+                    break
+                }
+                const [hour, minute] = time.split(":").map(item => parseInt(item))
+                const trainType = z.string().parse(el.querySelector("span.train-type")?.textContent)
+                const destination = z.string().parse(el.querySelector("span.destination")?.textContent)
+                const direction = directions[idx].textContent
+                result.push({ hour, minute, trainType, destination, direction, station, line, day })
+            }
+        })
+    }))
+    return result;
+}
+
+async function getAllEkitan() {
+    const urls = [
+
+        "https://ekitan.com/timetable/railway/line-station/163-16/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/264-3/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/180-22/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/180-21/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/163-19/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/25-0/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/110-17/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/163-15/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/261-11/d1",
+
+        "https://ekitan.com/timetable/railway/line-station/262-31/d1"
+
+    ]
+    const result: {
+        hour: number;
+        minute: number;
+        trainType: string;
+        destination: string;
+        direction: string;
+        station: string
+    }[] = []
+    await Promise.all(urls.map(async url => {
+        return await getEkitan({ url })
+    })).then(item => {
+        item.map(i => {
+            i.map(j => {
+                result.push(j)
+            })
+        })
+    })
+    result.map(item => {
+        if (item.destination === "京王多摩センターから特急新宿行き行き") {
+            item.destination = "新宿行き"
+            item.trainType = "各停・京王多摩センターから特急"
+        } else if (item.destination === "新線新宿から各駅停車本八幡行き行き") {
+            item.destination = "本八幡行き"
+            item.trainType = "急行・新線新宿から各停"
+        } else if (item.destination === "高幡不動から特急新宿行き行き") {
+            item.destination = "新宿行き"
+            item.trainType = "各停・高幡不動から特急"
+        } else if (item.destination === "高幡不動から急行新宿行き行き") {
+            item.destination = "新宿行き"
+            item.trainType = "各停・高幡不動から急行"
+        }
+        if (item.station === "八王子駅" || item.station === "京王八王子駅") {
+            item.station = "JR八王子駅/京王八王子駅"
+        }
+    })
+    fs.writeFileSync("src/utils/ekitan.json", JSON.stringify(result, null, 2))
+
+}
+
+getAllEkitan()
 getAllTimetables()
