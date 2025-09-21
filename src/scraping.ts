@@ -3,26 +3,21 @@ import * as z from "zod"
 import fs from "fs"
 
 async function getKeioBusStops({ url }: { url: string }) {
-    try {
         const dom = await JSDOM.fromURL(url);
         const document = dom.window.document
         const trs = [...document.querySelectorAll("#railroad-matrix>center>div")]
         const busStops = trs.map(tr => {
-            const hour = parseInt(z.string().parse((tr.querySelector("span")?.textContent.match(/(\d{2}:)/)?.[0].slice(0, 2))))
-            const minute = parseInt(z.string().parse(tr.querySelector("span")?.textContent.match(/(:\d{2})/)?.[0].slice(1, 3)))
+            const hour = parseInt(z.string().parse((tr.querySelector("span")?.textContent?.match(/(\d{2}:)/)?.[0].slice(0, 2))))
+            const minute = parseInt(z.string().parse(tr.querySelector("span")?.textContent?.match(/(:\d{2})/)?.[0].slice(1, 3)))
 
             const busStop = z.string().parse(tr.querySelector("strong")?.textContent?.replace(/[\n\r\t]/g, "").trim())
             return { hour, minute, busStop }
         })
         return busStops
-    } catch (e) {
-        throw e
-    }
 }
 
 async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ignoreMejirodaiOnly: boolean }) {
     const wkDict = { wkd: "Weekday", std: "Saturday", snd: "Sunday" }
-    try {
         const dom = await JSDOM.fromURL(url);
         const document = dom.window.document;
         const trs = [...document.querySelectorAll("tr.l2")]
@@ -38,11 +33,11 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
                 const day = tr.querySelector(`td.${week}`)
                 const items = [...day?.querySelectorAll("div.diagram-item") || []]
                 for (const item of items) {
-                    if (item.querySelector("div.top")?.textContent.indexOf("グ") != -1 && !ignoreMejirodaiOnly || item.querySelector("div.top")?.textContent.indexOf("め") == -1) {
+                    if (item.querySelector("div.top")?.textContent?.indexOf("グ") != -1 && !ignoreMejirodaiOnly || item.querySelector("div.top")?.textContent?.indexOf("め") == -1) {
                         const time = item.querySelector("span[aria-hidden='true']")
                         let leaveMinute = -1
                         if (time) {
-                            leaveMinute = parseInt(time.textContent)
+                            leaveMinute = parseInt(z.string().parse(time?.textContent))
                         }
                         const url = "https://transfer.navitime.biz" + item.querySelector("a")?.getAttribute("href")
                         urls.push({ url, leaveHour, leaveMinute, day: wkDict[week as keyof typeof wkDict] })
@@ -55,10 +50,6 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
             return { leaveHour, leaveMinute, busStops, day }
         }))
         return results
-    } catch (e) {
-        throw e
-        return []
-    }
 }
 
 async function getKanachuTimetable({ url }: { url: string }) {
@@ -245,7 +236,7 @@ async function getEkitan({ url }: { url: string }) {
         const document = dom.window.document
         const directions = document.querySelectorAll("li.ek-direction_tab > a")
         const line = z.string().parse(document.querySelector("li.line-name a")?.textContent)
-        const station = z.string().parse(document.querySelector("div.station-name a")?.textContent.replace(/\(神奈川\)/, ""));
+        const station = z.string().parse(document.querySelector("div.station-name a")?.textContent?.replace(/\(神奈川\)/, ""));
         [...document.querySelectorAll("div.tab-content-inner")].map((d, idx) => {
             for (const el of d.querySelectorAll("li.ek-narrow")) {
                 let time = ""
@@ -257,7 +248,7 @@ async function getEkitan({ url }: { url: string }) {
                 const [hour, minute] = time.split(":").map(item => parseInt(item))
                 const trainType = z.string().parse(el.querySelector("span.train-type")?.textContent)
                 const destination = z.string().parse(el.querySelector("span.destination")?.textContent)
-                const direction = directions[idx].textContent
+                const direction = z.string().parse(directions[idx]?.textContent)
                 result.push({ hour, minute, trainType, destination, direction, station, line, day })
             }
         })
