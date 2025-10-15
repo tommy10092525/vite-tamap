@@ -1,8 +1,8 @@
 // import React from 'react'
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
-import { Link } from 'react-router-dom';
+import { Link} from 'react-router-dom';
 import { useTheme } from "./theme-provider"
-import {MoonIcon,SunIcon,ShareNetworkIcon,ChatCenteredDotsIcon, InfoIcon,InstagramLogoIcon,ListIcon,GithubLogoIcon} from "@phosphor-icons/react"
+import { MoonIcon, SunIcon, ShareNetworkIcon, ChatCenteredDotsIcon, InfoIcon, InstagramLogoIcon, ListIcon, GithubLogoIcon, DeviceMobileIcon } from "@phosphor-icons/react"
 
 const Menu = () => {
   const { setTheme, theme } = useTheme()
@@ -19,7 +19,7 @@ const Menu = () => {
             if (theme === "light") {
               setTheme("dark")
             } else { setTheme("light") }
-          }}>{theme === "light" ? <MoonIcon size={24}/> : <SunIcon size={24}/>}<span className='mx-auto'>テーマを切り替える</span>
+          }}>{theme === "light" ? <MoonIcon size={24} /> : <SunIcon size={24} />}<span className='mx-auto'>テーマを切り替える</span>
           </button>
           <Link className="flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto"
             to='https://docs.google.com/forms/d/e/1FAIpQLScPysPRj60-S2v_zmFjrQF6YKlS0Qe200GSO4LnEMsiVbXxYg/viewform'>
@@ -41,7 +41,16 @@ const Menu = () => {
             href='https://codemates123.github.io/homepage/'><InfoIcon size={24} /><p className='mx-auto text-center'>CODE MATESとは</p></a>
           <a className="flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto"
             href='https://www.instagram.com/codemates_hosei?igsh=MTJvcmthMzUwOW90cg=='><InstagramLogoIcon size={24} /><p className='mx-auto text-center'>Instagram</p></a>
-            <a href="https://github.com/tommy10092525/vite-tamap" className='flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto' target='_blank'>
+          
+          <Link to="discount/" className='flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto'>
+          <DeviceMobileIcon size={24}/>
+          <p className='text-cener mx-auto'>
+          飲食店割引はこちら
+          </p>
+            
+          </Link>
+          
+          <a href="https://github.com/tommy10092525/vite-tamap" className='flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto' target='_blank'>
             <GithubLogoIcon size={24}></GithubLogoIcon>
             <p className='mx-auto text-center'>ソースコード</p></a>
         </SheetContent>

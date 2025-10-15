@@ -8,7 +8,7 @@ import { ScrollTrigger } from "gsap/all";
 import Card from "../components/ui/card"
 import timetableJSON from "../utils/Timetable.json"
 import holidayDataJSON from "../utils/Holidays.json"
-import { Link } from "react-router-dom";
+// import { Link } from "react-router-dom";
 import Menu from "../components/menu";
 import { timetableSchema, holidayDataSchema, stateSchema, } from "../utils/types";
 
@@ -68,7 +68,7 @@ export default function Home() {
     gsap.fromTo(Object.values(times).map(ref => ref.current), { opacity: 0, y: 5 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
   });
   const { setState, state } = useUserInput()
-  const waribikiRef = useRef(null);
+  // const waribikiRef = useRef(null);
   useEffect(() => {
     setNow(new Date())
     setInterval(() => {
@@ -267,12 +267,16 @@ export default function Home() {
           </Card>
 
           {/* 割引ボタン */}
-          <Link
+          {/* <Link
             to="/discount"
             className="block bg-gradient-to-r from-red-500 to-blue-500 shadow-lg md:m-0 my-2 p-3 border border-white/30 rounded-full w-full font-bold text-white text-3xl text-center"
             ref={waribikiRef}>
             飲食店割引はこちら
-          </Link>
+          </Link> */}
+          <div className="bg-gradient-to-br from-yellow-400 to-red-500 shadow-lg font-bold text-3xl p-6 text-center">
+            2025多摩祭に
+            初出店します！！          </div>
+          <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>
