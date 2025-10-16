@@ -21,7 +21,7 @@ import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
 import { AndroidLogoIcon, AppleLogoIcon, ArrowsCounterClockwiseIcon, CompassIcon, DotsThreeVerticalIcon, ExportIcon, GoogleChromeLogoIcon, QuestionIcon } from "@phosphor-icons/react";
 import Clock from "@/components/ui/Clock";
-import { DialogHeader, DialogTitle, Dialog, DialogContent, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
+import { DialogHeader, DialogTitle, Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
