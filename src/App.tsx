@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { useEffect } from "react";
 import Home from "../src/pages/home";
@@ -27,7 +27,7 @@ const TrackPageViews = () => {
 const App = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
-      <HashRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
+      <BrowserRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
         <TrackPageViews />
         <Routes>
           <Route
@@ -42,7 +42,7 @@ const App = () => {
           <Route path="kokuterudo" element={<Kokuterudo />} />
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
-      </HashRouter>
+      </BrowserRouter>
     </ThemeProvider>
   );
 };
