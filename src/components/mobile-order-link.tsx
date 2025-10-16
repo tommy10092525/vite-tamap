@@ -17,7 +17,6 @@ const MobileOrderLink = () => {
   return (
     <>
       <a href={mobileOrderURL} ref={mobileOrderRef} className="border-2 from-orange-500 via-pink-500 to-purple-600 font-bold text-2xl bg-gradient-to-r hover:underline p-4 text-white rounded-full text-center">モバイルオーダーはこちら</a>
-      <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
     </>
   )
 }
