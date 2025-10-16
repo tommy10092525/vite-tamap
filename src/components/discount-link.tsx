@@ -4,7 +4,7 @@ const DiscountLink = () => {
   return (
     <Link
       to="/discount"
-      className="block bg-gradient-to-r from-red-500 to-blue-500 shadow-lg md:m-0 my-2 p-3 border border-white/30 rounded-full w-full font-bold text-white text-3xl text-center">
+      className="block bg-linear-to-br/decreasing from-red-500 to-blue-500 shadow-lg md:m-0 p-4 rounded-full w-full font-bold text-white text-2xl text-center items-center hover:underline">
       飲食店割引はこちら
     </Link >)
 
