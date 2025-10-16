@@ -16,7 +16,7 @@ import StationButton from "@/components/ui/station-button";
 import tamapLogo from "@/images/tamap_logo.webp"
 import mapImage from "@/images/Map.webp"
 import { toast, Toaster } from "sonner";
-import AccordionArea from "@/components/AccordionArea";
+import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
 import Clock from "@/components/ui/Clock";
@@ -24,7 +24,6 @@ import MobileOrderBanner from "@/components/mobile-order-banner";
 import MobileOrderLink from "@/components/mobile-order-link";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
-import DiscountLink from "@/components/discount-link";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -278,7 +277,7 @@ export default function Home() {
           <TamapHowToInstall />
           <MobileOrderBanner />
           <MobileOrderLink />
-          <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
+          <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" className="hover:rotate-x-12 hover:rotate-y-12 transition-all" alt="" />
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>
