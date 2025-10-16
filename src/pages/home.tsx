@@ -1,26 +1,26 @@
 "use client"
 import { useEffect, useMemo, useRef, useState } from "react";
-import { findNextBuses, minutesToTime } from "../utils/timeHandlers";
-import { buildings, stationNames } from "../utils/constants";
+import { findNextBuses, minutesToTime } from "@/utils/timeHandlers";
+import { buildings, stationNames } from "@/utils/constants";
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
-import Card from "../components/ui/card"
-import timetableJSON from "../utils/Timetable.json"
-import holidayDataJSON from "../utils/Holidays.json"
+import Card from "@/components/ui/card"
+import timetableJSON from "@/utils/Timetable.json"
+import holidayDataJSON from "@/utils/Holidays.json"
 // import { Link } from "react-router-dom";
-import Menu from "../components/menu";
-import { timetableSchema, holidayDataSchema, stateSchema, } from "../utils/types";
+import Menu from "@/components/menu";
+import { timetableSchema, holidayDataSchema, stateSchema, } from "@/utils/types";
 
-import StationButton from "..//components/ui/station-button";
-import tamapLogo from "/images/tamap_logo.webp"
-import mapImage from "/images/Map.webp"
+import StationButton from "@/components/ui/station-button";
+import tamapLogo from "@/images/tamap_logo.webp"
+import mapImage from "@/images/Map.webp"
 import { toast, Toaster } from "sonner";
-import AccordionArea from "../components/AccordionArea";
-import useUserInput from "../utils/useUserInput";
+import AccordionArea from "@/components/AccordionArea";
+import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
-import Clock from "../components/ui/Clock";
+import Clock from "@/components/ui/Clock";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);

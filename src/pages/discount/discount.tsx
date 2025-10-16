@@ -1,8 +1,8 @@
 import { Link } from "react-router-dom"
 import StoreCard from '../../components/store-card'
-import fujiImage from "/images/fuji.webp"
-import hicheeseImage from "/images/hicheese.webp"
-import kokuterudouImage from "/images/kokuterudou.webp"
+import fujiImage from "@/images/fuji.webp"
+import hicheeseImage from "@/images/hicheese.webp"
+import kokuterudouImage from "@/images/kokuterudou.webp"
 import { Undo2 } from "lucide-react"
 const page = () => {
   return (

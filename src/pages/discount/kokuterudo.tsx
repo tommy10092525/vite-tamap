@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import kokuterudouImage from "/images/kokuterudou.webp"
+import kokuterudouImage from "@/images/kokuterudou.webp"
 import { Undo2 } from "lucide-react"
 
 const page = () => {

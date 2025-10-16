@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import hicheeseImage from "/images/hicheese.webp"
+import hicheeseImage from "@/images/hicheese.webp"
 import { Undo2 } from "lucide-react"
 
 const page = () => {

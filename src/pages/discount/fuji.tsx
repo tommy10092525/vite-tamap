@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom"
-import fujiImage from "/images/fuji.webp"
+import fujiImage from "@/images/fuji.webp"
 import { Undo2 } from "lucide-react"
 const page = () => {
   return (
