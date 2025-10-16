@@ -43,7 +43,7 @@ const Menu = () => {
             href={homepage}><InfoIcon size={24} /><p className='mx-auto text-center'>CODE MATESとは</p></a>
           <a className={cn(buttonStyles)}
             href={instagram}><InstagramLogoIcon size={24} /><p className='mx-auto text-center'>Instagram</p></a>
-          <Link to="discount/" className={cn(buttonStyles)}>
+          <Link to="/discount" className={cn(buttonStyles)}>
             <DeviceMobileIcon size={24} />
             <p className='text-cener mx-auto'>
               飲食店割引はこちら
