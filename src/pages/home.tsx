@@ -19,18 +19,23 @@ import { toast, Toaster } from "sonner";
 import AccordionArea from "@/components/AccordionArea";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
-import { AndroidLogoIcon, AppleLogoIcon, ArrowsCounterClockwiseIcon, CompassIcon, DotsThreeVerticalIcon, ExportIcon, GoogleChromeLogoIcon, QuestionIcon } from "@phosphor-icons/react";
 import Clock from "@/components/ui/Clock";
-import { DialogHeader, DialogTitle, Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
+import MobileOrderBanner from "@/components/mobile-order-banner";
+import MobileOrderLink from "@/components/mobile-order-link";
+import TamapHowToInstall from "@/components/tamap-how-to-install";
+import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
+
 let timetable: z.infer<typeof timetableSchema> = [];
 let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
+  
+
   console.log("レンダリング")
   try {
     timetable = useMemo(() => timetableSchema.parse(timetableJSON), []);
@@ -274,45 +279,9 @@ export default function Home() {
             ref={waribikiRef}>
             飲食店割引はこちら
           </Link> */}
-          <Dialog>
-            <DialogTrigger asChild>
-              <button className="p-4 from-blue-400 to-blue-600 hover:ring-2 ring-blue-800 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline">
-                <QuestionIcon size={32} />
-                <span className="text-center mx-auto">
-                  たまっぷ　インストール方法
-                </span>
-              </button>
-            </DialogTrigger>
-            <DialogContent className="border-2 border-black/50 bg-black/30 text-white backdrop-blur-md rounded-md shadow-lg fixed p-4 w-full">
-              <DialogHeader>
-                <DialogTitle className="text-center text-xl">たまっぷ　インストール方法</DialogTitle>
-              </DialogHeader>
-              <div className="**:items-center">
-                <span className="flex">
-                  <AppleLogoIcon size={32} />iPhone<CompassIcon size={32} />Safariで開いてください
-                </span>
-                <ul className="p-2">
-                  <li className="flex">シェア<ExportIcon size={32} />を押す</li>
-                  <li>「ホーム画面に追加」を選択</li>
-                </ul>
-              </div>
-              <div className="**:items-center">
-                <span className="flex"><AndroidLogoIcon size={32} />Android<GoogleChromeLogoIcon size={32} />
-                  Chromeで開いてください
-                </span>
-                <ul className="p-2">
-                  <li className="flex">3点ボタン<DotsThreeVerticalIcon size={32} />を押す</li>
-                  <li>「ホーム画面に追加」を選択</li>
-                  <li>「インストール」を選択<br />（※ショートカットにしないでください！）</li>
-                </ul>
-                <a href="https://codemates123.github.io/homepage/tamap.html" className="text-lg underline font-semibold text-center text-blue-600">詳細はこちら</a>
-              </div>
-            </DialogContent>
-
-          </Dialog>
-          <div className="bg-gradient-to-br from-yellow-400 to-red-500 shadow-lg font-bold text-3xl p-6 text-center">
-            2025多摩祭に<br />
-            初出店します！！          </div>
+          <TamapHowToInstall />
+          <MobileOrderBanner />
+          <MobileOrderLink />
           <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
