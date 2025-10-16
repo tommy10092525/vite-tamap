@@ -19,8 +19,9 @@ import { toast, Toaster } from "sonner";
 import AccordionArea from "@/components/AccordionArea";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
-import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
+import { AndroidLogoIcon, AppleLogoIcon, ArrowsCounterClockwiseIcon, CompassIcon, DotsThreeVerticalIcon, ExportIcon, GoogleChromeLogoIcon, QuestionIcon } from "@phosphor-icons/react";
 import Clock from "@/components/ui/Clock";
+import { DialogHeader, DialogTitle, Dialog, DialogContent, DialogDescription, DialogTrigger } from "@/components/ui/dialog";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -79,7 +80,7 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("station", state.station)
     localStorage.setItem("isComingToHosei", state.isComingToHosei ? "true" : "false")
-    if (now >= new Date("2025/7/20 21:00:00") && now < new Date("2025/7/21 21:00:00") &&state.station!=="aihara") {
+    if (now >= new Date("2025/7/20 21:00:00") && now < new Date("2025/7/21 21:00:00") && state.station !== "aihara") {
       toast("2025年7月21日京王バスは特別ダイヤです(祝日の各停+平日の急行)")
     }
   }, [state.station, state.isComingToHosei])
@@ -194,8 +195,8 @@ export default function Home() {
 
   return (
     <>
-        <title>たまっぷ - 法政大学多摩キャンパス向けバス時刻アプリ</title>
-        <meta name="description" content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。" />
+      <title>たまっぷ - 法政大学多摩キャンパス向けバス時刻アプリ</title>
+      <meta name="description" content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。" />
       <Toaster />
       <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-screen text-black dark:text-white">
@@ -213,7 +214,7 @@ export default function Home() {
               <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
-            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer}/>
+            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
             <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
@@ -273,8 +274,44 @@ export default function Home() {
             ref={waribikiRef}>
             飲食店割引はこちら
           </Link> */}
+          <Dialog>
+            <DialogTrigger asChild>
+              <button className="p-4 from-blue-400 to-blue-600 hover:ring-2 ring-blue-800 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline">
+                <QuestionIcon size={32} />
+                <span className="text-center mx-auto">
+                  たまっぷ　インストール方法
+                </span>
+              </button>
+            </DialogTrigger>
+            <DialogContent className="border-2 border-black/50 bg-black/30 text-white backdrop-blur-md rounded-md shadow-lg fixed p-4 w-full">
+              <DialogHeader>
+                <DialogTitle className="text-center text-xl">たまっぷ　インストール方法</DialogTitle>
+              </DialogHeader>
+              <div className="**:items-center">
+                <span className="flex">
+                  <AppleLogoIcon size={32} />iPhone<CompassIcon size={32} />Safariで開いてください
+                </span>
+                <ul className="p-2">
+                  <li className="flex">シェア<ExportIcon size={32} />を押す</li>
+                  <li>「ホーム画面に追加」を選択</li>
+                </ul>
+              </div>
+              <div className="**:items-center">
+                <span className="flex"><AndroidLogoIcon size={32} />Android<GoogleChromeLogoIcon size={32} />
+                  Chromeで開いてください
+                </span>
+                <ul className="p-2">
+                  <li className="flex">3点ボタン<DotsThreeVerticalIcon size={32} />を押す</li>
+                  <li>「ホーム画面に追加を選択」</li>
+                  <li>「インストールを選択」<br />（※ショートカットにしないでください！）</li>
+                </ul>
+                <a href="https://codemates123.github.io/homepage/tamap.html" className="text-lg underline font-semibold text-center text-blue-600">詳細はこちら</a>
+              </div>
+            </DialogContent>
+
+          </Dialog>
           <div className="bg-gradient-to-br from-yellow-400 to-red-500 shadow-lg font-bold text-3xl p-6 text-center">
-            2025多摩祭に<br/>
+            2025多摩祭に<br />
             初出店します！！          </div>
           <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
         </div>
