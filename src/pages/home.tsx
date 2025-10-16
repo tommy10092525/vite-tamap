@@ -302,8 +302,8 @@ export default function Home() {
                 </span>
                 <ul className="p-2">
                   <li className="flex">3点ボタン<DotsThreeVerticalIcon size={32} />を押す</li>
-                  <li>「ホーム画面に追加を選択」</li>
-                  <li>「インストールを選択」<br />（※ショートカットにしないでください！）</li>
+                  <li>「ホーム画面に追加」を選択</li>
+                  <li>「インストール」を選択<br />（※ショートカットにしないでください！）</li>
                 </ul>
                 <a href="https://codemates123.github.io/homepage/tamap.html" className="text-lg underline font-semibold text-center text-blue-600">詳細はこちら</a>
               </div>
