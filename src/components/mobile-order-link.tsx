@@ -16,7 +16,7 @@ const MobileOrderLink = () => {
   }, [])
   return (
     <>
-      <a href={mobileOrderURL} ref={mobileOrderRef} className="border-2 from-orange-500 via-pink-500 to-purple-600 font-bold text-2xl bg-gradient-to-r hover:underline p-4 text-white rounded-full text-center">モバイルオーダーはこちら</a>
+      <a href={mobileOrderURL} ref={mobileOrderRef} className="border-2 from-orange-500 via-pink-500 to-purple-600 font-bold text-2xl bg-linear-to-br hover:underline p-4 text-white rounded-full text-center">モバイルオーダーはこちら</a>
     </>
   )
 }
