@@ -1,4 +1,4 @@
-import React, { useRef } from 'react'
+import { useRef } from 'react'
 
 import { mobileOrderURL } from '@/utils/constants'
 import { useGSAP } from '@gsap/react'

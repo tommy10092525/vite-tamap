@@ -1,4 +1,3 @@
-import React from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog'
 import { QuestionIcon, AppleLogoIcon, ExportIcon, AndroidLogoIcon, GoogleChromeLogoIcon, DotsThreeVerticalIcon } from '@phosphor-icons/react'
 import { CompassIcon } from 'lucide-react'

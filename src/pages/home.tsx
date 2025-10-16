@@ -24,6 +24,7 @@ import MobileOrderBanner from "@/components/mobile-order-banner";
 import MobileOrderLink from "@/components/mobile-order-link";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
+import DiscountLink from "@/components/discount-link";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -273,12 +274,7 @@ export default function Home() {
           </Card>
 
           {/* 割引ボタン */}
-          {/* <Link
-            to="/discount"
-            className="block bg-gradient-to-r from-red-500 to-blue-500 shadow-lg md:m-0 my-2 p-3 border border-white/30 rounded-full w-full font-bold text-white text-3xl text-center"
-            ref={waribikiRef}>
-            飲食店割引はこちら
-          </Link> */}
+          {/* <DiscountLink /> */}
           <TamapHowToInstall />
           <MobileOrderBanner />
           <MobileOrderLink />
