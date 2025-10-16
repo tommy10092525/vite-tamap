@@ -7,7 +7,7 @@ import { findNextTrains, minutesToTime } from '../utils/timeHandlers'
 import ekitanDataJSON from "../utils/ekitan.json"
 import holidayData from "../utils/Holidays.json"
 import { ekitanSchema } from '../utils/types'
-import TrainSheet from '../components/ui/TrainSheet'
+import TrainSheet from './ui/TrainSheet'
 
 type Props = {
   previousBuses: {
