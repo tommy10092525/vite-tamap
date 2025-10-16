@@ -24,6 +24,7 @@ import MobileOrderBanner from "@/components/mobile-order-banner";
 import MobileOrderLink from "@/components/mobile-order-link";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
+import DiscountLink from "@/components/discount-link";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -34,7 +35,7 @@ gsap.ticker.lagSmoothing(1000, 16);
 let timetable: z.infer<typeof timetableSchema> = [];
 let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
-  
+
 
   console.log("レンダリング")
   try {
@@ -273,11 +274,15 @@ export default function Home() {
           </Card>
 
           {/* 割引ボタン */}
-          {/* <DiscountLink /> */}
           <TamapHowToInstall />
           <MobileOrderBanner />
-          <MobileOrderLink />
-          <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" className="hover:rotate-x-12 hover:rotate-y-12 transition-all" alt="" />
+          {now >= new Date(2025, 10, 19, 23, 59) ?
+            <DiscountLink /> :
+            <>
+              <MobileOrderLink />
+              <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
+            </>
+          }
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>
