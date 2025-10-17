@@ -1,12 +1,12 @@
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { useEffect } from "react";
-import Home from "../src/pages/home";
-import Discount from "../src/pages/discount/discount";
-import Fuji from "../src/pages/discount/fuji";
-import Hicheese from "../src/pages/discount/hicheese";
-import Kokuterudo from "./pages/discount/kokuterudo";
-import { ThemeProvider } from "./components/theme-provider";
+import Home from "@/pages/home";
+import Discount from "@/pages/discount/discount";
+import Fuji from "@/pages/discount/fuji";
+import Hicheese from "@/pages/discount/hicheese";
+import Kokuterudo from "@/pages/discount/kokuterudo";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const TRACKING_ID = "G-4F3PMM48SS";
 if (TRACKING_ID) {

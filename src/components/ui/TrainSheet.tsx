@@ -5,8 +5,8 @@ import {
   SheetHeader,
   SheetTitle,
   SheetTrigger,
-} from "../ui/sheet";
-import { minutesToTime } from '../../utils/timeHandlers';
+} from "@/components/ui/sheet";
+import { minutesToTime } from '@/utils/timeHandlers';
 import { TrainIcon } from 'lucide-react';
 import TrainDetail from './TrainDetail';
 type Props = {

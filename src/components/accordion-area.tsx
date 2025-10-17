@@ -1,12 +1,12 @@
 import React from 'react'
 import { ScrollArea } from './ui/scroll-area'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
-import { cn, resolveStationName } from '../lib/utils'
-import { majorStations } from '../utils/constants'
-import { findNextTrains, minutesToTime } from '../utils/timeHandlers'
-import ekitanDataJSON from "../utils/ekitan.json"
-import holidayData from "../utils/Holidays.json"
-import { ekitanSchema } from '../utils/types'
+import { cn, resolveStationName } from '@/lib/utils'
+import { majorStations } from '@/utils/constants'
+import { findNextTrains, minutesToTime } from '@/utils/timeHandlers'
+import ekitanDataJSON from "@/utils/ekitan.json"
+import holidayData from "@/utils/Holidays.json"
+import { ekitanSchema } from '@/utils/types'
 import TrainSheet from './ui/TrainSheet'
 
 type Props = {

@@ -1,5 +1,3 @@
-// import { cn } from "../lib/utils"
-
 export function typeColor({line, trainType}:{line:string,trainType:string}){
   let trainTypeStyles=""
   let lineStyles=""
