@@ -35,7 +35,10 @@ const TamapHowToInstall = () => {
             <li>「ホーム画面に追加」を選択</li>
             <li>「インストール」を選択<br />（※ショートカットにしないでください！）</li>
           </ul>
-          <a href="https://codemates123.github.io/homepage/tamap.html" className="text-lg underline font-semibold text-center text-blue-600">詳細はこちら</a>
+          <a
+            href="https://codemates123.github.io/homepage/tamap.html"
+            className="text-lg underline font-semibold text-center text-blue-600"
+          >詳細はこちら</a>
         </div>
       </DialogContent>
 

@@ -6,9 +6,7 @@ import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
 import Card from "@/components/ui/card"
-// import timetableJSON from "@/utils/Timetable.json"
 import holidayDataJSON from "@/utils/Holidays.json"
-// import { Link } from "react-router-dom";
 import Menu from "@/components/menu";
 import { timetableSchema, holidayDataSchema, stateSchema, } from "@/utils/types";
 
