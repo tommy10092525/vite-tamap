@@ -6,7 +6,7 @@ import gsap from "gsap"
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/all";
 import Card from "@/components/ui/card"
-import timetableJSON from "@/utils/Timetable.json"
+// import timetableJSON from "@/utils/Timetable.json"
 import holidayDataJSON from "@/utils/Holidays.json"
 // import { Link } from "react-router-dom";
 import Menu from "@/components/menu";
@@ -15,7 +15,6 @@ import { timetableSchema, holidayDataSchema, stateSchema, } from "@/utils/types"
 import StationButton from "@/components/ui/station-button";
 import tamapLogo from "@/images/tamap_logo.webp"
 import mapImage from "@/images/Map.webp"
-import { toast, Toaster } from "sonner";
 import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
@@ -31,19 +30,15 @@ gsap.registerPlugin(ScrollTrigger);
 gsap.ticker.fps(120);
 gsap.ticker.lagSmoothing(1000, 16);
 
-
-let timetable: z.infer<typeof timetableSchema> = [];
 let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
 
-
-  console.log("レンダリング")
-  try {
-    timetable = useMemo(() => timetableSchema.parse(timetableJSON), []);
-  } catch (e) {
-    console.error("Invalid timetable data:", e);
-    throw new Error("Invalid timetable data");
-  }
+  const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>([]);
+  useEffect(()=>{
+    import("@/utils/Timetable.json").then(function (timetable) {
+      setTimetable(timetableSchema.parse(timetable.default))
+    })
+  },[])
   try {
     holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
   } catch (e) {
@@ -86,9 +81,6 @@ export default function Home() {
   useEffect(() => {
     localStorage.setItem("station", state.station)
     localStorage.setItem("isComingToHosei", state.isComingToHosei ? "true" : "false")
-    if (now >= new Date("2025/7/20 21:00:00") && now < new Date("2025/7/21 21:00:00") && state.station !== "aihara") {
-      toast("2025年7月21日京王バスは特別ダイヤです(祝日の各停+平日の急行)")
-    }
   }, [state.station, state.isComingToHosei])
 
   const handleDirectionButtonClicked = () => {
@@ -203,7 +195,6 @@ export default function Home() {
     <>
       <title>たまっぷ - 法政大学多摩キャンパス向けバス時刻アプリ</title>
       <meta name="description" content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。" />
-      <Toaster />
       <Menu />
       <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-screen text-black dark:text-white">
         {/* 時計 */}
