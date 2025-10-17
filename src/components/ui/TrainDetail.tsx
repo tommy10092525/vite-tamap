@@ -1,4 +1,4 @@
-import { typeColor } from '../../utils/color';
+import { typeColor } from '@/utils/color';
 
 
 type Props={

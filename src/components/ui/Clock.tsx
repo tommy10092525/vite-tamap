@@ -1,6 +1,6 @@
 // import { useEffect, useState } from 'react'
-import { getDateString, getTimeString, isHoliday } from '../../utils/timeHandlers'
-import holidayData from '../../utils/Holidays.json'
+import { getDateString, getTimeString, isHoliday } from '@/utils/timeHandlers'
+import holidayData from '@/utils/Holidays.json'
 
 type Props={
     now: Date
