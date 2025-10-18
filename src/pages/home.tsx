@@ -22,6 +22,7 @@ import MobileOrderLink from "@/components/mobile-order-link";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
+import { cn } from "@/lib/utils";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -188,6 +189,7 @@ export default function Home() {
     overlay.gym = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.gym)
   }
 
+  const overlayStyles="absolute backdrop-blur-sm rounded-lg w-1/3 h-16"
 
   return (
     <>
@@ -204,9 +206,9 @@ export default function Home() {
 
             {/* 行先表示 */}
             <div className="grid grid-cols-5 mx-auto mt-5 px-8 font-semibold text-xl text-center" ref={directionContainer}>
-              <p className="inline-block col-span-2 h-8 text-center js-departure" ref={departureRef}>{departure}</p>
+              <p className="inline-block col-span-2 h-8 text-center" ref={departureRef}>{departure}</p>
               <p className="col-span-1 h-4">⇒</p>
-              <p className="inline-block col-span-2 h-8 text-center js-arrival" ref={destinationRef}>{destination}</p>
+              <p className="inline-block col-span-2 h-8 text-center" ref={destinationRef}>{destination}</p>
             </div>
             {/* 時刻一覧 */}
             <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
@@ -222,19 +224,20 @@ export default function Home() {
           <Card>
             <div className="relative font-semibold text-lg text-center">
               <img src={mapImage} alt="地図のイラスト" width={300} className="mx-auto h-48 object-cover" height={300} />
-              <Card className="top-0 left-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
+              <Card className={cn("top-0 left-0",overlayStyles)}>
                 経済
                 <span className="block" ref={times.economics}>{overlay.economics}</span>
               </Card>
-              <Card className="top-0 right-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
+              <Card className={cn("top-0 right-0",overlayStyles)
+              }>
                 社・現福
                 <span className="block" ref={times.health}>{overlay.health}</span>
               </Card>
-              <Card className="bottom-0 left-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
+              <Card className={cn("bottom-0 left-0",overlayStyles)}>
                 体育館
                 <span className="block" ref={times.gym}>{overlay.gym}</span>
               </Card>
-              <Card className="right-0 bottom-0 absolute backdrop-blur-sm rounded-lg w-1/3 h-16">
+              <Card className={cn("right-0 bottom-0",overlayStyles)}>
                 スポ健康
                 <span className="block" ref={times.sport}>{overlay.sport}</span>
               </Card>
