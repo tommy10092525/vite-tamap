@@ -17,8 +17,6 @@ import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
 import Clock from "@/components/ui/Clock";
-import MobileOrderBanner from "@/components/mobile-order-banner";
-import MobileOrderLink from "@/components/mobile-order-link";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
@@ -267,14 +265,7 @@ export default function Home() {
 
           {/* 割引ボタン */}
           <TamapHowToInstall />
-          <MobileOrderBanner />
-          {now >= new Date(2025, 10, 19, 23, 59) ?
-            <DiscountLink /> :
-            <>
-              <MobileOrderLink />
-              <img src="https://codemates123.github.io/homepage/images/gakusai_poster.webp" alt="" />
-            </>
-          }
+          <DiscountLink />
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>

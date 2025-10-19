@@ -2,7 +2,7 @@
 import { Sheet, SheetContent, SheetTitle, SheetTrigger } from './ui/sheet';
 import { Link } from 'react-router-dom';
 import { useTheme } from "./theme-provider"
-import { MoonIcon, SunIcon, ShareNetworkIcon, ChatCenteredDotsIcon, InfoIcon, InstagramLogoIcon, ListIcon, GithubLogoIcon, DeviceMobileIcon } from "@phosphor-icons/react"
+import { MoonIcon, SunIcon, ShareNetworkIcon, ChatCenteredDotsIcon, InfoIcon, InstagramLogoIcon, ListIcon, GithubLogoIcon} from "@phosphor-icons/react"
 import { cn } from '@/lib/utils';
 
 const Menu = () => {
@@ -43,13 +43,13 @@ const Menu = () => {
             href={homepage}><InfoIcon size={24} /><p className='mx-auto text-center'>CODE MATESとは</p></a>
           <a className={cn(buttonStyles)}
             href={instagram}><InstagramLogoIcon size={24} /><p className='mx-auto text-center'>Instagram</p></a>
-          <Link to="/discount" className={cn(buttonStyles)}>
+          {/* <Link to="/discount" className={cn(buttonStyles)}>
             <DeviceMobileIcon size={24} />
             <p className='text-cener mx-auto'>
               飲食店割引はこちら
             </p>
 
-          </Link>
+          </Link> */}
 
           <a href="https://github.com/tommy10092525/vite-tamap" className='flex bg-gray-900 dark:bg-zinc-950/80 shadow-xl mx-10 p-2 border border-zinc-700 rounded-lg text-white text-center hover:underline will-change-auto' target='_blank'>
             <GithubLogoIcon size={24}></GithubLogoIcon>
