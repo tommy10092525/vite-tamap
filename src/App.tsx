@@ -7,6 +7,9 @@ import Fuji from "@/pages/discount/fuji";
 import Hicheese from "@/pages/discount/hicheese";
 import Kokuterudo from "@/pages/discount/kokuterudo";
 import { ThemeProvider } from "@/components/theme-provider";
+import { supabase } from "./lib/supabase";
+import useUserId from "./utils/useUserId";
+
 
 const TRACKING_ID = "G-4F3PMM48SS";
 if (TRACKING_ID) {
@@ -24,11 +27,25 @@ const TrackPageViews = () => {
   return null;
 };
 
+const TraceWithSupabase=()=>{
+  const location=useLocation()
+  const {userId}=useUserId()
+  useEffect(()=>{
+    supabase.from("users").insert({userId:userId,pathname:location.pathname}).select().then(t=>{
+      console.log(t)
+    })
+    console.log({userId:userId,pathname:location.pathname})
+  },[location])
+  return null
+
+}
+
 const App = () => {
   return (
     <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
       <BrowserRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
         <TrackPageViews />
+        <TraceWithSupabase />
         <Routes>
           <Route
             path="/"
