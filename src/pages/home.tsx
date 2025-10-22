@@ -21,7 +21,7 @@ import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
 import { cn } from "@/lib/utils";
-import TamasaiThanks from "@/components/tamasa-thanks";
+import TamasaiThanks from "@/components/tamasai-thanks";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -265,10 +265,10 @@ export default function Home() {
           </Card>
 
 
-          <TamasaiThanks />
           {/* 割引ボタン */}
           <TamapHowToInstall />
           <DiscountLink />
+          <TamasaiThanks />
         </div>
         <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
         <p className="text-black text-center">©CODE MATES︎</p>
