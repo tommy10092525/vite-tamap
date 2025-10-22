@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 
 export default function useUserId(){
-  const [userId,setUserId]=useState("")
+  const [userId,setUserId]=useState(crypto.randomUUID().toString())  
   useEffect(()=>{
     const userId=localStorage.getItem("userId")
     if(userId){
