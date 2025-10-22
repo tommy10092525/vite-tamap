@@ -21,6 +21,7 @@ import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
 import { cn } from "@/lib/utils";
+import TamasaiThanks from "@/components/tamasa-thanks";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -263,6 +264,8 @@ export default function Home() {
             </div>
           </Card>
 
+
+          <TamasaiThanks />
           {/* 割引ボタン */}
           <TamapHowToInstall />
           <DiscountLink />
