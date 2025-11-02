@@ -16,7 +16,7 @@ const page = () => {
       <div className='gap-8 grid grid-cols-1 md:grid-cols-2 mx-auto mt-4 p-8 max-w-5xl'>
         {[
           { storeName: '藤', storeImage: fujiImage, storeDescription: 'めじろ台　うどん屋', url: '/fuji', children: <p>普通盛り50円引き<br />大盛無料</p> },
-          { storeName: 'ハイチーズ', storeImage: hicheeseImage, storeDescription: '八王子　チーズ料理', url: '/hicheese', children: <p>ランチソフトドリンク無料<br />コースディナー500円引き<br />飲み放題30分延長</p> },
+          { storeName: 'ハイチーズ', storeImage: hicheeseImage, storeDescription: '八王子　チーズ料理', url: '/hicheese', children: <p>ランチソフトドリンク無料<br />コースディナー100円引き<br />飲み放題30分延長</p> },
           // { storeName: '吾衛門', storeImage: '/goemon.jpg', storeDescription: '西八王子ラーメン店', url: '/discount/goemon', children: <p>大盛無料</p> },
           { storeName: 'コクテル堂', storeImage: kokuterudouImage, storeDescription: '橋本　カフェ', url: '/kokuterudo', children: <p>ケーキ×ドリンクのセット<br />さらに100円引き</p> }
         ].map((store, index) => (
