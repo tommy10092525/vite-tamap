@@ -12,7 +12,7 @@ const StationButton = React.forwardRef<HTMLButtonElement, StationButtonProps>(({
     <button 
       onClick={onClick} 
       ref={ref} 
-      className={cn("shadow-lg rounded-xl p-2 transition-all",station === selectedStation ? 'bg-black/80 dark:bg-white/80 text-white dark:text-black scale-110' : 'bg-black/50 dark:bg-white/50 text-white dark:text-black')}
+      className={cn("shadow-lg rounded-xl p-2 transition-all",station === selectedStation ? 'bg-black/80 dark:bg-white/80 not-dark:text-white dark:text-black scale-110' : 'bg-black/50 dark:bg-white/50 not-dark:text-white dark:text-black')}
       aria-pressed={station === selectedStation}
       aria-label={station}
       type="button"
