@@ -200,7 +200,7 @@ export default function Home() {
         {/* 時計 */}
         <Clock now={now} />
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
-        {(new Date("2025/11/23 0:00") <= now && now < new Date("2025/11/24") || true) && <>
+        {now < new Date("2025/11/24") && <>
           <Accordion type="single" collapsible className="max-w-2xl mx-auto border px-2 border-white/30 dark:border-white/10 rounded-xl bg-white/10 dark:bg-black/30">
             <AccordionItem value="item-1">
               <AccordionTrigger className="text-lg text-center font-semibold">11月24日（祝日・授業実施日）の路線バスについて</AccordionTrigger>
