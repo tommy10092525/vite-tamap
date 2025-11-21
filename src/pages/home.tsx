@@ -22,6 +22,7 @@ import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
 import { cn } from "@/lib/utils";
 import TamasaiThanks from "@/components/tamasai-thanks";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -32,11 +33,11 @@ let holidayData: z.infer<typeof holidayDataSchema> = {};
 export default function Home() {
 
   const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>([]);
-  useEffect(()=>{
+  useEffect(() => {
     import("@/utils/Timetable.json").then(function (timetable) {
       setTimetable(timetableSchema.parse(timetable.default))
     })
-  },[])
+  }, [])
   try {
     holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
   } catch (e) {
@@ -188,7 +189,7 @@ export default function Home() {
     overlay.gym = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.gym)
   }
 
-  const overlayStyles="absolute backdrop-blur-sm rounded-lg w-1/3 h-16"
+  const overlayStyles = "absolute backdrop-blur-sm rounded-lg w-1/3 h-16"
 
   return (
     <>
@@ -199,6 +200,29 @@ export default function Home() {
         {/* 時計 */}
         <Clock now={now} />
         <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
+        {(new Date("2025/11/23 0:00") <= now && now < new Date("2025/11/24") || true) && <>
+          <Accordion type="single" collapsible className="max-w-2xl mx-auto border px-2 border-white/30 dark:border-white/10 rounded-xl bg-white/10 dark:bg-black/30">
+            <AccordionItem value="item-1">
+              <AccordionTrigger className="text-lg text-center font-semibold">11月24日（祝日・授業実施日）の路線バスについて</AccordionTrigger>
+              <AccordionContent className="">
+                <span className="text-lg font-mono">以下法政大学HPより</span><br />
+                <span className="font-bold text-xl">・神奈川中央交通（相原駅）</span>
+                <br />
+                ・「<span className="text-red-600 font-bold">休日ダイヤ</span>」で運行します。<br />
+                ・連節バスを運行します。平日と同じ発車時刻で運行する予定です。<br />
+                ・臨時便（各停）を運行します。1・2時限前の通学時間帯は、JR横浜線の到着に合わせて臨時運行する予定です。<br />
+                ・急行（法政大学体育館行）の運行はありません。<br />
+                ・<span className="underline">11月24日のみ法政大学発相原駅西口行きの最終バスを延長（21:15発）</span>
+                します。乗り遅れには気を付けて下さい。<br />
+                <span className="font-bold text-xl">・京王電鉄バス（西八王子駅、めじろ台駅）</span>
+                <br />
+                ・「<span className="text-red-600 font-bold">日曜・祝日ダイヤ</span>」で運行します。<br />
+                ・臨時便（急行）を運行します。<br />
+                <a href="https://www.hosei.ac.jp/tama/info/article-20251118092039/" className="text-blue-600 underline font-bold text-lg">詳細はこちら</a>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </>}
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
           {/* 一つ目のカード */}
           <Card>
@@ -211,7 +235,7 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
-            <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 text-white dark:text-black text-center" onClick={() => {
+            <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 not-dark:text-white dark:text-black text-center" onClick={() => {
               handleDirectionButtonClicked()
             }} ref={arrowsContainer}>
               <ArrowsCounterClockwiseIcon size={28} ref={arrowsRef} className="mt-[8px] ml-3 rotate-x-180" />
@@ -223,20 +247,20 @@ export default function Home() {
           <Card>
             <div className="relative font-semibold text-lg text-center">
               <img src={mapImage} alt="地図のイラスト" width={300} className="mx-auto h-48 object-cover" height={300} />
-              <Card className={cn("top-0 left-0",overlayStyles)}>
+              <Card className={cn("top-0 left-0", overlayStyles)}>
                 経済
                 <span className="block" ref={times.economics}>{overlay.economics}</span>
               </Card>
-              <Card className={cn("top-0 right-0",overlayStyles)
+              <Card className={cn("top-0 right-0", overlayStyles)
               }>
                 社・現福
                 <span className="block" ref={times.health}>{overlay.health}</span>
               </Card>
-              <Card className={cn("bottom-0 left-0",overlayStyles)}>
+              <Card className={cn("bottom-0 left-0", overlayStyles)}>
                 体育館
                 <span className="block" ref={times.gym}>{overlay.gym}</span>
               </Card>
-              <Card className={cn("right-0 bottom-0",overlayStyles)}>
+              <Card className={cn("right-0 bottom-0", overlayStyles)}>
                 スポ健康
                 <span className="block" ref={times.sport}>{overlay.sport}</span>
               </Card>
