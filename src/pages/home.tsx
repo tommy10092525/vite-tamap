@@ -23,6 +23,7 @@ import DiscountLink from "@/components/discount-link";
 import { cn } from "@/lib/utils";
 import TamasaiThanks from "@/components/tamasai-thanks";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import NewSNS from "@/components/new-sns";
 
 gsap.registerPlugin(useGSAP);
 gsap.registerPlugin(ScrollTrigger);
@@ -224,6 +225,7 @@ export default function Home() {
           </Accordion>
         </>}
         <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
+        <NewSNS />
           {/* 一つ目のカード */}
           <Card>
 
