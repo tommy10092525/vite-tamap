@@ -45,7 +45,6 @@ const App = () => {
     <ThemeProvider defaultTheme="system" storageKey="tamap-theme">
       <BrowserRouter basename={import.meta.env.PROD ? "/tamap" : ""}>
         <TrackPageViews />
-        <TraceWithSupabase />
         <Routes>
           <Route
             path="/"
