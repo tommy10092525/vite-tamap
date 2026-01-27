@@ -7,9 +7,9 @@ import { Undo2 } from "lucide-react"
 const page = () => {
   return (
     <div className='bg-zinc-100 dark:bg-zinc-950 min-h-screen text-black dark:text-white'>
-        <title>提携店舗一覧 - たまっぷ</title>
-        <meta name="description" content="たまっぷと提携している店舗の一覧です。法政大学の学生証を提示すると、お得な割引を受けられます。" />
-      <header className='bg-[#ff6347] text-white'>
+      <title>提携店舗一覧 - たまっぷ</title>
+      <meta name="description" content="たまっぷと提携している店舗の一覧です。法政大学の学生証を提示すると、お得な割引を受けられます。" />
+      <header className='bg-[#ff6347] text-white sticky top-0'>
         <h1 className='mx-auto p-3 font-bold text-2xl text-center'>たまっぷ 提携店舗一覧</h1>
       </header>
       <Link to="/" className='top-2 left-2 fixed bg-white dark:bg-black p-4 border-2 border-rose-500 rounded-full font-semibold text-black dark:text-white text-lg'><Undo2></Undo2></Link>
