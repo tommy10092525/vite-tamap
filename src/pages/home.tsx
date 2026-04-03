@@ -1,18 +1,20 @@
-"use client"
-import { useEffect, useMemo, useRef, useState } from "react";
-import { findNextBuses, minutesToTime } from "@/utils/timeHandlers";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { anomary20260401, findNextBuses, msToTime } from "@/utils/timeHandlers";
 import { buildings, stationNames } from "@/utils/constants";
-import gsap from "gsap"
+import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { ScrollTrigger } from "gsap/all";
-import Card from "@/components/ui/card"
-import holidayDataJSON from "@/utils/Holidays.json"
+// import {Card } from "@/components/ui/card";
+import holidayDataJSON from "@/utils/Holidays.json";
 import Menu from "@/components/menu";
-import { timetableSchema, holidayDataSchema, stateSchema, } from "@/utils/types";
+import {
+  timetableSchema,
+  holidayDataSchema,
+  stateSchema,
+  stationSchema,
+} from "@/utils/types";
 
-import StationButton from "@/components/ui/station-button";
-import tamapLogo from "@/images/tamap_logo.webp"
-import mapImage from "@/images/Map.webp"
+import tamapLogo from "@/images/tamap_logo.webp";
+import mapImage from "@/images/Map.webp";
 import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
 import * as z from "zod/v4";
@@ -21,41 +23,47 @@ import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
 import DiscountLink from "@/components/discount-link";
 import { cn } from "@/lib/utils";
-import TamasaiThanks from "@/components/tamasai-thanks";
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import NewSNS from "@/components/new-sns";
+
+import { Tabs } from "@base-ui/react/tabs"
+import { Button } from "@/components/ui/button";
+import { Link } from "react-router-dom";
+import HoseiLink from "@/components/HoseiLink";
+// import { Card } from "@/components/ui/card";
 
 gsap.registerPlugin(useGSAP);
-gsap.registerPlugin(ScrollTrigger);
-gsap.ticker.fps(120);
-gsap.ticker.lagSmoothing(1000, 16);
 
-let holidayData: z.infer<typeof holidayDataSchema> = {};
+const Card = ({ children, className }: { children: ReactNode, className?: string }) => {
+  return <div className={cn("dark:bg-black/50 bg-white/20 rounded-xl p-2 w-full", className)}>
+    {children}
+  </div>
+}
+
 export default function Home() {
-
-  const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>([]);
+  const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>(
+    [],
+  );
   useEffect(() => {
-    import("@/utils/Timetable.json").then(function (timetable) {
-      setTimetable(timetableSchema.parse(timetable.default))
-    })
-  }, [])
-  try {
-    holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
-  } catch (e) {
-    console.error("Invalid holiday data:", e);
-    throw new Error("Invalid holiday data");
-  }
+    import("@/utils/Timetable.json").then((timetable) => {
+      setTimetable(anomary20260401({ now, timetable: timetableSchema.parse(timetable.default) }));
+    });
+  }, []);
+
+  const holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
+
   const [now, setNow] = useState(new Date());
-  const mainContainer = useRef(null);
-  const arrowsRef = useRef(null);
-  const departureRef = useRef(null);
-  const destinationRef = useRef(null);
-  const arrowsContainer = useRef(null);
   const animateArrows = useGSAP().contextSafe(() => {
-    gsap.fromTo(arrowsRef.current, { rotate: 0 }, { rotate: 180, duration: 0.3 });
+    gsap.fromTo(
+      "[data-arrows]",
+      { rotate: 0 },
+      { rotate: 180, duration: 0.3 },
+    );
   });
   const animateDirectionButton = useGSAP().contextSafe(() => {
-    gsap.fromTo(arrowsContainer.current, { scale: 1.05 }, { scale: 1, duration: 0.3 });
+    gsap.fromTo(
+      "[data-arrowscontainer]",
+      { scale: 1.05, opacity: 0.5 },
+      { scale: 1, duration: 0.3, opacity: 1 },
+    );
   });
   const timesContainer = useRef(null);
   const directionContainer = useRef(null);
@@ -66,58 +74,84 @@ export default function Home() {
     sport: useRef(null),
   };
   const animateText = useGSAP().contextSafe(() => {
-    gsap.fromTo(timesContainer.current, { opacity: 0, y: 10 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
-    gsap.fromTo(Object.values(times).map(ref => ref.current), { opacity: 0, y: 5 }, { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 });
+    gsap.fromTo(
+      Object.values(times).map((ref) => ref.current),
+      { opacity: 0, y: 5 },
+      { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 },
+    );
   });
-  const { setState, state } = useUserInput()
-  // const waribikiRef = useRef(null);
-  useEffect(() => {
-    setNow(new Date())
-    setInterval(() => {
-      setNow(new Date())
-    }, 1000)
-  }, [])
+  const { setState, state } = useUserInput();
 
   useEffect(() => {
-    localStorage.setItem("station", state.station)
-    localStorage.setItem("isComingToHosei", state.isComingToHosei ? "true" : "false")
-  }, [state.station, state.isComingToHosei])
+    setInterval(() => {
+      if (now.getMinutes() !== new Date().getMinutes()) {
+        setNow(new Date())
+      }
+    }, 1000);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("station", state.station);
+    localStorage.setItem(
+      "isComingToHosei",
+      state.isComingToHosei ? "true" : "false",
+    );
+  }, [state.station, state.isComingToHosei]);
 
   const handleDirectionButtonClicked = () => {
-    setState(prev => {
+    setState((prev) => {
       return stateSchema.parse({
         ...prev,
-        isComingToHosei: !prev.isComingToHosei
-      })
-    })
-  }
+        isComingToHosei: !prev.isComingToHosei,
+      });
+    });
+    gsap.fromTo(
+      timesContainer.current,
+      { opacity: 0, y: 10 },
+      { y: 0, duration: 0.3, opacity: 1, stagger: 0.01 },
+    );
+  };
 
-  const handleStationButtonClicked = (station: "nishihachioji" | "mejirodai" | "aihara") => {
-    setState(prev => {
+  const handleStationButtonClicked = (
+    station: z.infer<typeof stationSchema>,
+  ) => {
+    setState((prev) => {
       return stateSchema.parse({
         ...prev,
-        station
-      })
-    })
+        station,
+      });
+    });
+  };
 
-  }
   useGSAP(() => {
-    animateText()
-  }, [state.isComingToHosei, state.station])
+    animateText();
+  }, [state.isComingToHosei, state.station]);
+
   useGSAP(() => {
-    animateDirectionButton()
-    animateArrows()
-    gsap.fromTo(directionContainer.current, { rotateY: 180, autoAlpha: 0 }, { rotateY: 0, duration: 0.3, autoAlpha: 1 })
-  }, [state.isComingToHosei])
+    animateDirectionButton();
+    animateArrows();
+    gsap.fromTo(
+      directionContainer.current,
+      { rotateY: 180, autoAlpha: 0 },
+      { rotateY: 0, duration: 0.3, autoAlpha: 1 },
+    );
+  }, [state.isComingToHosei]);
+
   useGSAP(() => {
     if (state.isComingToHosei) {
-      gsap.fromTo(departureRef.current, { y: -20, autoAlpha: 0 }, { y: 0, duration: 0.3, autoAlpha: 1 })
+      gsap.fromTo(
+        "[data-departure]",
+        { y: -20, autoAlpha: 0 },
+        { y: 0, duration: 0.3, autoAlpha: 1 },
+      );
     } else {
-      gsap.fromTo(destinationRef.current, { y: -20, autoAlpha: 0 }, { y: 0, duration: 0.3, autoAlpha: 1 })
+      gsap.fromTo(
+        "[data-arrival]",
+        { y: -20, autoAlpha: 0 },
+        { y: 0, duration: 0.3, autoAlpha: 1 },
+      );
     }
-  }, [state.station])
-
-
+  }, [state.station]);
 
   let departure = "";
   let destination = "";
@@ -125,183 +159,227 @@ export default function Home() {
     economics: "--:--",
     health: "--:--",
     sport: "--:--",
-    gym: "--:--"
-  }
-  let previousBuses: {
-    id: string;
-    day: "Weekday" | "Sunday" | "Saturday";
-    isComingToHosei: boolean;
-    station: "nishihachioji" | "mejirodai" | "aihara";
-    leaveHour: number;
-    leaveMinute: number;
-    arriveHour: number;
-    arriveMinute: number;
-    date: Date,
-    busStopList: {
-      hour: number,
-      minute: number,
-      busStop: string,
-      date: Date
-    }[];
-  }[] = []
-  let futureBuses: {
-    id: string;
-    day: "Weekday" | "Sunday" | "Saturday";
-    isComingToHosei: boolean;
-    station: "nishihachioji" | "mejirodai" | "aihara";
-    leaveHour: number;
-    leaveMinute: number;
-    arriveHour: number;
-    arriveMinute: number;
-    date: Date,
-    busStopList: {
-      hour: number,
-      minute: number,
-      busStop: string,
-      date: Date
-    }[];
-  }[] = []
-  previousBuses = findNextBuses({
+    gym: "--:--",
+  };
+  const previousBuses = findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
-    length: -2
-  })
-  futureBuses = findNextBuses({
+    length: -2,
+  });
+  const futureBuses = findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
-    length: 3
-  })
-  const [nextBus] = futureBuses
-  departure = stationNames[state.station]
-  destination = "法政大学"
+    length: 3,
+  });
+
+  const [nextBus] = futureBuses;
+  departure = stationNames[state.station];
+  destination = "法政大学";
   if (!state.isComingToHosei) {
-    [departure, destination] = [destination, departure]
+    [departure, destination] = [destination, departure];
   }
-  if (state.isComingToHosei && nextBus) {
-    overlay.economics = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.economics)
-    overlay.health = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.health)
-    overlay.sport = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.sport)
-    overlay.gym = minutesToTime(nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.gym)
+  if (state.isComingToHosei && nextBus && nextBus.arriveh && nextBus.arrivem) {
+    overlay.economics = msToTime(
+      nextBus.arriveh * 60 + nextBus.arrivem + buildings.economics,
+    );
+    overlay.health = msToTime(
+      nextBus.arriveh * 60 + nextBus.arrivem + buildings.health,
+    );
+    overlay.sport = msToTime(
+      nextBus.arriveh * 60 + nextBus.arrivem + buildings.sport,
+    );
+    overlay.gym = msToTime(
+      nextBus.arriveh * 60 + nextBus.arrivem + buildings.gym,
+    );
   }
 
-  const overlayStyles = "absolute backdrop-blur-sm rounded-lg w-1/3 h-16"
+  const overlayStyles = "absolute backdrop-blur-sm rounded-lg w-1/3 h-16";
+  const tabsStyles = "transition-all text-lg h-8 font-medium data-[active]:text-white  dark:data-[active]:text-black dark:text-white"
 
   return (
     <>
       <title>たまっぷ - 法政大学多摩キャンパス向けバス時刻アプリ</title>
-      <meta name="description" content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。" />
+      <meta
+        name="description"
+        content="法政大学多摩キャンパスと最寄り駅（西八王子、めじろ台、相原）を結ぶバスの時刻表をリアルタイムで確認できます。次のバスの発車時刻や、各学部棟への到着時刻もわかります。"
+      />
+      {/* 宣材 */}
       <Menu />
-      <div className="bg-gradient-to-bl from-sky-500 dark:from-blue-500 to-orange-400 dark:to-orange-400 p-3 md:p-7 w-full min-h-screen text-black dark:text-white">
+      <div className="bg-linear-210 dark:from-blue-500 dark:to-orange-500 from-sky-400 to-orange-300 p-3 md:p-7 w-full min-h-screen text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black" data-container >
+
+
         {/* 時計 */}
-        <Clock now={now} />
-        <img alt="たまっぷのロゴ" src={tamapLogo} height={400} width={400} className="md:col-span-1 mx-auto -my-8 w-60 h-60" />
-        {now < new Date("2025/11/25") && <>
-          <Accordion type="single" collapsible className="max-w-2xl mx-auto border px-2 border-white/30 dark:border-white/10 rounded-xl bg-white/10 dark:bg-black/30">
-            <AccordionItem value="item-1">
-              <AccordionTrigger className="text-lg text-center font-semibold">11月24日（祝日・授業実施日）の路線バスについて</AccordionTrigger>
-              <AccordionContent className="">
-                <span className="text-lg font-mono">以下法政大学HPより</span><br />
-                <span className="font-bold text-xl">・神奈川中央交通（相原駅）</span>
-                <br />
-                ・「<span className="text-red-600 font-bold">休日ダイヤ</span>」で運行します。<br />
-                ・連節バスを運行します。平日と同じ発車時刻で運行する予定です。<br />
-                ・臨時便（各停）を運行します。1・2時限前の通学時間帯は、JR横浜線の到着に合わせて臨時運行する予定です。<br />
-                ・急行（法政大学体育館行）の運行はありません。<br />
-                ・<span className="underline">11月24日のみ法政大学発相原駅西口行きの最終バスを延長（21:15発）</span>
-                します。乗り遅れには気を付けて下さい。<br />
-                <span className="font-bold text-xl">・京王電鉄バス（西八王子駅、めじろ台駅）</span>
-                <br />
-                ・「<span className="text-red-600 font-bold">日曜・祝日ダイヤ</span>」で運行します。<br />
-                ・臨時便（急行）を運行します。<br />
-                <a href="https://www.hosei.ac.jp/tama/info/article-20251118092039/" className="text-blue-600 underline font-bold text-lg">詳細はこちら</a>
-              </AccordionContent>
-            </AccordionItem>
-          </Accordion>
-        </>}
-        <div className="gap-3 grid mx-auto p-3 max-w-2xl touch-manipulation" ref={mainContainer}>
-        <NewSNS />
+        <Clock />
+
+
+
+        <div
+          className="gap-3 flex items-center flex-col mx-auto p-3 max-w-2xl touch-manipulation"
+          data-main
+        >
+        <HoseiLink />
+        <img
+          alt="たまっぷのロゴ"
+          src={tamapLogo}
+          className="md:col-span-1 mx-auto -my-8 w-60 h-60"
+          fetchPriority="high"
+        />
+          {/* <NewSNS /> */}
           {/* 一つ目のカード */}
           <Card>
-
             {/* 行先表示 */}
-            <div className="grid grid-cols-5 mx-auto mt-5 px-8 font-semibold text-xl text-center" ref={directionContainer}>
-              <p className="inline-block col-span-2 h-8 text-center" ref={departureRef}>{departure}</p>
+            <div
+              className="grid grid-cols-5 mx-auto mt-5 px-8 font-semibold text-xl text-center"
+              ref={directionContainer}
+            >
+              <p
+                className="inline-block col-span-2 h-8 text-center"
+                data-departure
+              >
+                {departure}
+              </p>
               <p className="col-span-1 h-4">⇒</p>
-              <p className="inline-block col-span-2 h-8 text-center" ref={destinationRef}>{destination}</p>
+              <p
+                className="inline-block col-span-2 h-8 text-center"
+                data-arrival
+              >
+                {destination}
+              </p>
             </div>
             {/* 時刻一覧 */}
-            <AccordionArea previousBuses={previousBuses} futureBuses={futureBuses} timesContainer={timesContainer} />
-            <button className="flex bg-black/50 dark:bg-white/50 shadow-xl dark:shadow-black/30 mx-auto mt-3 rounded-lg w-1/2 not-dark:text-white dark:text-black text-center" onClick={() => {
-              handleDirectionButtonClicked()
-            }} ref={arrowsContainer}>
-              <ArrowsCounterClockwiseIcon size={28} ref={arrowsRef} className="mt-[8px] ml-3 rotate-x-180" />
-              <span className="mx-auto my-2 font-semibold text-lg text-center">左右切替</span>
-            </button>
+            <AccordionArea
+              previousBuses={previousBuses}
+              futureBuses={futureBuses}
+              timesContainer={timesContainer}
+            />
+            <div className="flex gap-2 mt-3">
+              <Button
+                className="flex shadow-xl mx-auto rounded-lg w-1/2 not-dark:text-white dark:text-black text-center bg-black dark:bg-white"
+                onClick={() => {
+                  handleDirectionButtonClicked();
+                }}
+                data-arrowscontainer
+              >
+
+                <ArrowsCounterClockwiseIcon
+                  // ref={arrowsRef}
+                  data-arrows
+                  className="ml-3 rotate-x-180 size-6"
+                />
+                {/* <Repeat  ref={arrowsRef} className="size-7 mt-[8px] ml-3"/> */}
+                <span className="mx-auto my-2 font-semibold text-lg text-center">
+                  左右切替
+                </span>
+              </Button>
+              <Button type="button" className=""><Link to={"/question"}>「？」表記について</Link></Button>
+            </div>
+
           </Card>
+
+          <Tabs.Root className="rounded-xl w-full" defaultValue={"nishihachioji"} onValueChange={value => {
+            const prev = ["nishihachioji", "mejirodai", "aihara"].indexOf(state.station)
+            const next = ["nishihachioji", "mejirodai", "aihara"].indexOf(value)
+            let direction = 0
+            if (prev > next) {
+              direction = -1
+            } else {
+              direction = 1
+            }
+            gsap.fromTo(
+              timesContainer.current,
+              { opacity: 0, x: 20 * direction },
+              { x: 0, duration: 0.5, opacity: 1, stagger: 0.01 },
+            );
+            handleStationButtonClicked(value)
+
+          }} value={state.station}>
+            <Tabs.List className="relative z-0 gap-1 px-1 bg-white/20 dark:bg-stone-950/60 grid grid-cols-3 rounded-xl p-2.5">
+              <Tabs.Tab
+                className={tabsStyles}
+                value="nishihachioji"
+              >
+                西八王子
+              </Tabs.Tab>
+              <Tabs.Tab
+                className={tabsStyles}
+                value="mejirodai"
+              >
+                めじろ台
+              </Tabs.Tab>
+              <Tabs.Tab
+                className={tabsStyles}
+                value="aihara"
+              >
+                相原
+              </Tabs.Tab>
+              <Tabs.Indicator className="absolute top-1/2 left-0 z-[-1] h-10 w-[var(--active-tab-width)] translate-x-[var(--active-tab-left)] -translate-y-1/2 rounded-md bg-black dark:bg-white transition-all duration-200 ease-in-out" />
+            </Tabs.List>
+          </Tabs.Root>
+
 
           {/* 二つ目のカード */}
           <Card>
             <div className="relative font-semibold text-lg text-center">
-              <img src={mapImage} alt="地図のイラスト" width={300} className="mx-auto h-48 object-cover" height={300} />
+              <img
+                src={mapImage}
+                alt="地図のイラスト"
+                width={300}
+                className="mx-auto h-48 object-cover"
+                height={300}
+              />
               <Card className={cn("top-0 left-0", overlayStyles)}>
                 経済
-                <span className="block" ref={times.economics}>{overlay.economics}</span>
+                <span className="block" ref={times.economics}>
+                  {overlay.economics}
+                </span>
               </Card>
-              <Card className={cn("top-0 right-0", overlayStyles)
-              }>
+              <Card className={cn("top-0 right-0", overlayStyles)}>
                 社・現福
-                <span className="block" ref={times.health}>{overlay.health}</span>
+                <span className="block" ref={times.health}>
+                  {overlay.health}
+                </span>
               </Card>
               <Card className={cn("bottom-0 left-0", overlayStyles)}>
                 体育館
-                <span className="block" ref={times.gym}>{overlay.gym}</span>
+                <span className="block" ref={times.gym}>
+                  {overlay.gym}
+                </span>
               </Card>
               <Card className={cn("right-0 bottom-0", overlayStyles)}>
                 スポ健康
-                <span className="block" ref={times.sport}>{overlay.sport}</span>
+                <span className="block" ref={times.sport}>
+                  {overlay.sport}
+                </span>
               </Card>
-            </div>
-          </Card>
-
-          {/* 三つ目のカード */}
-          <Card>
-            <div className="gap-3 grid grid-cols-3 font-semibold text-lg text-center">
-              <StationButton station="nishihachioji" onClick={() => {
-                handleStationButtonClicked("nishihachioji")
-              }} selectedStation={state.station}>
-                西八王子
-              </StationButton>
-              <StationButton station="mejirodai" onClick={() => {
-                handleStationButtonClicked("mejirodai")
-              }} selectedStation={state.station} >
-                めじろ台
-              </StationButton>
-              <StationButton station="aihara" onClick={() => {
-                handleStationButtonClicked("aihara")
-              }} selectedStation={state.station} >
-                相原
-              </StationButton>
             </div>
           </Card>
 
 
           {/* 割引ボタン */}
           <TamapHowToInstall />
-          <DiscountLink />
-          <TamasaiThanks />
-        </div>
-        <p className="mx-auto mt-2 font-medium text-black text-center">時刻は目安であり、交通状況等による変わる可能性があります。<br />また臨時便等には対応しておりません。</p>
-        <p className="text-black text-center">©CODE MATES︎</p>
-        <div className="text-black">
-        </div>
-      </div>
 
+          {new Date() < new Date("2026/4/1") && <DiscountLink />}
+
+          {/* <TamasaiThanks /> */}
+        </div>
+        <p className="mx-auto mt-2 font-medium text-black text-center">
+          時刻は目安であり、交通状況等による変わる可能性があります。
+          <br />
+          また臨時便等には対応しておりません。
+        </p>
+        <p className="text-black text-center">©CODE MATES︎</p>
+        <div className="text-black"></div>
+      </div>
+      <div className="fixed bottom-4 left-4 text-xs backdrop-blur-md bg-white/10 p-1 rounded">
+        最終更新<br />
+        2026年4月3日22時56分
+      </div>
     </>
   );
 }

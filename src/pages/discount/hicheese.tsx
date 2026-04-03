@@ -4,7 +4,7 @@ import { Undo2 } from "lucide-react"
 
 const page = () => {
   return (
-    <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
+    <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black'>
         <title>ハイチーズ Hi Cheese! - たまっぷ提携店舗</title>
         <meta name="description" content="八王子駅近くのチーズ料理店「ハイチーズ Hi Cheese!」。法政大学の学生証提示で、ランチはソフトドリンク1杯無料、ディナーはコース価格100円引きまたは飲み放題30分延長の特典があります。" />
       <Link to="/discount" className='top-2 left-2 fixed backdrop-blur-xs p-4 border-2 border-rose-500 rounded-full font-semibold text-lg'><Undo2></Undo2></Link>

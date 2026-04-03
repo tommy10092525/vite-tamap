@@ -18,14 +18,14 @@ const timetableSchema = z.array(
       z.literal("mejirodai"),
       z.literal("aihara"),
     ]),
-    leaveHour: z.number(),
-    leaveMinute: z.number(),
-    arriveHour: z.number(),
-    arriveMinute: z.number(),
+    leaveh: z.number(),
+    leavem: z.number(),
+    arriveh: z.number().optional(),
+    arrivem: z.number().optional(),
     busStopList: z.array(
       z.object({
-        hour: z.number(),
-        minute: z.number(),
+        h: z.number(),
+        m: z.number(),
         busStop: z.string()
       })
     )
@@ -33,32 +33,15 @@ const timetableSchema = z.array(
 )
 
 
-const BusSchema=z.object({
-    id: z.string(),
-    day: z.union([
-      z.literal("Weekday"),
-      z.literal("Sunday"),
-      z.literal("Saturday"),
-    ]),
-    isComingToHosei: z.boolean(),
-    station: z.union([
-      z.literal("nishihachioji"),
-      z.literal("mejirodai"),
-      z.literal("aihara"),
-    ]),
-    leaveHour: z.number(),
-    leaveMinute: z.number(),
-    arriveHour: z.number(),
-    arriveMinute: z.number(),
-    busStopList: z.array(
-      z.object({
-        hour: z.number(),
-        minute: z.number(),
-        busStop: z.string()
-      })
-    ),
-    date:z.date()
-  })
+const BusSchema = timetableSchema.element.extend({
+  date: z.date(),
+  busStopList: z.array(z.object({
+    date: z.date(),
+    h: z.number(),
+    m: z.number(),
+    busStop: z.string(),
+  })),
+})
 
 const ekitanSchema=z.array(
   z.object({
@@ -78,8 +61,8 @@ const ekitanSchema=z.array(
     destination:z.string(),
     direction:z.string(),
     line:z.string(),
-    hour: z.number(),
-    minute: z.number(),
+    h: z.number(),
+    m: z.number(),
   })
 )
 
@@ -100,4 +83,7 @@ const stationSchema = z.union([
 
 
 
-export { holidayDataSchema, timetableSchema, stationSchema ,stateSchema,ekitanSchema,BusSchema };
+export type Bus = z.infer<typeof BusSchema>
+export type TrainWithDate = z.infer<typeof ekitanSchema>[number] & { date: Date }
+
+export { holidayDataSchema, timetableSchema, stationSchema, stateSchema, ekitanSchema, BusSchema };

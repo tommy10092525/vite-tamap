@@ -15,6 +15,8 @@ export default function useUserInput() {
       } catch (e) {
         console.error("Invalide localStorage data:", e)
       }
+    }else{
+      localStorage.setItem("firstAccessed","false")
     }
   },[])
   return { state, setState }

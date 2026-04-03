@@ -29,7 +29,7 @@ export function typeColor({line, trainType}:{line:string,trainType:string}){
     }else if(trainType==="快速"){
       trainTypeStyles="bg-blue-600"
     }else if(trainType==="区間急行"){
-      trainTypeStyles="bg-lime-300"
+      trainTypeStyles="bg-lime-300 text-black"
     }else if(trainType==="急行" || trainType==="急行・新線新宿から各停"||trainType=="各停・高幡不動から急行"){
       trainTypeStyles="bg-green-500"
     }else if(trainType==="特急" || trainType==="各停・京王多摩センターから特急"||trainType=="各停・高幡不動から特急"){

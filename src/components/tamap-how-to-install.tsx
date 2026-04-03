@@ -6,14 +6,14 @@ const TamapHowToInstall = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="p-4 from-blue-400 to-blue-600 hover:ring-2 ring-blue-800 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline">
+        <button className="p-4 from-blue-400 to-blue-600 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline w-full">
           <QuestionIcon size={32} />
           <span className="text-center mx-auto">
             たまっぷ　インストール方法
           </span>
         </button>
       </DialogTrigger>
-      <DialogContent className="border-2 border-black/50 bg-black/30 text-white backdrop-blur-md rounded-md shadow-lg fixed p-4 w-full">
+      <DialogContent className="border-white/10 dark:bg-black/30 bg-white/50 dark:text-white backdrop-blur-lg rounded-md shadow-lg fixed p-4 w-full">
         <DialogHeader>
           <DialogTitle className="text-center text-xl">たまっぷ　インストール方法</DialogTitle>
         </DialogHeader>
