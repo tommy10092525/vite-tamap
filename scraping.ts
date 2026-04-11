@@ -2,7 +2,8 @@ import jsdom from "jsdom"
 const { JSDOM } = jsdom
 import * as z from "zod"
 import fs from "fs"
-import { timeToms } from "./src/utils/timeHandlers";
+
+// npx tsx scraping.ts
 
 async function getKeiostList({ url }: { url: string }) {
   try {
@@ -240,7 +241,7 @@ async function getEkitan({ url }: { url: string }) {
   await Promise.all(days.map(async (day, idx) => {
     const dom = await JSDOM.fromURL(`${url}?view=list&dw=${idx}`, {
       referrer: "https://ekitan.com/",
-      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
+      // userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
     })
     const document = dom.window.document
     const directions = document.querySelectorAll("li.ek-direction_tab > a")
@@ -267,27 +268,16 @@ async function getEkitan({ url }: { url: string }) {
 
 async function getAllEkitan() {
   const urls = [
-
     "https://ekitan.com/timetable/railway/line-station/163-16/d1",
-
     "https://ekitan.com/timetable/railway/line-station/264-3/d1",
-
     "https://ekitan.com/timetable/railway/line-station/180-22/d1",
-
     "https://ekitan.com/timetable/railway/line-station/180-21/d1",
-
     "https://ekitan.com/timetable/railway/line-station/163-19/d1",
-
     "https://ekitan.com/timetable/railway/line-station/25-0/d1",
-
     "https://ekitan.com/timetable/railway/line-station/110-17/d1",
-
     "https://ekitan.com/timetable/railway/line-station/163-15/d1",
-
     "https://ekitan.com/timetable/railway/line-station/261-11/d1",
-
     "https://ekitan.com/timetable/railway/line-station/262-31/d1"
-
   ]
   const result: {
     h: number;
@@ -307,22 +297,40 @@ async function getAllEkitan() {
     })
   })
   result.map(item => {
-    if (item.destination === "京王多摩センターから特急新宿行き行き") {
-      item.destination = "新宿行き"
-      item.trainType = "各停・京王多摩センターから特急"
-    } else if (item.destination === "新線新宿から各駅停車本八幡行き行き") {
-      item.destination = "本八幡行き"
-      item.trainType = "急行・新線新宿から各停"
-    } else if (item.destination === "高幡不動から特急新宿行き行き") {
-      item.destination = "新宿行き"
-      item.trainType = "各停・高幡不動から特急"
-    } else if (item.destination === "高幡不動から急行新宿行き行き") {
-      item.destination = "新宿行き"
-      item.trainType = "各停・高幡不動から急行"
+    switch (item.destination) {
+      case "京王多摩センターから特急新宿行き行き":
+        item.destination = "新宿行き";
+        item.trainType = "各停・京王多摩センターから特急";
+        break;
+      case "新線新宿から各駅停車本八幡行き行き":
+        item.destination = "新宿行き"
+        item.trainType = "各停・京王多摩センターから特急";
+        break
+      case "高幡不動から特急新宿行き行き":
+        item.destination = "新宿行き"
+        item.trainType = "各停・高幡不動から特急"
+        break
+      case "高幡不動から急行新宿行き行き":
+        item.destination = "新宿行き";
+        item.trainType = "各停・高幡不動から急行";
+        break;
     }
     if (item.station === "八王子駅" || item.station === "京王八王子駅") {
       item.station = "JR八王子駅/京王八王子駅"
     }
+    // if (item.destination === "京王多摩センターから特急新宿行き行き") {
+    //   item.destination = "新宿行き"
+    //   item.trainType = "各停・京王多摩センターから特急"
+    // } else if (item.destination === "新線新宿から各駅停車本八幡行き行き") {
+    //   item.destination = "本八幡行き"
+    //   item.trainType = "急行・新線新宿から各停"
+    // } else if (item.destination === "高幡不動から特急新宿行き行き") {
+    //   item.destination = "新宿行き"
+    //   item.trainType = "各停・高幡不動から特急"
+    // } else if (item.destination === "高幡不動から急行新宿行き行き") {
+    //   item.destination = "新宿行き"
+    //   item.trainType = "各停・高幡不動から急行"
+    // }
   })
 
   fs.writeFileSync("src/utils/ekitan.json", JSON.stringify(result, null, 2))
