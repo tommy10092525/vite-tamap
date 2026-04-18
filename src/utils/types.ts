@@ -18,30 +18,33 @@ const timetableSchema = z.array(
       z.literal("mejirodai"),
       z.literal("aihara"),
     ]),
-    leaveh: z.number(),
-    leavem: z.number(),
-    arriveh: z.number().optional(),
-    arrivem: z.number().optional(),
-    busStopList: z.array(
+    leaveHour: z.number(),
+    leaveMinute: z.number(),
+    arriveHour: z.number().optional(),
+    arriveMinute: z.number().optional(),
+    stopList: z.array(
       z.object({
-        h: z.number(),
-        m: z.number(),
-        busStop: z.string()
+        hour: z.number(),
+        minute: z.number(),
+        name: z.string()
       })
-    )
+    ),
+    gym:z.boolean().optional()
   })
 )
 
 
 const BusSchema = timetableSchema.element.extend({
   date: z.date(),
-  busStopList: z.array(z.object({
+  stopList: z.array(z.object({
     date: z.date(),
-    h: z.number(),
-    m: z.number(),
-    busStop: z.string(),
+    hour: z.number(),
+    minute: z.number(),
+    name: z.string(),
   })),
 })
+
+
 
 const ekitanSchema=z.array(
   z.object({

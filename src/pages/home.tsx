@@ -1,9 +1,8 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { anomary20260401, findNextBuses, msToTime } from "@/utils/timeHandlers";
+import { findNextBuses, keioRapid, msToTime } from "@/utils/timeHandlers";
 import { buildings, stationNames } from "@/utils/constants";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-// import {Card } from "@/components/ui/card";
 import holidayDataJSON from "@/utils/Holidays.json";
 import Menu from "@/components/menu";
 import {
@@ -26,9 +25,7 @@ import { cn } from "@/lib/utils";
 
 import { Tabs } from "@base-ui/react/tabs"
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
 import HoseiLink from "@/components/HoseiLink";
-// import { Card } from "@/components/ui/card";
 
 gsap.registerPlugin(useGSAP);
 
@@ -39,18 +36,27 @@ const Card = ({ children, className }: { children: ReactNode, className?: string
 }
 
 export default function Home() {
+  const [now, setNow] = useState(new Date());
+
+  useEffect(() => {
+    setInterval(() => {
+      if (now.getMinutes() !== new Date().getMinutes()) {
+        setNow(new Date())
+      }
+    }, 1000);
+  }, []);
+
   const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>(
     [],
   );
   useEffect(() => {
-    import("@/utils/Timetable.json").then((timetable) => {
-      setTimetable(anomary20260401({ now, timetable: timetableSchema.parse(timetable.default) }));
+    import("@/utils/TimeTable_4_18_23_53.json").then((timetable) => {
+      setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
     });
   }, []);
 
   const holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
 
-  const [now, setNow] = useState(new Date());
   const animateArrows = useGSAP().contextSafe(() => {
     gsap.fromTo(
       "[data-arrows]",
@@ -82,13 +88,7 @@ export default function Home() {
   });
   const { setState, state } = useUserInput();
 
-  useEffect(() => {
-    setInterval(() => {
-      if (now.getMinutes() !== new Date().getMinutes()) {
-        setNow(new Date())
-      }
-    }, 1000);
-  }, []);
+
 
   useEffect(() => {
     localStorage.setItem("station", state.station);
@@ -169,6 +169,7 @@ export default function Home() {
     currentDate: now,
     length: -2,
   });
+
   const futureBuses = findNextBuses({
     timetable,
     station: state.station,
@@ -178,24 +179,26 @@ export default function Home() {
     length: 3,
   });
 
+  console.log(futureBuses)
+
   const [nextBus] = futureBuses;
   departure = stationNames[state.station];
   destination = "法政大学";
   if (!state.isComingToHosei) {
     [departure, destination] = [destination, departure];
   }
-  if (state.isComingToHosei && nextBus && nextBus.arriveh && nextBus.arrivem) {
+  if (state.isComingToHosei && nextBus && nextBus.arriveHour && nextBus.arriveMinute) {
     overlay.economics = msToTime(
-      nextBus.arriveh * 60 + nextBus.arrivem + buildings.economics,
+      nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.economics,
     );
     overlay.health = msToTime(
-      nextBus.arriveh * 60 + nextBus.arrivem + buildings.health,
+      nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.health,
     );
     overlay.sport = msToTime(
-      nextBus.arriveh * 60 + nextBus.arrivem + buildings.sport,
+      nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.sport,
     );
     overlay.gym = msToTime(
-      nextBus.arriveh * 60 + nextBus.arrivem + buildings.gym,
+      nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.gym,
     );
   }
 
@@ -277,7 +280,7 @@ export default function Home() {
                   左右切替
                 </span>
               </Button>
-              <Button type="button" className=""><Link to={"/question"}>「？」表記について</Link></Button>
+              {/*<Button type="button" className=""><Link to={"/question"}>「？」表記について</Link></Button>*/}
             </div>
 
           </Card>
@@ -378,7 +381,7 @@ export default function Home() {
       </div>
       <div className="fixed bottom-4 left-4 text-xs backdrop-blur-md bg-white/10 p-1 rounded">
         最終更新<br />
-        2026年4月3日22時56分
+        2026年4月16日3時31分
       </div>
     </>
   );

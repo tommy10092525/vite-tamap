@@ -20,13 +20,13 @@ const dayIndices = [
 const equationOfTime = 9;
 
 export function toms({
-  h,
-  ms,
+  hour,
+  minute,
 }: {
-  h: number;
-  ms: number;
+  hour: number;
+  minute: number;
 }) {
-  return h * 60 + ms;
+  return hour * 60 + minute;
 }
 
 export function timeDifference({
@@ -154,26 +154,26 @@ export const getDateAddedBus = ({
   }
   const newDate = sethAndm({
     date: dateToCheck,
-    h: bus.leaveh,
-    m: bus.leavem,
+    h: bus.leaveHour,
+    m: bus.leaveMinute,
   });
   const newBus = {
     ...bus,
-    busStopList: bus.busStopList.map((stop) => {
+    stopList: bus.stopList.map((stop) => {
       // stListのそれぞれのオブジェクトについて，
       // mapのコールバック関数内でdateプロパティを新しく設定する
       const stopDate = sethAndm({
         date: newDate,
-        h: stop.h,
-        m: stop.m,
+        h: stop.hour,
+        m: stop.minute,
       });
       // 電車の時刻を表示するためにtimetable.jsonでは時と分のみが設定されているところに日付の情報を加えて，
       // 年月日時刻の情報を生成する
       return {
         date: stopDate,
-        h: stopDate.getHours(),
-        m: stopDate.getMinutes(),
-        busStop: stop.busStop,
+        hour: stopDate.getHours(),
+        minute: stopDate.getMinutes(),
+        name: stop.name,
       };
     }),
   };
@@ -196,12 +196,12 @@ export function findNextBuses({
   isComingToHosei: boolean;
   station: z.infer<typeof stationSchema>;
 }) {
-  const currenth = currentDate.getHours();
-  const currentms = currentDate.getMinutes();
+  const currentHour = currentDate.getHours();
+  const currentMinutes = currentDate.getMinutes();
   const currentDay = dayIndices[currentDate.getDay()];
   const nowInms = toms({
-    h: currenth,
-    ms: currentms,
+    hour: currentHour,
+    minute: currentMinutes,
   });
   const returnBuses = [];
   // 現在の曜日のバスを取得
@@ -209,8 +209,8 @@ export function findNextBuses({
   const newTimetable = filterByConditions({
     timetable: timetable.sort((a, b) => {
       if (
-        a.leaveh * 60 + a.leavem >=
-        b.leaveh * 60 + b.leavem
+        a.leaveHour * 60 + a.leaveMinute >=
+        b.leaveHour * 60 + b.leaveMinute
       ) {
         return 1;
       } else {
@@ -251,12 +251,12 @@ export function findNextBuses({
       m = binarySearch({
         data: busesForDay,
         cmp: (bus: {
-          leaveh: number;
-          leavem: number;
+          leaveHour: number;
+          leaveMinute: number;
         }) => {
           const busLeaveTime = toms({
-            h: bus.leaveh,
-            ms: bus.leavem,
+            hour: bus.leaveHour,
+            minute: bus.leaveMinute,
           });
           return (
             i > 0 ||
@@ -271,12 +271,12 @@ export function findNextBuses({
       m = binarySearch({
         data: busesForDay,
         cmp: (bus: {
-          leaveh: number;
-          leavem: number;
+          leaveHour: number;
+          leaveMinute: number;
         }) => {
           const busLeaveTime = toms({
-            h: bus.leaveh,
-            ms: bus.leavem,
+            hour: bus.leaveHour,
+            minute: bus.leaveMinute,
           });
           return (
             i > 0 ||
@@ -586,9 +586,7 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
   }
 
   console.log(now)
-  if(now<new Date("2026/4/1") || new Date("2026/4/6")<now){
-    
-  }else{
+  if(!(now<new Date("2026/4/1") || new Date("2026/4/6")<now)){
     let dateIndex=-1
     for(let date=1;date<=6;date++){
       if(date!==5 && now<new Date(`2026/4/${date+1}`)){
@@ -600,9 +598,9 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
       value.map(item=>{
         timetable.push({
           id:crypto.randomUUID(),
-          leaveh:Number(key),
-          leavem:item,
-          busStopList:[],
+          leaveHour:Number(key),
+          leaveMinute:item,
+          stopList:[],
           day:"Weekday",
           isComingToHosei:true,
           station:"nishihachioji"
@@ -613,9 +611,9 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
       value.map(item=>{
         timetable.push({
           id:crypto.randomUUID(),
-          leaveh:Number(key),
-          leavem:item,
-          busStopList:[],
+          leaveHour:Number(key),
+          leaveMinute:item,
+          stopList:[],
           day:"Weekday",
           isComingToHosei:true,
           station:"mejirodai"
@@ -626,9 +624,9 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
       value.map(item=>{
         timetable.push({
           id:crypto.randomUUID(),
-          leaveh:Number(key),
-          leavem:item,
-          busStopList:[],
+          leaveHour:Number(key),
+          leaveMinute:item,
+          stopList:[],
           day:"Weekday",
           isComingToHosei:false,
           station:"nishihachioji"
@@ -639,9 +637,9 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
       value.map(item=>{
         timetable.push({
           id:crypto.randomUUID(),
-          leaveh:Number(key),
-          leavem:item,
-          busStopList:[],
+          leaveHour:Number(key),
+          leaveMinute:item,
+          stopList:[],
           day:"Weekday",
           isComingToHosei:false,
           station:"mejirodai"
@@ -650,6 +648,143 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
     });
   }
   return timetable.sort((a,b)=>{
-    return a.leaveh*60+a.leavem>b.leaveh*60+b.leavem ?1:-1;
+    return a.leaveHour*60+a.leaveMinute>b.leaveHour*60+b.leaveMinute ?1:-1;
   })
+}
+
+export const keioRapid=({ timetable }: { now: Date, timetable: z.infer<typeof timetableSchema> }):z.infer<typeof timetableSchema> =>{
+  type EachTable={
+    [key:number]:(number|{time:number,gym:boolean})[]
+  }
+  const table:{
+    nishihachiojiToHosei:EachTable,
+    mejirodaiToHosei:EachTable,
+    hoseiToNishihachioji:EachTable,
+    hoseiToMejirodai:EachTable
+  } = {
+    nishihachiojiToHosei: {
+      8: [38, 
+        {time:45,gym:true},
+         {time:52,gym:true}],
+      10: [26, 27, 31, 38],
+      12: [56],
+      13: [6],
+      14:[46,56]
+    }, mejirodaiToHosei: {
+      8: [41, 46, 51, 53, 59],
+      9: [0],
+      10: [30, 31, 35, 39, 42, 46, 51, 54],
+      13: [4, 10, 14],
+      14: [54],
+      15:[0,4]
+    }, hoseiToNishihachioji: {
+      12:[58],
+      15:[28,35,45],
+      17:[15,25,35],
+      19:[5,15]
+    },hoseiToMejirodai:{
+      12:[58],
+      15:[38,48,56],
+      17:[18,28,38],
+      19:[8,18]      
+    }
+  }
+
+  const gen=({station,isComingToHosei,leaveHour,leaveMinute,gym}:{station:"nishihachioji" | "mejirodai" | "aihara"
+    ,isComingToHosei:boolean,leaveHour:number,leaveMinute:number,gym:boolean}):z.infer<typeof timetableSchema>[number]=>{
+    return {
+      id:crypto.randomUUID(),
+      day:"Weekday",station,isComingToHosei,leaveHour,leaveMinute,stopList:[],gym
+    }
+  }
+
+  Object.entries(table.nishihachiojiToHosei).map(([key,value])=>{
+    value.map(minute=>{
+      if(typeof minute==="number"){
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:true,
+          leaveHour:parseInt(key),
+          leaveMinute:minute,
+          station:"nishihachioji"
+        }))
+      }else{
+        timetable.push(gen({
+          gym:true,
+          isComingToHosei:true,
+          leaveHour:parseInt(key),
+          leaveMinute:minute.time,
+          station:"nishihachioji"
+        }))
+      }
+    })
+  })
+  Object.entries(table.mejirodaiToHosei).map(([key,value])=>{
+    value.map(minute=>{
+      if(typeof minute==="number"){
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:true,
+          leaveHour:parseInt(key),
+          leaveMinute:minute,
+          station:"mejirodai"
+        }))
+      }else{
+        timetable.push(gen({
+          gym:true,
+          isComingToHosei:true,
+          leaveHour:parseInt(key),
+          leaveMinute:minute.time,
+          station:"mejirodai"
+        }))
+      }
+    })
+  })
+
+  Object.entries(table.hoseiToNishihachioji).map(([key,value])=>{
+    value.map(minute=>{
+      if(typeof minute==="number"){
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:false,
+          leaveHour:parseInt(key),
+          leaveMinute:minute,
+          station:"nishihachioji"
+        }))
+      }else{
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:false,
+          leaveHour:parseInt(key),
+          leaveMinute:minute.time,
+          station:"nishihachioji"
+        }))
+      }
+    })
+  })
+
+  Object.entries(table.hoseiToMejirodai).map(([key,value])=>{
+    value.map(minute=>{
+      if(typeof minute==="number"){
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:false,
+          leaveHour:parseInt(key),
+          leaveMinute:minute,
+          station:"mejirodai"
+        }))
+      }else{
+        timetable.push(gen({
+          gym:false,
+          isComingToHosei:false,
+          leaveHour:parseInt(key),
+          leaveMinute:minute.time,
+          station:"mejirodai"
+        }))
+      }
+    })
+  })
+  
+
+  return timetable
 }

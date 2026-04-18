@@ -5,215 +5,245 @@ import fs from "fs"
 
 // npx tsx scraping.ts
 
-async function getKeiostList({ url }: { url: string }) {
-  try {
-
-    const dom = await JSDOM.fromURL(url);
-    const document = dom.window.document
-    const trs = [...document.querySelectorAll("#railroad-matrix>center>div")]
-    const stList = trs.map(tr => {
-      const h = parseInt(z.string().parse((tr.querySelector("span")?.textContent?.match(/(\d{2}:)/)?.[0].slice(0, 2))))
-      const m = parseInt(z.string().parse(tr.querySelector("span")?.textContent?.match(/(:\d{2})/)?.[0].slice(1, 3)))
-
-      const st = z.string().parse(tr.querySelector("strong")?.textContent?.replace(/[\n\r\t]/g, "").trim())
-      return { h, m, st }
-    })
-    return stList
-  } catch {
-    return []
-  }
+type Eki={
+  hour: number,
+  minute: number,
+  trainType: string,
+  destination: string,
+  direction: string,
+  station: string,
+  line: string,
+  day: string 
 }
 
-async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ignoreMejirodaiOnly: boolean }) {
+type BusStop={
+  hour: number;
+  minute: number;
+  name: string
+}
+
+type TimeTableElement={
+  arriveHour: number,
+  arriveMinute: number,
+  station: string,
+  isComingToHosei: boolean,
+  id: string
+} & Bus
+
+type Bus={
+  day: string,
+  leaveHour: number,
+  leaveMinute: number,
+  stopList: BusStop[],
+  url:string
+}
+
+async function getKeioStopList({ url }: { url: string }):Promise<BusStop[]> {
+  const data = await fetch(url)
+  const text = await data.text()
+  const dom = new JSDOM(text);
+  const document = dom.window.document
+  const trs = [...document.querySelectorAll("#railroad-matrix>center>div")]
+  const parsedScheduleEntries = trs.map(tr => {
+    const timeString=tr.querySelector("span")?.textContent.match(/(\d{2}:\d{2})/)?.[0] as string
+    // const hour = parseInt(z.string().parse((tr.querySelector("span")?.textContent?.match(/(\d{2}:)/)?.[0].slice(0, 2))))
+    // const minute = parseInt(z.string().parse(tr.querySelector("span")?.textContent?.match(/(:\d{2})/)?.[0].slice(1, 3)))
+    const [hour,minute]=timeString.split(":").map(item=>parseInt(item))
+    const name = z.string().parse(tr.querySelector("strong")?.textContent?.replace(/[\n\r\t]/g, "").trim())
+    return {  hour,minute,name }
+  })
+  return parsedScheduleEntries
+}
+
+async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ignoreMejirodaiOnly: boolean }):Promise<Bus[]> {
   const wkDict = { wkd: "Weekday", std: "Saturday", snd: "Sunday" }
-  const dom = await JSDOM.fromURL(url);
+  const data = await fetch(url)
+  const text = await data.text()
+  const dom = new JSDOM(text);
   const document = dom.window.document;
   const trs = [...document.querySelectorAll("tr.l2")]
-  const urls: { url: string, leaveh: number, leavem: number, day: string }[] = []
+  const urls: { url: string, leaveHour: number, leaveMinute: number, day: string }[] = []
   trs.map(tr => {
-    const r = tr.querySelector("th.h")?.textContent?.replace(/[\n\r\t]/g, "")
-    let leaveh = -1
-    if (r) {
-      leaveh = parseInt(r)
-    } else {
-    }
+    const leaveHour = parseInt(tr.querySelector("th.hour")?.textContent?.replace(/[\n\r\t]/g, "") as string)
+    // let leaveHour = -1
+    // if (r) {
+    //   leaveHour = parseInt(r)
+    // }
     for (const week in wkDict) {
       const day = tr.querySelector(`td.${week}`)
       const items = [...day?.querySelectorAll("div.diagram-item") || []]
       for (const item of items) {
         // indexOf("グ")===-1 グが検索でヒットしない，グリーンヒル寺田行きのバスではない
-        if (item.querySelector("div.top")?.textContent?.indexOf("グ") === -1 && (!ignoreMejirodaiOnly || item.querySelector("div.top")?.textContent?.indexOf("め") === -1)) {
+        const isGreenHill=item.querySelector("div.top")?.textContent?.indexOf("グ") !== -1
+        const onlyMejirodai=item.querySelector("div.top")?.textContent?.indexOf("め") !== -1
+        if (!isGreenHill && !(ignoreMejirodaiOnly && onlyMejirodai)) {
           const time = item.querySelector("span[aria-hidden='true']")
-          let leavem = -1
-          if (time) {
-            leavem = parseInt(z.string().parse(time?.textContent))
-          }
+          const leaveMinute=parseInt(time?.textContent as string)
           const url = "https://transfer.navitime.biz" + item.querySelector("a")?.getAttribute("href")
-          urls.push({ url, leaveh, leavem, day: wkDict[week as keyof typeof wkDict] })
+          urls.push({ url, leaveHour: leaveHour, leaveMinute: leaveMinute, day: wkDict[week as keyof typeof wkDict] })
         }
       }
     }
   })
-  const results = await Promise.all(urls.map(async ({ url, leaveh, leavem, day }) => {
-    const stList = await getKeiostList({ url })
-    return { leaveh, leavem, stList, day }
+  const results = await Promise.all(urls.map(async ({ url, leaveHour: leaveHour, leaveMinute: leaveMinute, day }) => {
+    const stopList = await getKeioStopList({ url })
+    return { leaveHour,leaveMinute,stopList, day ,url}
   }))
   return results
 }
 
-async function getKanachuTimetable({ url }: { url: string }) {
+async function getKanachuTimetable({ url }: { url: string }):Promise<Bus[]> {
+  console.log(url)
   // 2026年3月30日　神奈中HP仕様変更に伴う対応
   const data = await fetch(url)
   const text = await data.text()
   const dom = new JSDOM(text);
   const document = dom.window.document;
-  const trs = [...document.querySelectorAll("tr")];
+  const trs = document.querySelectorAll("tr");
   const urls: { url: string, leaveh: number, leavem: number, day: string }[] = []
   const days = ["Weekday", "Saturday", "Sunday"]
   for (const tr of trs) {
-    const leaveh = tr.querySelector("th>div")?.textContent?.replace(/[\n\r\t]/g, "")
+    const leaveHour = tr.querySelector("th>div")?.textContent?.replace(/[\n\r\t]/g, "")
     const tds = [...tr.querySelectorAll("td")];
     tds.map((td, index) => {
       const aTags = [...td.querySelectorAll("a")];
-      aTags.map(aTag => {
+      aTags.map(aTag => {  
         const url = "https://transfer-cloud.navitime.biz" + aTag.getAttribute("href")
-        console.log(url)
         const leavem = aTag.textContent?.replace(/[\n\r\t]/g, "")
-        if (leaveh && leavem && url) {
-          urls.push({ url, leaveh: parseInt(leaveh), leavem: parseInt(leavem), day: days[index] })
+        if (leaveHour && leavem && url) {
+          urls.push({ url, leaveh: parseInt(leaveHour), leavem: parseInt(leavem), day: days[index] })
         }
       })
     })
   }
-  const results = await Promise.all(urls.map(async ({ url, leaveh, leavem, day }) => {
-    const stList = await getKanachustList({ url })
-    return { leaveh, leavem, stList, day }
+  const results = await Promise.all(urls.map(async ({ url, leaveh: leaveHour, leavem: leaveMinute, day }) => {
+    const stopList = await getKanachuStopList({ url })
+    return {leaveHour,leaveMinute, stopList, day,url }
   }))
   return results
 }
 
-async function getKanachustList({ url }: { url: string }) {
-
+async function getKanachuStopList({ url }: { url: string }):Promise<BusStop[]> {
+  console.log(url)
   const data = await fetch(url)
   const text = await data.text()
   const dom = new JSDOM(text);
   const document = dom.window.document;
-  const stList: { h: number, m: number, st: string }[] = []
-  const lis = document.querySelectorAll("ul>li")
-  console.log(lis)
-  console.log(lis.length)
+  const stList: { hour: number, minute: number, name: string }[] = []
+  const lis = document.querySelectorAll("div.box-content")
   for (const li of lis) {
-    const st=z.string().parse(li.querySelector("div.ml-4.grow.text-lg.font-bold")?.textContent);
-    const [h,m]=li.querySelector("div.flex.items-center.ml-8.flex.w-20.items-end.text-center.text-xl.font-bold > time")?.textContent?.split(":").map(item=>Number(item)) ?? [];
-    stList.push({h,m,st})
+    const stopName=z.string().parse(li.querySelector("div.ml-4.grow.text-lg.font-bold")?.textContent);
+    const [h,m]=li.querySelector("div.flex.items-center.ml-8.flex.w-20.items-end.text-center.text-xl.font-bold > time")?.textContent?.split(":").map(item=>parseInt
+      (item)) ?? [];
+    stList.push({hour: h,minute: m,name: stopName})
   }
   return stList
-
 }
 
-const busRouteUrls = {
-  "keio": {
-    "nishihachiojiToHosei": [
+const busRouteURLs = {
+  keio: {
+    nishihachiojiToHosei: [
       "https://transfer.navitime.biz/bus-navi/pc/diagram/BusDiagram?orvCode=00020677&course=0000456027&stopNo=11",
     ],
-    "mejirodaiToHosei": [
+    mejirodaiToHosei: [
       "https://transfer.navitime.biz/bus-navi/pc/diagram/BusDiagram?orvCode=00020064&course=0000456027&stopNo=17",
     ],
-    "hoseiTo": [
+    hoseiTo: [
       "https://transfer.navitime.biz/bus-navi/pc/diagram/BusDiagram?orvCode=00021279&course=0000456026&stopNo=1",
     ],
   },
-  "kanachu": {
-    "aiharaTo":
-      ["https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022822&course-sequence=0008002246-1",
-        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022822&course-sequence=0008000987-12",
+  kanachu: {
+    aiharaTo:
+      ["https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022822&course-sequence=0008000984-1",
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022822&course-sequence=0008000987-12",
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022822&course-sequence=0008001585-1"
       ],
-    "hoseiTo":
+    hoseiTo:
       [
-        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022655&course-sequence=0008000981-1",
-        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022655&course-sequence=0008000988-6",
-        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022655&course-sequence=0008000952-1",
-        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022655&course-sequence=0008000987-22"
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022655&course-sequence=0008000981-1",
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022655&course-sequence=0008000988-6",
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022655&course-sequence=0008001586-1",
+        "https://transfer-cloud.navitime.biz/kanachu/courses/timetables?busstop=00022655&course-sequence=0008000987-22"
       ]
   }
 }
 
 async function getAllTimetables() {
-  let aiharaToHosei: { leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
-  for (const url of busRouteUrls.kanachu.aiharaTo) {
-    const res = await getKanachuTimetable({ url })
-    res.forEach(item => aiharaToHosei.push({ ...item, station: "aihara", isComingToHosei: true, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
-  }
-  const hoseiToAihara: { leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
-  for (const url of busRouteUrls.kanachu.hoseiTo) {
-    const res = await getKanachuTimetable({ url })
-    res.forEach(item => hoseiToAihara.push({ ...item, station: "aihara", isComingToHosei: false, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
-  }
-  for (const bus of aiharaToHosei) {
-    bus.arriveh = bus.stList.at(-1)?.h as number
-    bus.arrivem = bus.stList.at(-1)?.m as number
-  }
-  aiharaToHosei = structuredClone(aiharaToHosei).filter(bus => bus.arriveh)
-  for (const bus of hoseiToAihara) {
-    for (const st of bus.stList) {
-      if (st.st === "相原駅西口") {
-        bus.arriveh = st.h
-        bus.arrivem = st.m
-        break; // Exit after the first iteration
+
+  let aiharaToHosei: TimeTableElement[] = []
+  const hoseiToAihara: TimeTableElement[] = []
+  const kanachu=async()=>{
+
+    for (const url of busRouteURLs.kanachu.aiharaTo) {
+      const res = await getKanachuTimetable({ url })
+      res.forEach(item => aiharaToHosei.push({ ...item, station: "aihara", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
+    }
+    for (const url of busRouteURLs.kanachu.hoseiTo) {
+      const res = await getKanachuTimetable({ url })
+      res.forEach(item => hoseiToAihara.push({ ...item, station: "aihara", isComingToHosei: false, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
+    }
+    for (const bus of aiharaToHosei) {
+      bus.arriveHour = bus.stopList.at(-1)?.hour as number
+      bus.arriveMinute = bus.stopList.at(-1)?.minute as number
+    }
+    aiharaToHosei = structuredClone(aiharaToHosei).filter(bus => bus.arriveHour)
+    for (const bus of hoseiToAihara) {
+      for (const st of bus.stopList) {
+        if (st.name === "相原駅西口") {
+          bus.arriveHour = st.hour;
+          bus.arriveMinute = st.minute;
+          break; // Exit after the first iteration
+        }
       }
     }
   }
+  await kanachu()
+
   const kanachuTimetable = aiharaToHosei.concat(hoseiToAihara)
 
-  let mejirodaiToHosei: { leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
-  for (const url of busRouteUrls.keio.mejirodaiToHosei) {
+  let mejirodaiToHosei: TimeTableElement[] = []
+  for (const url of busRouteURLs.keio.mejirodaiToHosei) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
-    res.forEach(item => mejirodaiToHosei.push({ ...item, station: "mejirodai", isComingToHosei: true, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
+    res.forEach(item => mejirodaiToHosei.push({ ...item, station: "mejirodai", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
   }
   for (const bus of mejirodaiToHosei) {
-    bus.arriveh = bus.stList.at(-1)?.h as number
-    bus.arrivem = bus.stList.at(-1)?.m as number
-
+    bus.arriveHour = bus.stopList.at(-1)?.hour as number
+    bus.arriveMinute = bus.stopList.at(-1)?.minute as number
   }
-  let nishihachiojiToHosei: { leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
-  for (const url of busRouteUrls.keio.nishihachiojiToHosei) {
+  let nishihachiojiToHosei: TimeTableElement[] = []
+  for (const url of busRouteURLs.keio.nishihachiojiToHosei) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: true })
-    res.forEach(item => nishihachiojiToHosei.push({ ...item, station: "nishihachioji", isComingToHosei: true, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
+    res.forEach(item => nishihachiojiToHosei.push({ ...item, station: "nishihachioji", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
   }
   for (const bus of nishihachiojiToHosei) {
-    bus.arriveh = bus.stList.at(-1)?.h as number
-    bus.arrivem = bus.stList.at(-1)?.m as number
+    bus.arriveHour = bus.stopList.at(-1)?.hour as number
+    bus.arriveMinute = bus.stopList.at(-1)?.minute as number
   }
-  let hoseiToMejirodai: {
-    leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string,
-    station: string, isComingToHosei: boolean, id: string
-  }[] = []
-  let hoseiToNishihachioji: {
-    leaveh: number, leavem: number, arriveh: number, arrivem: number, stList: { h: number, m: number, st: string }[], day: string,
-    station: string, isComingToHosei: boolean, id: string
-  }[] = []
-  for (const url of busRouteUrls.keio.hoseiTo) {
+  let hoseiToMejirodai: TimeTableElement[] = []
+  let hoseiToNishihachioji: TimeTableElement[] = []
+
+  for (const url of busRouteURLs.keio.hoseiTo) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
-    res.forEach(item => hoseiToMejirodai.push({ ...item, station: "mejirodai", isComingToHosei: false, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
+    res.forEach(item => hoseiToMejirodai.push({ ...item, station: "mejirodai", isComingToHosei: false, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
   }
-  for (const url of busRouteUrls.keio.hoseiTo) {
+  for (const url of busRouteURLs.keio.hoseiTo) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: true })
-    res.forEach(item => hoseiToNishihachioji.push({ ...item, station: "nishihachioji", isComingToHosei: false, arriveh: -1, arrivem: -1, id: crypto.randomUUID() }))
+    res.forEach(item => hoseiToNishihachioji.push({ ...item, station: "nishihachioji", isComingToHosei: false, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
   }
   for (const bus of hoseiToMejirodai) {
-    for (const st of bus.stList) {
-      if (st.st === "めじろ台駅") {
-        bus.arriveh = st.h
-        bus.arrivem = st.m
+    for (const station of bus.stopList) {
+      if (station.name === "めじろ台駅") {
+        bus.arriveHour = station.hour;
+        bus.arriveMinute = station.minute;
         break; // Exit after the first iteration
       }
     }
   }
   for (const bus of hoseiToNishihachioji) {
-    for (const st of bus.stList) {
-      if (st.st === "西八王子駅南口") {
-        bus.arriveh = st.h
-        bus.arrivem = st.m
+    for (const st of bus.stopList) {
+      if (st.name === "西八王子駅南口") {
+        bus.arriveHour = st.hour;
+        bus.arriveMinute = st.minute;
         break; // Exit after the first iteration
       }
     }
@@ -222,27 +252,30 @@ async function getAllTimetables() {
     .concat(hoseiToNishihachioji)
     .concat(mejirodaiToHosei)
     .concat(nishihachiojiToHosei)
-    .filter(bus => bus.arriveh)
+    .filter(bus => bus.arriveHour)
   const allTimetable = kanachuTimetable.concat(keioTimetable).sort((a, b) => {
-    if (a.arriveh * 60 + a.arrivem >= b.arriveh * 60 + a.arrivem) {
+    if (a.arriveHour * 60 + a.arriveMinute >= b.arriveHour * 60 + a.arriveMinute) {
       return 1
     } else {
       return -1
     }
   })
-  fs.writeFileSync("src/utils/Timetable2.json", JSON.stringify(allTimetable)
+  const write=()=>{
+    const now=new Date();
+    fs.writeFileSync(`src/utils/TimeTable_${now.getMonth()+1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}.json`, JSON.stringify(allTimetable))
+  }
+  write()
 }
 
+async function getEkitan({ url }: { url: string }):Promise<Eki[]> {
 
-
-async function getEkitan({ url }: { url: string }) {
   const days = ["Weekday", "Saturday", "Sunday"]
-  const result: { h: number, m: number, trainType: string, destination: string, direction: string, station: string, line: string, day: string }[] = []
+  const result: Eki[] = []
   await Promise.all(days.map(async (day, idx) => {
-    const dom = await JSDOM.fromURL(`${url}?view=list&dw=${idx}`, {
-      referrer: "https://ekitan.com/",
-      // userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
-    })
+    const data = await fetch(url)
+    const text = await data.text()
+    const dom = new JSDOM(text);
+
     const document = dom.window.document
     const directions = document.querySelectorAll("li.ek-direction_tab > a")
     const line = z.string().parse(document.querySelector("li.line-name a")?.textContent)
@@ -259,7 +292,7 @@ async function getEkitan({ url }: { url: string }) {
         const trainType = z.string().parse(el.querySelector("span.train-type")?.textContent)
         const destination = z.string().parse(el.querySelector("span.destination")?.textContent)
         const direction = z.string().parse(directions[idx]?.textContent)
-        result.push({ h, m, trainType, destination, direction, station, line, day })
+        result.push({ hour: h, minute: m, trainType, destination, direction, station, line, day })
       }
     })
   }))
@@ -279,70 +312,51 @@ async function getAllEkitan() {
     "https://ekitan.com/timetable/railway/line-station/261-11/d1",
     "https://ekitan.com/timetable/railway/line-station/262-31/d1"
   ]
-  const result: {
-    h: number;
-    m: number;
-    trainType: string;
-    destination: string;
-    direction: string;
-    station: string
-  }[] = []
-  await Promise.all(urls.map(async url => {
+  
+  const result=(await Promise.all(urls.map(async url => {
     return await getEkitan({ url })
-  })).then(item => {
-    item.map(i => {
-      i.map(j => {
-        result.push(j)
-      })
-    })
-  })
-  result.map(item => {
-    switch (item.destination) {
+  }))).flat()
+
+  result.map(eki => {
+    switch (eki.destination) {
       case "京王多摩センターから特急新宿行き行き":
-        item.destination = "新宿行き";
-        item.trainType = "各停・京王多摩センターから特急";
+        eki.destination = "新宿行き";
+        eki.trainType = "各停・京王多摩センターから特急";
         break;
       case "新線新宿から各駅停車本八幡行き行き":
-        item.destination = "新宿行き"
-        item.trainType = "各停・京王多摩センターから特急";
+        eki.destination = "新宿行き"
+        eki.trainType = "各停・京王多摩センターから特急";
         break
       case "高幡不動から特急新宿行き行き":
-        item.destination = "新宿行き"
-        item.trainType = "各停・高幡不動から特急"
+        eki.destination = "新宿行き"
+        eki.trainType = "各停・高幡不動から特急"
         break
       case "高幡不動から急行新宿行き行き":
-        item.destination = "新宿行き";
-        item.trainType = "各停・高幡不動から急行";
+        eki.destination = "新宿行き";
+        eki.trainType = "各停・高幡不動から急行";
         break;
     }
-    if (item.station === "八王子駅" || item.station === "京王八王子駅") {
-      item.station = "JR八王子駅/京王八王子駅"
+    if (eki.station === "八王子駅" || eki.station === "京王八王子駅") {
+      eki.station = "JR八王子駅/京王八王子駅"
     }
-    // if (item.destination === "京王多摩センターから特急新宿行き行き") {
-    //   item.destination = "新宿行き"
-    //   item.trainType = "各停・京王多摩センターから特急"
-    // } else if (item.destination === "新線新宿から各駅停車本八幡行き行き") {
-    //   item.destination = "本八幡行き"
-    //   item.trainType = "急行・新線新宿から各停"
-    // } else if (item.destination === "高幡不動から特急新宿行き行き") {
-    //   item.destination = "新宿行き"
-    //   item.trainType = "各停・高幡不動から特急"
-    // } else if (item.destination === "高幡不動から急行新宿行き行き") {
-    //   item.destination = "新宿行き"
-    //   item.trainType = "各停・高幡不動から急行"
-    // }
   })
 
   fs.writeFileSync("src/utils/ekitan.json", JSON.stringify(result, null, 2))
 
 }
 
+// console.log(await getKeioStopList({
+//   url:"https://transfer.navitime.biz/bus-navi/pc/diagram/BusRouteTimetable?operation=82670033&datetime=2026-04-18T06%3A44%3A00&node=00021279&course=0000456026&stop-no=1",
+
+// }))
+
+// console.log(await getKeioStopList({
+//   url:"https://transfer.navitime.biz/bus-navi/pc/diagram/BusRouteTimetable?operation=82670034&datetime=2026-04-18T06%3A56%3A00&node=00021279&course=0000456026&stop-no=1"
+// }))
+
 getAllTimetables()
 // getAllEkitan()
 
-// const result=(await getKanachuTimetable({url:"https://transfer-cloud.navitime.biz/kanachu/courses/timetables?st=00022655&course-sequence=0008000987-22"}))
-
-// const result=(await getKanachustList({url:"https://transfer-cloud.navitime.biz/kanachu/courses/timetables/837b000f/stops?departure-st=00022655-22&course=0008000987&datetime=2026-03-30T19:31:00%2B09:00"}))
 
 // console.table(result)
 // console.log(result)
