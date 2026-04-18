@@ -1,6 +1,5 @@
 import HoseiLinkImage from "@/images/Stylized Interlocked 'H' and 'L' Icon.png"
 import { Card, CardContent, CardHeader } from './ui/card'
-import { Separator } from "./ui/separator"
 
 const HoseiLink = () => {
   return (
@@ -20,7 +19,6 @@ const HoseiLink = () => {
         </CardContent>
 
       </Card>
-      <Separator className="my-4" /> 
     </div>
   )
 }
