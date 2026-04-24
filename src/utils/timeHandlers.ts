@@ -19,7 +19,7 @@ const dayIndices = [
 ];
 const equationOfTime = 9;
 
-export function toms({
+export function timeToMinutes({
   hour,
   minute,
 }: {
@@ -30,13 +30,13 @@ export function toms({
 }
 
 export function timeDifference({
-  nowInms,
-  busInms,
+  nowInMinutes: nowInMinutes,
+  busInMinutes: busInms,
 }: {
-  nowInms: number;
-  busInms: number;
+  nowInMinutes: number;
+  busInMinutes: number;
 }) {
-  return busInms - nowInms;
+  return busInms - nowInMinutes;
 }
 
 // 日付が祝日かどうかを判定
@@ -199,7 +199,7 @@ export function findNextBuses({
   const currentHour = currentDate.getHours();
   const currentMinutes = currentDate.getMinutes();
   const currentDay = dayIndices[currentDate.getDay()];
-  const nowInms = toms({
+  const nowInMinutes = timeToMinutes({
     hour: currentHour,
     minute: currentMinutes,
   });
@@ -242,27 +242,28 @@ export function findNextBuses({
     const busesForDay = newTimetable
       .slice()
       .filter(
-        (bus) =>
-          bus.day === dayToCheck ||
-          (isWeekday(dayToCheck) && bus.day === "Weekday"),
-      );
+        (bus) =>{
+          const condition=bus.day === dayToCheck ||(isWeekday(dayToCheck) && bus.day === "Weekday")
+          return condition
+        });
     let m = -1;
     if (length >= 1) {
       m = binarySearch({
         data: busesForDay,
-        cmp: (bus: {
+        cmpCallBackFn: (bus: {
           leaveHour: number;
           leaveMinute: number;
         }) => {
-          const busLeaveTime = toms({
+          const busLeaveTime = timeToMinutes({
             hour: bus.leaveHour,
             minute: bus.leaveMinute,
           });
+          // console.log({busesForDay})
           return (
             i > 0 ||
             timeDifference({
-              nowInms,
-              busInms: busLeaveTime,
+              nowInMinutes,
+              busInMinutes: busLeaveTime,
             }) >= 0
           );
         },
@@ -270,19 +271,19 @@ export function findNextBuses({
     } else {
       m = binarySearch({
         data: busesForDay,
-        cmp: (bus: {
+        cmpCallBackFn: (bus: {
           leaveHour: number;
           leaveMinute: number;
         }) => {
-          const busLeaveTime = toms({
+          const busLeaveTime = timeToMinutes({
             hour: bus.leaveHour,
             minute: bus.leaveMinute,
           });
           return (
             i > 0 ||
             timeDifference({
-              nowInms,
-              busInms: busLeaveTime,
+              nowInMinutes,
+              busInMinutes: busLeaveTime,
             }) < 0
           );
         },
@@ -339,10 +340,10 @@ export function getTimeString(now: Date) {
 
 export const binarySearch = <T>({
   data,
-  cmp: cmpCallbackFn,
+  cmpCallBackFn: cmpCallbackFn,
 }: {
   data: T[];
-  cmp: (a: T) => boolean;
+  cmpCallBackFn: (a: T) => boolean;
 }) => {
   if (data.length === 0) {
     return -1;
@@ -585,7 +586,6 @@ export const anomary20260401=({timetable,now}:{now:Date,timetable:z.infer<typeof
     }
   }
 
-  console.log(now)
   if(!(now<new Date("2026/4/1") || new Date("2026/4/6")<now)){
     let dateIndex=-1
     for(let date=1;date<=6;date++){
