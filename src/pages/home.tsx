@@ -50,7 +50,7 @@ export default function Home() {
     [],
   );
   useEffect(() => {
-    import("@/utils/TimeTable_4_18_23_53.json").then((timetable) => {
+    import("@/utils/TimeTable_4_27_4_10.json").then((timetable) => {
       setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
     });
   }, []);
@@ -381,7 +381,7 @@ export default function Home() {
       </div>
       <div className="fixed bottom-4 left-4 text-xs backdrop-blur-md bg-white/10 p-1 rounded">
         最終更新<br />
-        2026年4月16日3時31分
+        2026年4月27日4時14分
       </div>
     </>
   );

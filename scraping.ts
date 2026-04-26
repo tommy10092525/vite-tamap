@@ -94,7 +94,7 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
 
 async function getKanachuTimetable({ url }: { url: string }):Promise<Bus[]> {
   console.log(url)
-  // 2026年3月30日　神奈中HP仕様変更に伴う対応
+  // 2026年3月30日神奈中HP仕様変更に伴う対応
   const data = await fetch(url)
   const text = await data.text()
   const dom = new JSDOM(text);
@@ -183,15 +183,19 @@ async function getAllTimetables() {
       res.forEach(item => hoseiToAihara.push({ ...item, station: "aihara", isComingToHosei: false, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
     }
     for (const bus of aiharaToHosei) {
-      bus.arriveHour = bus.stopList.at(-1)?.hour as number
-      bus.arriveMinute = bus.stopList.at(-1)?.minute as number
+      for(const station of bus.stopList){
+        if(station.name==="法政大学"){
+          bus.arriveHour=station.hour;
+          bus.arriveMinute=station.minute;
+        }
+      }
     }
     aiharaToHosei = structuredClone(aiharaToHosei).filter(bus => bus.arriveHour)
     for (const bus of hoseiToAihara) {
-      for (const st of bus.stopList) {
-        if (st.name === "相原駅西口") {
-          bus.arriveHour = st.hour;
-          bus.arriveMinute = st.minute;
+      for (const station of bus.stopList) {
+        if (station.name === "相原駅西口") {
+          bus.arriveHour = station.hour;
+          bus.arriveMinute = station.minute;
           break; // Exit after the first iteration
         }
       }
@@ -201,7 +205,7 @@ async function getAllTimetables() {
 
   const kanachuTimetable = aiharaToHosei.concat(hoseiToAihara)
 
-  let mejirodaiToHosei: TimeTableElement[] = []
+  const mejirodaiToHosei: TimeTableElement[] = []
   for (const url of busRouteURLs.keio.mejirodaiToHosei) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
     res.forEach(item => mejirodaiToHosei.push({ ...item, station: "mejirodai", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -210,7 +214,7 @@ async function getAllTimetables() {
     bus.arriveHour = bus.stopList.at(-1)?.hour as number
     bus.arriveMinute = bus.stopList.at(-1)?.minute as number
   }
-  let nishihachiojiToHosei: TimeTableElement[] = []
+  const nishihachiojiToHosei: TimeTableElement[] = []
   for (const url of busRouteURLs.keio.nishihachiojiToHosei) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: true })
     res.forEach(item => nishihachiojiToHosei.push({ ...item, station: "nishihachioji", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -219,8 +223,8 @@ async function getAllTimetables() {
     bus.arriveHour = bus.stopList.at(-1)?.hour as number
     bus.arriveMinute = bus.stopList.at(-1)?.minute as number
   }
-  let hoseiToMejirodai: TimeTableElement[] = []
-  let hoseiToNishihachioji: TimeTableElement[] = []
+  const hoseiToMejirodai: TimeTableElement[] = []
+  const hoseiToNishihachioji: TimeTableElement[] = []
 
   for (const url of busRouteURLs.keio.hoseiTo) {
     const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
@@ -340,8 +344,8 @@ async function getAllEkitan() {
       eki.station = "JR八王子駅/京王八王子駅"
     }
   })
-
-  fs.writeFileSync("src/utils/ekitan.json", JSON.stringify(result, null, 2))
+  const now=new Date();
+  fs.writeFileSync(`src/utils/ekitan._${now.getMonth()+1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}.json`, JSON.stringify(result, null, 2))
 
 }
 
