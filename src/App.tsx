@@ -39,11 +39,6 @@ const App = () => {
               <Home />
             }
           />
-          <Route path="/discount" element={<Discount />} />
-          <Route path="/fuji" element={<Fuji />} />
-          <Route path="/hicheese" element={<Hicheese />} />
-          <Route path="/kokuterudo" element={<Kokuterudo />} />
-          <Route path="/question" element={<Question />} />
           
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
