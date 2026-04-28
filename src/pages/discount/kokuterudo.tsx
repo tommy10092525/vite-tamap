@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom"
-import kokuterudouImage from "/images/kokuterudou.webp"
+import kokuterudouImage from "@/images/kokuterudou.webp"
 import { Undo2 } from "lucide-react"
 
 const page = () => {
   return (
-    <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white'>
+    <div className='bg-gray-100 dark:bg-zinc-950 p-8 min-h-screen text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black'>
         <title>コクテル堂 - たまっぷ提携店舗</title>
         <meta name="description" content="橋本駅近くのカフェ「コクテル堂」。法政大学の学生証提示で、「ケーキ×ドリンクのセット」がさらに100円割引になります。" />
       <Link to="/discount" className='top-2 left-2 fixed backdrop-blur-xs p-4 border-2 border-rose-500 rounded-full font-semibold text-lg'><Undo2></Undo2></Link>
