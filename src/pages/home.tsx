@@ -26,6 +26,7 @@ import { cn } from "@/lib/utils";
 import { Tabs } from "@base-ui/react/tabs"
 import { Button } from "@/components/ui/button";
 import HoseiLink from "@/components/HoseiLink";
+import LastEdited from "@/components/last-edited";
 
 gsap.registerPlugin(useGSAP);
 
@@ -379,10 +380,7 @@ export default function Home() {
         <p className="text-black text-center">©CODE MATES︎</p>
         <div className="text-black"></div>
       </div>
-      <div className="fixed bottom-4 left-4 text-xs backdrop-blur-md bg-white/10 p-1 rounded">
-        最終更新<br />
-        2026年4月27日4時14分
-      </div>
+      <LastEdited/>
     </>
   );
 }
