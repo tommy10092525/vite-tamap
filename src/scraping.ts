@@ -27,8 +27,9 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
             let leaveHour = -1
             if (r) {
                 leaveHour = parseInt(r)
-            } else {
             }
+            // } else {
+            // }
             for (const week in wkDict) {
                 const day = tr.querySelector(`td.${week}`)
                 const items = [...day?.querySelectorAll("div.diagram-item") || []]
@@ -160,7 +161,7 @@ async function getAllTimetables() {
     }
     const kanachuTimetable = aiharaToHosei.concat(hoseiToAihara)
 
-    let mejirodaiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
+    const mejirodaiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
     for (const url of busRouteUrls.keio.mejirodaiToHosei) {
         const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
         res.forEach(item => mejirodaiToHosei.push({ ...item, station: "mejirodai", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -188,7 +189,7 @@ async function getAllTimetables() {
         leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string,
         station: string, isComingToHosei: boolean, id: string
     }[] = []
-    let hoseiToNishihachioji: {
+    const hoseiToNishihachioji: {
         leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string,
         station: string, isComingToHosei: boolean, id: string
     }[] = []
