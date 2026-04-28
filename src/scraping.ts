@@ -231,7 +231,6 @@ async function getEkitan({ url }: { url: string }) {
     await Promise.all(days.map(async (day, idx) => {
         const dom = await JSDOM.fromURL(`${url}?view=list&dw=${idx}`, {
             referrer: "https://ekitan.com/",
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
         })
         const document = dom.window.document
         const directions = document.querySelectorAll("li.ek-direction_tab > a")
