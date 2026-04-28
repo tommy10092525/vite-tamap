@@ -172,7 +172,7 @@ async function getAllTimetables() {
             break; // Exit after the first iteration
         }
     }
-    let nishihachiojiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
+    const nishihachiojiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
     for (const url of busRouteUrls.keio.nishihachiojiToHosei) {
         const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: true })
         res.forEach(item => nishihachiojiToHosei.push({ ...item, station: "nishihachioji", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -184,7 +184,7 @@ async function getAllTimetables() {
             break; // Exit after the first iteration
         }
     }
-    let hoseiToMejirodai: {
+    const hoseiToMejirodai: {
         leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string,
         station: string, isComingToHosei: boolean, id: string
     }[] = []
