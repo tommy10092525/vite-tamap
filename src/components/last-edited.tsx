@@ -1,5 +1,3 @@
-import React from 'react'
-
 const LastEdited = () => {
   return (
     <div className="fixed bottom-4 left-4 text-xs backdrop-blur-md bg-white/10 p-1 rounded">
