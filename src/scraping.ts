@@ -27,8 +27,9 @@ async function getKeioTimeTable({ url, ignoreMejirodaiOnly }: { url: string, ign
             let leaveHour = -1
             if (r) {
                 leaveHour = parseInt(r)
-            } else {
             }
+            // } else {
+            // }
             for (const week in wkDict) {
                 const day = tr.querySelector(`td.${week}`)
                 const items = [...day?.querySelectorAll("div.diagram-item") || []]
@@ -160,7 +161,7 @@ async function getAllTimetables() {
     }
     const kanachuTimetable = aiharaToHosei.concat(hoseiToAihara)
 
-    let mejirodaiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
+    const mejirodaiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
     for (const url of busRouteUrls.keio.mejirodaiToHosei) {
         const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: false })
         res.forEach(item => mejirodaiToHosei.push({ ...item, station: "mejirodai", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -172,7 +173,7 @@ async function getAllTimetables() {
             break; // Exit after the first iteration
         }
     }
-    let nishihachiojiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
+    const nishihachiojiToHosei: { leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string, station: string, isComingToHosei: boolean, id: string }[] = []
     for (const url of busRouteUrls.keio.nishihachiojiToHosei) {
         const res = await getKeioTimeTable({ url, ignoreMejirodaiOnly: true })
         res.forEach(item => nishihachiojiToHosei.push({ ...item, station: "nishihachioji", isComingToHosei: true, arriveHour: -1, arriveMinute: -1, id: crypto.randomUUID() }))
@@ -184,11 +185,11 @@ async function getAllTimetables() {
             break; // Exit after the first iteration
         }
     }
-    let hoseiToMejirodai: {
+    const hoseiToMejirodai: {
         leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string,
         station: string, isComingToHosei: boolean, id: string
     }[] = []
-    let hoseiToNishihachioji: {
+    const hoseiToNishihachioji: {
         leaveHour: number, leaveMinute: number, arriveHour: number, arriveMinute: number, busStops: { hour: number, minute: number, busStop: string }[], day: string,
         station: string, isComingToHosei: boolean, id: string
     }[] = []
@@ -231,7 +232,6 @@ async function getEkitan({ url }: { url: string }) {
     await Promise.all(days.map(async (day, idx) => {
         const dom = await JSDOM.fromURL(`${url}?view=list&dw=${idx}`, {
             referrer: "https://ekitan.com/",
-            userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.3"
         })
         const document = dom.window.document
         const directions = document.querySelectorAll("li.ek-direction_tab > a")
