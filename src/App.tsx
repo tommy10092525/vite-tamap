@@ -2,11 +2,6 @@ import { Routes, Route, useLocation,HashRouter } from "react-router-dom";
 import ReactGA from "react-ga4";
 import { useEffect } from "react";
 import Home from "@/pages/home";
-import Discount from "@/pages/discount/discount";
-import Fuji from "@/pages/discount/fuji";
-import Hicheese from "@/pages/discount/hicheese";
-import Kokuterudo from "@/pages/discount/kokuterudo";
-import Question from "@/pages/question"
 import { ThemeProvider } from "@/components/theme-provider";
 
 const TRACKING_ID = "G-4F3PMM48SS";
@@ -39,11 +34,6 @@ const App = () => {
               <Home />
             }
           />
-          <Route path="/discount" element={<Discount />} />
-          <Route path="/fuji" element={<Fuji />} />
-          <Route path="/hicheese" element={<Hicheese />} />
-          <Route path="/kokuterudo" element={<Kokuterudo />} />
-          <Route path="/question" element={<Question />} />
           
           <Route path="*" element={<div>404 Not Found</div>} />
         </Routes>
