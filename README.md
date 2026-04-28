@@ -57,9 +57,9 @@
     - `day`: 運行曜日 (`Weekday`, `Saturday`, `Sunday`)
     - `station`: 発着駅 (`nishihachioji`, `mejirodai`, `aihara`)
     - `isComingToHosei`: 大学行きかどうかのフラグ (`true`/`false`)
-    - `leaveh`, `leavem`: 出発時刻
-    - `arriveh`, `arrivem`: 到着時刻
-    - `stList`: 主要なバス停ごとの到着予測時刻
+    - `leaveHour`, `leaveMinute`: 出発時刻
+    - `arriveHour`, `arriveMinute`: 到着時刻
+    - `busStops`: 主要なバス停ごとの到着予測時刻
 
 - **`Holidays.json`**
   - 日本の祝日を定義したデータです。
