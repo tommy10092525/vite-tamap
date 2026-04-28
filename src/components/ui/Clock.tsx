@@ -16,7 +16,6 @@ const Clock = () => {
       <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString(now)}</p>
       <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{getTimeString(now)}</p>
       {isHoliday({ date: now, holidayData }) && <div><p className='text-red-500 text-center'>{isHoliday({ date: now, holidayData })}</p></div>}
-      <p className="text-red-500 text-center">{isHoliday({ date: now, holidayData })}</p>
     </div>
   )
 }
