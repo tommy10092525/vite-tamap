@@ -106,14 +106,13 @@ async function getKanachuTimetable({ url }: { url: string }):Promise<Bus[]> {
     const leaveHour = tr.querySelector("th>div")?.textContent?.replace(/[\n\r\t]/g, "")
     const tds = [...tr.querySelectorAll("td")];
     tds.map((td, index) => {
-      const aTags = [...td.querySelectorAll("a")];
-      aTags.map(aTag => {  
-        const url = "https://transfer-cloud.navitime.biz" + aTag.getAttribute("href")
-        const leavem = aTag.textContent?.replace(/[\n\r\t]/g, "")
-        if (leaveHour && leavem && url) {
+      const aTag = td.querySelector("a")
+        const url = "https://transfer-cloud.navitime.biz" + aTag?.getAttribute("href")
+        const leavem = aTag?.textContent?.replace(/[\n\r\t]/g, "")
+        const sup=td.querySelector("sup")
+        if (leaveHour && leavem && url && sup?.textContent!=="◎") {
           urls.push({ url, leaveh: parseInt(leaveHour), leavem: parseInt(leavem), day: days[index] })
         }
-      })
     })
   }
   const results = await Promise.all(urls.map(async ({ url, leaveh: leaveHour, leavem: leaveMinute, day }) => {

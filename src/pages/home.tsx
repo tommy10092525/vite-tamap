@@ -51,7 +51,7 @@ export default function Home() {
     [],
   );
   useEffect(() => {
-    import("@/utils/TimeTable_4_27_4_10.json").then((timetable) => {
+    import("@/utils/TimeTable_5_5_18_59.json").then((timetable) => {
       setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
     });
   }, []);
