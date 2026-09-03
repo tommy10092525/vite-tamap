@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { findNextBuses, keioRapid, msToTime } from "@/utils/timeHandlers";
-import { buildings, stationNames } from "@/utils/constants";
+import { buildings, newTamapUrl, stationNames } from "@/utils/constants";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import holidayDataJSON from "@/utils/Holidays.json";
@@ -25,7 +25,6 @@ import { cn } from "@/lib/utils";
 
 import { Tabs } from "@base-ui/react/tabs"
 import { Button } from "@/components/ui/button";
-import HoseiLink from "@/components/HoseiLink";
 import LastEdited from "@/components/last-edited";
 import { useNow } from "@/hooks/useNow";
 
@@ -81,8 +80,6 @@ export default function Home() {
     );
   });
   const { setState, state } = useUserInput();
-
-
 
   useEffect(() => {
     localStorage.setItem("station", state.station);
@@ -173,8 +170,6 @@ export default function Home() {
     length: 3,
   });
 
-  console.log(futureBuses)
-
   const [nextBus] = futureBuses;
   departure = stationNames[state.station];
   destination = "法政大学";
@@ -220,7 +215,11 @@ export default function Home() {
           className="gap-3 flex items-center flex-col mx-auto p-3 max-w-2xl touch-manipulation"
           data-main
         >
-        <HoseiLink />
+        <Card>
+          <span className="text-lg">「たまっぷ」は新しいＵＲＬに移行します！</span><br/>
+          <a className="underline font-bold text-xl" href={newTamapUrl}>新しいたまっぷ</a>
+        </Card>
+        <div className=""></div>
         <img
           alt="たまっぷのロゴ"
           src={tamapLogo}

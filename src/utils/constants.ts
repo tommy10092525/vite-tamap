@@ -15,5 +15,7 @@ const majorStations=["相原駅西口","橋本駅北口","めじろ台駅","西�
 
 const mobileOrderURL="https://cdmts-pay.codemates.net/"
 
+export const newTamapUrl="https://tamap.codemates.org";
+
 export {facilitiesTimesMapping as buildings,stationNames,majorStations,mobileOrderURL
 }
