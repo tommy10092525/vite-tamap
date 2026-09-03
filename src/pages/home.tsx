@@ -358,7 +358,7 @@ export default function Home() {
 
 
           {/* 割引ボタン */}
-          <TamapHowToInstall />
+          {/* <TamapHowToInstall /> */}
 
           {new Date() < new Date("2026/4/1") && <DiscountLink />}
 
