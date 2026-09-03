@@ -1,16 +1,10 @@
 import { getDateString, getTimeString, isHoliday } from '@/utils/timeHandlers'
 import holidayData from '@/utils/Holidays.json'
-// import Card from './card'
-import { useEffect, useState } from 'react';
+import { useNow } from '@/hooks/useNow'
 
 
 const Clock = () => {
-  const [now,setNow]=useState(new Date());
-  useEffect(()=>{
-    setInterval(()=>{
-      setNow(()=>new Date())
-    },1000)
-  },[])
+  const {now}=useNow()
   return (
     <div className='top-3 left-3 fixed w-auto p-4 z-10 dark:bg-black/50 bg-white/20 rounded-xl'>
       <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString(now)}</p>

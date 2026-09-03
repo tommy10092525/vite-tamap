@@ -27,6 +27,7 @@ import { Tabs } from "@base-ui/react/tabs"
 import { Button } from "@/components/ui/button";
 import HoseiLink from "@/components/HoseiLink";
 import LastEdited from "@/components/last-edited";
+import { useNow } from "@/hooks/useNow";
 
 gsap.registerPlugin(useGSAP);
 
@@ -37,15 +38,7 @@ const Card = ({ children, className }: { children: ReactNode, className?: string
 }
 
 export default function Home() {
-  const [now, setNow] = useState(new Date());
-
-  useEffect(() => {
-    setInterval(() => {
-      if (now.getMinutes() !== new Date().getMinutes()) {
-        setNow(new Date())
-      }
-    }, 1000);
-  }, []);
+  const {now}=useNow()
 
   const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>(
     [],
