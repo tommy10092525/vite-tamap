@@ -25,9 +25,10 @@ import { cn } from "@/lib/utils";
 
 import { Tabs } from "@base-ui/react/tabs"
 import { Button } from "@/components/ui/button";
-import HoseiLink from "@/components/HoseiLink";
+// import HoseiLink from "@/components/HoseiLink";
 import LastEdited from "@/components/last-edited";
 import { useNow } from "@/hooks/useNow";
+import Tamasai2026 from "@/components/Tamasai2026";
 
 gsap.registerPlugin(useGSAP);
 
