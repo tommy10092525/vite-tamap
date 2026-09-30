@@ -220,7 +220,8 @@ export default function Home() {
           className="gap-3 flex items-center flex-col mx-auto p-3 max-w-2xl touch-manipulation"
           data-main
         >
-        <HoseiLink />
+        {/* <HoseiLink /> */}
+        <Tamasai2026/>
         <img
           alt="たまっぷのロゴ"
           src={tamapLogo}
