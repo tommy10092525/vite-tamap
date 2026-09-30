@@ -1,6 +1,0 @@
-<FilesMatch "\.html$">
-  Header set Cache-Control "no-store"
-  Header unset ETag
-  Header unset Last-Modified
-  FileETag None
-</FilesMatch>
