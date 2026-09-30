@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import Home from "@/pages/home";
 import { ThemeProvider } from "@/components/theme-provider";
 
-const TRACKING_ID = "G-4F3PMM48SS";
+const TRACKING_ID = "G-L6HYNTLG6N";
 if (TRACKING_ID) {
   ReactGA.initialize(TRACKING_ID);
 }
