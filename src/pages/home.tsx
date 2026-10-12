@@ -29,6 +29,7 @@ import { Button } from "@/components/ui/button";
 import LastEdited from "@/components/last-edited";
 import { useNow } from "@/hooks/useNow";
 import Tamasai2026 from "@/components/Tamasai2026";
+import Carousel from "@/components/Carousel";
 
 gsap.registerPlugin(useGSAP);
 
@@ -209,6 +210,7 @@ export default function Home() {
       />
       {/* 宣材 */}
       <Menu />
+  
       <div className="bg-linear-210 dark:from-blue-500 dark:to-orange-500 from-sky-400 to-orange-300 p-3 md:p-7 w-full min-h-screen text-black dark:text-white selection:bg-black selection:text-white dark:selection:bg-white dark:selection:text-black" data-container >
 
 
@@ -222,7 +224,8 @@ export default function Home() {
           data-main
         >
         {/* <HoseiLink /> */}
-        <Tamasai2026/>
+        {/* <Tamasai2026/> */}
+        <Carousel/>
         <img
           alt="たまっぷのロゴ"
           src={tamapLogo}
