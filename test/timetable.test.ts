@@ -18,7 +18,7 @@ describe("時刻表の形式が正しいか検証します", () => {
     });
   });
 
-  it("出発時刻は到着時刻より後である必要があります",()=>{
+  it("出発時刻は到着時刻より前である必要があります",()=>{
     timetable.map(item=>{
       expect(item.arriveHour*60+item.arriveMinute).toBeGreaterThanOrEqual(item.leaveHour*60+item.leaveMinute)
     })
