@@ -9,7 +9,7 @@ const Clock = () => {
     <div className='top-3 left-3 fixed w-auto p-4 z-10 dark:bg-black/50 bg-white/20 rounded-xl'>
       <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-lg text-center">{getDateString(now)}</p>
       <p suppressHydrationWarning={false} className="w-auto h-7 font-medium text-2xl text-center">{getTimeString(now)}</p>
-      {isHoliday({ date: now, holidayData }) && <div><p className='text-red-500 text-center'>{isHoliday({ date: now, holidayData })}</p></div>}
+      {isHoliday({ date: now, holidayData }) && <div><p className='text-red-900 dark:text-red-200 text-center'>{isHoliday({ date: now, holidayData })}</p></div>}
     </div>
   )
 }

@@ -318,7 +318,7 @@ export function findNextBuses({
 }
 
 // `hh:mm` を分単位に変換する関数
-export function timeToms(time: string) {
+export function timeToMinute(time: string) {
   const [hs, ms] = time.split(":").map(Number);
   return hs * 60 + ms;
 }

@@ -6,7 +6,7 @@ const TamapHowToInstall = () => {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <button className="p-4 from-blue-400 to-blue-600 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline w-full">
+        <button className="p-4 from-blue-600 to-blue-800 bg-gradient-to-br transition-all text-white font-semibold text-xl rounded-lg flex hover:underline w-full">
           <QuestionIcon size={32} />
           <span className="text-center mx-auto">
             たまっぷ　インストール方法
@@ -37,7 +37,7 @@ const TamapHowToInstall = () => {
           </ul>
           <a
             href="https://codemates123.github.io/homepage/tamap.html"
-            className="text-lg underline font-semibold text-center text-blue-600"
+            className="text-lg underline font-semibold text-center text-blue-600 dark:text-blue-300"
           >詳細はこちら</a>
         </div>
       </DialogContent>
