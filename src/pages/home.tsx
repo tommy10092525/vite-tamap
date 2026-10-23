@@ -28,7 +28,6 @@ import { Button } from "@/components/ui/button";
 // import HoseiLink from "@/components/HoseiLink";
 import LastEdited from "@/components/last-edited";
 import { useNow } from "@/hooks/useNow";
-import Carousel from "@/components/Carousel";
 
 gsap.registerPlugin(useGSAP);
 
@@ -45,7 +44,7 @@ export default function Home() {
     [],
   );
   useEffect(() => {
-    import("@/utils/TimeTable_5_5_18_59.json").then((timetable) => {
+    import("@/utils/TimeTable.json").then((timetable) => {
       setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
     });
   }, []);
@@ -224,7 +223,6 @@ export default function Home() {
         >
         {/* <HoseiLink /> */}
         {/* <Tamasai2026/> */}
-        <Carousel/>
         <img
           alt="たまっぷのロゴ"
           src={tamapLogo}
