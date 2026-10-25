@@ -1,8 +1,11 @@
 import jsdom from "jsdom";
 const { JSDOM } = jsdom;
-import * as z from "zod";
+import * as v from "valibot";
 import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { randomUUID } from "crypto";
+import { Item } from "@radix-ui/react-accordion";
 
 // npx tsx scraping.ts
 
@@ -41,19 +44,76 @@ type Bus = {
 
 type Station = "nishihachioji" | "mejirodai" | "aihara";
 
+/** 各駅で乗り降りするバス停の名前 */
+export const stopNames = {
+  hosei: "法政大学",
+  nishihachioji: "西八王子駅南口",
+  mejirodai: "めじろ台駅",
+  aihara: "相原駅西口",
+} as const;
+
+/**
+ * バス停リストからfrom→toの乗車区間を切り出し、出発・到着時刻を返します。
+ * 始発でない便（例：西八王子駅南口発でめじろ台駅から乗る）でも、乗るバス停の時刻を出発時刻にします。
+ * 区間を通らない便の場合はnullを返します。
+ */
+export function extractRide(stopList: BusStop[], from: string, to: string) {
+  const fromIndex = stopList.findIndex((stop) => stop.name === from);
+  const toIndex = stopList.findIndex(
+    (stop, i) => fromIndex !== -1 && i > fromIndex && stop.name === to,
+  );
+  if (fromIndex === -1 || toIndex === -1) {
+    return null;
+  }
+  const ride = stopList.slice(fromIndex, toIndex + 1);
+  return {
+    leaveHour: ride[0].hour,
+    leaveMinute: ride[0].minute,
+    arriveHour: ride[ride.length - 1].hour,
+    arriveMinute: ride[ride.length - 1].minute,
+    stopList: ride,
+  };
+}
+
+/** 1便のバス停リストから、指定した駅ごとの時刻表の行を作ります。区間を通らない駅の行は作りません。 */
+export function buildTimetableRows({
+  stopList,
+  day,
+  stations,
+  isComingToHosei,
+}: {
+  stopList: BusStop[];
+  day: string;
+  stations: readonly Station[];
+  isComingToHosei: boolean;
+}) {
+  return stations.flatMap((station) => {
+    const ride = isComingToHosei
+      ? extractRide(stopList, stopNames[station], stopNames.hosei)
+      : extractRide(stopList, stopNames.hosei, stopNames[station]);
+    return ride ? [{ ...ride, day, station, isComingToHosei }] : [];
+  });
+}
+
 /** URLからバス停の一覧を取得します（京王） */
 export async function getKeioBusStopList(url: string) {
   const data = await fetch(url);
   const text = await data.text();
-  const dom = new JSDOM(text);
+  return { stopList: parseKeioBusStopList(text) };
+}
+
+/** 京王の停車時刻表ページのHTMLからバス停の一覧を取り出します */
+export function parseKeioBusStopList(html: string): BusStop[] {
+  const dom = new JSDOM(html);
   const document = dom.window.document;
   const trs = [...document.querySelectorAll("#railroad-matrix>center>div")];
   const parsedScheduleEntries = trs.map((tr) => {
-    const timeString = tr
-      .querySelector("span")
-      ?.textContent.match(/(\d{2}:\d{2})/)?.[0] as string;
+    const timeString = v.parse(
+      v.string(),
+      tr.querySelector("span")?.textContent?.match(/(\d{2}:\d{2})/)?.[0],
+    );
     const [hour, minute] = timeString.split(":").map((item) => parseInt(item));
-    const name = z.string().parse(
+    const name = v.parse(v.string(), 
       tr
         .querySelector("strong")
         ?.textContent?.replace(/[\n\r\t]/g, "")
@@ -61,20 +121,7 @@ export async function getKeioBusStopList(url: string) {
     );
     return { hour, minute, name };
   });
-
-  // バス停の最初と最後から出発時刻と到着時刻を取得します。
-  const leaveHour = parsedScheduleEntries[0].hour as number;
-  const leaveMinute = parsedScheduleEntries[0].minute as number;
-  const arriveHour = parsedScheduleEntries.at(-1)?.hour as number;
-  const arriveMinute = parsedScheduleEntries.at(-1)?.minute as number;
-
-  return {
-    leaveHour,
-    leaveMinute,
-    arriveHour,
-    arriveMinute,
-    stopList: parsedScheduleEntries,
-  };
+  return parsedScheduleEntries;
 }
 
 /** 時刻表のURLからバス停のURLリストを返します。（京王） */
@@ -86,6 +133,7 @@ export const getKeioBusUrls = async ({
   ignoreMejirodaiOnly: boolean;
 }) => {
   const wkDict = { wkd: "Weekday", std: "Saturday", snd: "Sunday" } as const;
+  const weekSchema = v.picklist(["wkd", "std", "snd"]);
   const data = await fetch(url);
   const text = await data.text();
   const dom = new JSDOM(text);
@@ -93,7 +141,8 @@ export const getKeioBusUrls = async ({
   const trs = [...document.querySelectorAll("tr.l2")];
   const urls: { day: (typeof wkDict)[keyof typeof wkDict]; url: string }[] = [];
   trs.map((tr) => {
-    Object.keys(wkDict).map((week) => {
+    Object.keys(wkDict).map((key) => {
+      const week = v.parse(weekSchema, key);
       const day = tr.querySelector(`td.${week}`);
       const items = [...(day?.querySelectorAll("div.diagram-item") || [])];
       items.map((item) => {
@@ -104,7 +153,7 @@ export const getKeioBusUrls = async ({
         if (!isGreenHill && !(ignoreMejirodaiOnly && onlyMejirodai)) {
           const url = `https://transfer.navitime.biz${item.querySelector("a")?.getAttribute("href")}`;
           urls.push({
-            day: wkDict[week as keyof typeof wkDict],
+            day: wkDict[week],
             url,
           });
         }
@@ -159,9 +208,7 @@ export async function getKanachuBusStopList(url: string) {
   const busStopList: { hour: number; minute: number; name: string }[] = [];
   const lis = document.querySelectorAll("div.box-content");
   for (const li of lis) {
-    const stopName = z
-      .string()
-      .parse(li.querySelector("div.ml-4.grow.text-lg.font-bold")?.textContent);
+    const stopName = v.parse(v.string(), li.querySelector("div.ml-4.grow.text-lg.font-bold")?.textContent);
     const [hour, minute] =
       li
         .querySelector(
@@ -171,10 +218,20 @@ export async function getKanachuBusStopList(url: string) {
         .map((item) => parseInt(item)) ?? [];
     busStopList.push({ hour: hour, minute: minute, name: stopName });
   }
-  const leaveHour = busStopList.at(0)?.hour as number;
-  const leaveMinute = busStopList.at(0)?.minute as number;
-  const arriveHour = busStopList.at(-1)?.hour as number;
-  const arriveMinute = busStopList.at(-1)?.minute as number;
+  const departure=busStopList.find(({name})=>name==="相原駅西口"||name==="法政大学")
+  if(!departure){
+    throw new Error("バス停リストに相原駅西口・法政大学が含まれていません。")
+  }
+
+  const arrival=busStopList.find(({name})=>name!==departure.name&&(name==="相原駅西口"||name==="法政大学"))
+  if(!arrival){
+    throw new Error("バス停リストに相原駅西口・法政大学の片方しか含まれていません")
+  }
+
+  const leaveHour = departure.hour
+  const leaveMinute = departure.minute
+  const arriveHour = arrival.hour
+  const arriveMinute = arrival.minute
   return {
     leaveHour,
     leaveMinute,
@@ -211,79 +268,57 @@ export const busRouteURLs = {
   },
 } as const;
 
-export const getAllTimeTable = async () => {
-  // 関数が返す既定の値のほかに、曜日・駅・向きを返す
-  const timetable: (Awaited<ReturnType<typeof getKeioBusStopList>> & {
-    day: string;
-    station: Station;
+export const getAllBusTimeTable = async () => {
+  const timetable: ReturnType<typeof buildTimetableRows> = [];
+
+  // 時刻表のURLから便ごとのバス停リストを取得し、駅ごとの乗車区間を時刻表に追加します。
+  // 便ごとの取得もawaitして、書き込む前にすべて揃うようにします。
+  const addKeioRoutes = async ({
+    urls,
+    stations,
+    isComingToHosei,
+  }: {
+    urls: readonly string[];
+    stations: readonly Station[];
     isComingToHosei: boolean;
-  })[] = [];
+  }) => {
+    await Promise.all(urls.map(async (url) => {
+      const result = await getKeioBusUrls({ url, ignoreMejirodaiOnly: false });
+      await Promise.all(result.map(async ({ day, url }) => {
+        const { stopList } = await getKeioBusStopList(url);
+        timetable.push(...buildTimetableRows({ stopList, day, stations, isComingToHosei }));
+      }));
+    }));
+  };
 
-  // めじろ台→法政
-  await Promise.all(busRouteURLs.keio.mejirodaiToHosei.map(async(url)=>{
-    const result=await getKeioBusUrls({url,ignoreMejirodaiOnly:false});
-    result.map(async({day,url})=>{
-      const busStopList=await getKeioBusStopList(url);
-      timetable.push({
-        ...busStopList,
-        day,
-        station:"mejirodai",
-        isComingToHosei:true
-      })
-    })
-  }))
+  const addKanachuRoutes = async ({
+    urls,
+    isComingToHosei,
+  }: {
+    urls: readonly string[];
+    isComingToHosei: boolean;
+  }) => {
+    await Promise.all(urls.map(async (url) => {
+      const result = await getKanachuBusUrls(url);
+      await Promise.all(result.map(async ({ day, url }) => {
+        const { stopList } = await getKanachuBusStopList(url);
+        timetable.push(...buildTimetableRows({ stopList, day, stations: ["aihara"], isComingToHosei }));
+      }));
+    }));
+  };
 
-  // 西八王子→法政
-  await Promise.all(busRouteURLs.keio.mejirodaiToHosei.map(async(url)=>{
-    const result=await getKeioBusUrls({url,ignoreMejirodaiOnly:false});
-    result.map(async({day,url})=>{
-      const busStopList=await getKeioBusStopList(url);
-      timetable.push({
-        ...busStopList,
-        day,
-        station:"nishihachioji",
-        isComingToHosei:true
-      })
-    })
-  }))
-
-  // 法政→めじろ台・西八王子
-  await Promise.all(busRouteURLs.keio.hoseiTo.map(async (url) => {
-    const result = await getKeioBusUrls({ url, ignoreMejirodaiOnly: false });
-    result.map(async ({ day, url }) => {
-      const busStopList = await getKeioBusStopList(url);
-      timetable.push({
-        ...busStopList,
-        day,
-        station: "nishihachioji",
-        isComingToHosei: false,
-      });
-      timetable.push({
-        ...busStopList,
-        day,
-        station: "mejirodai",
-        isComingToHosei: false,
-      });
-    });
-  }));
-
-  // 相原→法政
-  await Promise.all(busRouteURLs.kanachu.aiharaTo.map(async(url)=>{
-    const result=await getKanachuBusUrls(url)
-    result.map(async({day,url})=>{
-      const busStopList=await getKanachuBusStopList(url)
-      timetable.push({...busStopList,day,isComingToHosei:true,station:"aihara"})
-    })
-  }))
-
-  // 法政→相原
-  await Promise.all(busRouteURLs.kanachu.hoseiTo.map(async(url)=>{
-    const result=await getKanachuBusUrls(url)
-    result.map(async({day,url})=>{
-      const busStopList=await getKanachuBusStopList(url)
-      timetable.push({...busStopList,day,station:"aihara",isComingToHosei:false})
-    })
-  }))
+  await Promise.all([
+    // めじろ台→法政
+    addKeioRoutes({ urls: busRouteURLs.keio.mejirodaiToHosei, stations: ["mejirodai"], isComingToHosei: true }),
+    // 西八王子→法政
+    addKeioRoutes({ urls: busRouteURLs.keio.nishihachiojiToHosei, stations: ["nishihachioji"], isComingToHosei: true }),
+    // 法政→めじろ台・西八王子（1便から駅ごとに別々の区間を切り出す）
+    addKeioRoutes({ urls: busRouteURLs.keio.hoseiTo, stations: ["nishihachioji", "mejirodai"], isComingToHosei: false }),
+    // 相原→法政
+    addKanachuRoutes({ urls: busRouteURLs.kanachu.aiharaTo, isComingToHosei: true }),
+    // 法政→相原
+    addKanachuRoutes({ urls: busRouteURLs.kanachu.hoseiTo, isComingToHosei: false }),
+  ]);
 
   const write=()=>{
     fs.writeFileSync(`src/utils/TimeTable.json`,
@@ -293,25 +328,32 @@ export const getAllTimeTable = async () => {
   return timetable
 };
 
-getAllTimeTable()
+// `npx tsx scraping.ts`で直接実行したときだけ取得する。
+// テストなどからimportしたときにスクレイピングとTimeTable.jsonの上書きが走らないようにする。
+const isMain =
+  typeof process.argv[1] === "string" &&
+  path.resolve(fileURLToPath(import.meta.url)).toLowerCase() ===
+    path.resolve(process.argv[1]).toLowerCase();
+if (isMain) {
+  getAllBusTimeTable();
+}
 
-async function getEkitan({ url }: { url: string }): Promise<Eki[]> {
+export const getEkitan=async(url:string) => {
   const days = ["Weekday", "Saturday", "Sunday"];
   const result: Eki[] = [];
   await Promise.all(
     days.map(async (day, idx) => {
-      const data = await fetch(url);
+      const _url=new URL(url)
+      _url.searchParams.append("dw",idx.toString())
+      _url.searchParams.append("view","list")
+      const data = await fetch(_url.toString());
       const text = await data.text();
       const dom = new JSDOM(text);
 
       const document = dom.window.document;
       const directions = document.querySelectorAll("li.ek-direction_tab > a");
-      const line = z
-        .string()
-        .parse(document.querySelector("li.line-name a")?.textContent);
-      const station = z
-        .string()
-        .parse(
+      const line = v.parse(v.string(), document.querySelector("li.line-name a")?.textContent);
+      const station = v.parse(v.string(), 
           document
             .querySelector("div.station-name a")
             ?.textContent?.replace(/\(神奈川\)/, ""),
@@ -320,20 +362,14 @@ async function getEkitan({ url }: { url: string }): Promise<Eki[]> {
         for (const el of d.querySelectorAll("li.ek-narrow")) {
           let time = "";
           try {
-            time = z
-              .string()
-              .parse(el.querySelector("span.dep-time")?.textContent);
+            time = v.parse(v.string(), el.querySelector("span.dep-time")?.textContent);
           } catch {
             break;
           }
           const [h, m] = time.split(":").map((item) => parseInt(item));
-          const trainType = z
-            .string()
-            .parse(el.querySelector("span.train-type")?.textContent);
-          const destination = z
-            .string()
-            .parse(el.querySelector("span.destination")?.textContent);
-          const direction = z.string().parse(directions[idx]?.textContent);
+          const trainType = v.parse(v.string(), el.querySelector("span.train-type")?.textContent);
+          const destination = v.parse(v.string(), el.querySelector("span.destination")?.textContent);
+          const direction = v.parse(v.string(), directions[idx]?.textContent);
           result.push({
             hour: h,
             minute: m,
@@ -351,7 +387,7 @@ async function getEkitan({ url }: { url: string }): Promise<Eki[]> {
   return result;
 }
 
-async function getAllEkitan() {
+export const getAllEkitan=async()=>{
   const urls = [
     "https://ekitan.com/timetable/railway/line-station/163-16/d1",
     "https://ekitan.com/timetable/railway/line-station/264-3/d1",
@@ -368,7 +404,7 @@ async function getAllEkitan() {
   const result = (
     await Promise.all(
       urls.map(async (url) => {
-        return await getEkitan({ url });
+        return await getEkitan(url);
       }),
     )
   ).flat();
@@ -396,9 +432,10 @@ async function getAllEkitan() {
       eki.station = "JR八王子駅/京王八王子駅";
     }
   });
-  const now = new Date();
   fs.writeFileSync(
-    `src/utils/ekitan._${now.getMonth() + 1}_${now.getDate()}_${now.getHours()}_${now.getMinutes()}.json`,
+    `src/utils/ekitan.json`,
     JSON.stringify(result, null, 2),
   );
 }
+
+// getAllEkitan()

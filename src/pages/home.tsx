@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { findNextBuses, keioRapid, msToTime } from "@/utils/timeHandlers";
+import { findNextBuses, mergeTimetables, msToTime } from "@/utils/timeHandlers";
 import { buildings, stationNames } from "@/utils/constants";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -7,16 +7,18 @@ import holidayDataJSON from "@/utils/Holidays.json";
 import Menu from "@/components/menu";
 import {
   timetableSchema,
+  expressTimetableSchema,
   holidayDataSchema,
   stateSchema,
   stationSchema,
+  type TimetableEntry,
 } from "@/utils/types";
 
 import tamapLogo from "@/images/tamap_logo.webp";
 import mapImage from "@/images/Map.webp";
 import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
-import * as z from "zod/v4";
+import * as v from "valibot";
 import Clock from "@/components/ui/Clock";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
@@ -38,18 +40,25 @@ const Card = ({ children, className }: { children: ReactNode, className?: string
 }
 
 export default function Home() {
-  const {now}=useNow()
+  // バスの検索は分単位で十分なので、毎秒の再描画を避ける
+  const {now}=useNow("minute")
 
-  const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>(
-    [],
-  );
+  const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   useEffect(() => {
-    import("@/utils/TimeTable.json").then((timetable) => {
-      setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
+    Promise.all([
+      import("@/utils/TimeTable.json"),
+      import("@/utils/ExpressTimetable.json"),
+    ]).then(([regular, express]) => {
+      setTimetable(
+        mergeTimetables({
+          regular: v.parse(timetableSchema, regular.default),
+          express: v.parse(expressTimetableSchema, express.default),
+        }),
+      );
     });
   }, []);
 
-  const holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
+  const holidayData = useMemo(() => v.parse(holidayDataSchema, holidayDataJSON), []);
 
   const animateArrows = useGSAP().contextSafe(() => {
     gsap.fromTo(
@@ -94,7 +103,7 @@ export default function Home() {
 
   const handleDirectionButtonClicked = () => {
     setState((prev) => {
-      return stateSchema.parse({
+      return v.parse(stateSchema, {
         ...prev,
         isComingToHosei: !prev.isComingToHosei,
       });
@@ -107,10 +116,10 @@ export default function Home() {
   };
 
   const handleStationButtonClicked = (
-    station: z.infer<typeof stationSchema>,
+    station: v.InferOutput<typeof stationSchema>,
   ) => {
     setState((prev) => {
-      return stateSchema.parse({
+      return v.parse(stateSchema, {
         ...prev,
         station,
       });
@@ -155,25 +164,23 @@ export default function Home() {
     sport: "--:--",
     gym: "--:--",
   };
-  const previousBuses = findNextBuses({
+  const previousBuses = useMemo(() => findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
     length: -2,
-  });
+  }), [timetable, state.station, state.isComingToHosei, holidayData, now]);
 
-  const futureBuses = findNextBuses({
+  const futureBuses = useMemo(() => findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
     length: 3,
-  });
-
-  console.log(futureBuses)
+  }), [timetable, state.station, state.isComingToHosei, holidayData, now]);
 
   const [nextBus] = futureBuses;
   departure = stationNames[state.station];
@@ -181,7 +188,7 @@ export default function Home() {
   if (!state.isComingToHosei) {
     [departure, destination] = [destination, departure];
   }
-  if (state.isComingToHosei && nextBus && nextBus.arriveHour && nextBus.arriveMinute) {
+  if (state.isComingToHosei && nextBus && nextBus.kind === "regular") {
     overlay.economics = msToTime(
       nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.economics,
     );

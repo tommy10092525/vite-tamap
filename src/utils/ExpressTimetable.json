@@ -1,0 +1,96 @@
+[
+  {
+    "kind": "express",
+    "station": "nishihachioji",
+    "isComingToHosei": true,
+    "day": "Weekday",
+    "validFrom": "2026-04-01",
+    "departures": [
+      "8:38",
+      { "time": "8:45", "destination": "gym" },
+      { "time": "8:52", "destination": "gym" },
+      "10:23",
+      {"time":"10:27","destination":"gym"},
+      "10:31",
+      {"time":"20:38","destination":"gym"},
+      "12:56",
+      "13:06",
+      "14:46",
+      "14:56"
+    ]
+  },
+  {
+    "kind": "express",
+    "station": "mejirodai",
+    "isComingToHosei": true,
+    "day": "Weekday",
+    "validFrom": "2026-04-01",
+    "departures": [
+      "8:46",
+      {"time":"8:53","destination":"gym"},
+      {"time":"9:00","destination":"gym"},
+      "10:31",
+      {"time":"10:35","destination":"gym"},
+      "10:39",
+      {"time":"10:46","destination":"gym"},
+      "13:04",
+      "13:14",
+      "14:54",
+      "15:04"
+    ]
+  },
+  {
+    "kind": "express",
+    "station": "nishihachioji",
+    "isComingToHosei": false,
+    "day": "Weekday",
+    "validFrom": "2026-04-01",
+    "departures": [
+      "12:55",
+      "15:28",
+      "15:35",
+      "15:45",
+      "17:15",
+      "17:25",
+      "17:35",
+      "19:05",
+      "19:15"
+    ]
+  },
+  {
+    "kind": "express",
+    "station": "mejirodai",
+    "isComingToHosei": false,
+    "day": "Weekday",
+    "validFrom": "2026-04-01",
+    "departures": [
+      "12:58",
+      "15:18",
+      "15:38",
+      "15:48",
+      "17:08",
+      "17:18",
+      "17:28",
+      "19:08",
+      "19:18"
+    ]
+  },
+  {
+    "kind":"direct",
+    "station":"mejirodai",
+    "isComingToHosei":true,
+    "day":"Weekday",
+    "validFrom":"2026-09-01",
+    "departures":[
+      "8:30",
+      "8:41",
+      "8:51",
+      "8:59",
+      "10:30",
+      "10:42",
+      "10:54",
+      "13:10",
+      "15:00"
+    ]
+  }
+]
