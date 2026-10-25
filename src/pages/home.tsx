@@ -18,7 +18,7 @@ import tamapLogo from "@/images/tamap_logo.webp";
 import mapImage from "@/images/Map.webp";
 import AccordionArea from "@/components/accordion-area";
 import useUserInput from "@/utils/useUserInput";
-import * as z from "zod/v4";
+import * as v from "valibot";
 import Clock from "@/components/ui/Clock";
 import TamapHowToInstall from "@/components/tamap-how-to-install";
 import { ArrowsCounterClockwiseIcon } from "@phosphor-icons/react";
@@ -51,14 +51,14 @@ export default function Home() {
     ]).then(([regular, express]) => {
       setTimetable(
         mergeTimetables({
-          regular: timetableSchema.parse(regular.default),
-          express: expressTimetableSchema.parse(express.default),
+          regular: v.parse(timetableSchema, regular.default),
+          express: v.parse(expressTimetableSchema, express.default),
         }),
       );
     });
   }, []);
 
-  const holidayData = useMemo(() => holidayDataSchema.parse(holidayDataJSON), []);
+  const holidayData = useMemo(() => v.parse(holidayDataSchema, holidayDataJSON), []);
 
   const animateArrows = useGSAP().contextSafe(() => {
     gsap.fromTo(
@@ -103,7 +103,7 @@ export default function Home() {
 
   const handleDirectionButtonClicked = () => {
     setState((prev) => {
-      return stateSchema.parse({
+      return v.parse(stateSchema, {
         ...prev,
         isComingToHosei: !prev.isComingToHosei,
       });
@@ -116,10 +116,10 @@ export default function Home() {
   };
 
   const handleStationButtonClicked = (
-    station: z.infer<typeof stationSchema>,
+    station: v.InferOutput<typeof stationSchema>,
   ) => {
     setState((prev) => {
-      return stateSchema.parse({
+      return v.parse(stateSchema, {
         ...prev,
         station,
       });

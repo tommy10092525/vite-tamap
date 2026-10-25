@@ -1,4 +1,4 @@
-import * as z from "zod/v4";
+import * as v from "valibot";
 
 import {
   ekitanSchema,
@@ -50,7 +50,7 @@ export function isHoliday({
   holidayData,
 }: {
   date: Date;
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
 }) {
   const newDate = structuredClone(date);
   // 日本時間と標準時の差を足す。
@@ -74,7 +74,7 @@ export function getNextDay({
   holidayData,
 }: {
   currentDate: Date;
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
 }) {
   const nextDate = new Date(currentDate);
   const currentDay = dayIndices[currentDate.getDay()];
@@ -96,7 +96,7 @@ export function getPreviousDay({
   holidayData,
 }: {
   currentDate: Date;
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
 }) {
   const previousDate = new Date(currentDate);
   const currentDay = dayIndices[currentDate.getDay()];
@@ -120,7 +120,7 @@ export const filterByConditions = ({
   isComingToHosei,
 }: {
   timetable: TimetableEntry[];
-  station: z.infer<typeof stationSchema>;
+  station: v.InferOutput<typeof stationSchema>;
   isComingToHosei: boolean;
 }) => {
   const newTimetable = timetable
@@ -200,11 +200,11 @@ export function findNextBuses({
   station,
 }: {
   timetable: TimetableEntry[];
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
   currentDate: Date;
   length: number;
   isComingToHosei: boolean;
-  station: z.infer<typeof stationSchema>;
+  station: v.InferOutput<typeof stationSchema>;
 }) {
   const currentHour = currentDate.getHours();
   const currentMinutes = currentDate.getMinutes();
@@ -368,9 +368,9 @@ export function findFutureTrains({
   holidayData,
   date,
 }: {
-  ekitanData: z.infer<typeof ekitanSchema>;
+  ekitanData: v.InferOutput<typeof ekitanSchema>;
   station: string;
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
   date: Date;
 }) {
   const currenth = date.getHours();
@@ -417,9 +417,9 @@ export function findPastTrains({
   holidayData,
   date,
 }: {
-  ekitanData: z.infer<typeof ekitanSchema>;
+  ekitanData: v.InferOutput<typeof ekitanSchema>;
   station: string;
-  holidayData: z.infer<typeof holidayDataSchema>;
+  holidayData: v.InferOutput<typeof holidayDataSchema>;
   date: Date;
 }) {
   const currenth = date.getHours();
@@ -486,7 +486,7 @@ export function isAvailableOn({
 // ExpressTimetable.jsonを時刻表の1便ずつに展開する。
 // idは内容から決まるので、読み込みのたびに変わらない。
 export function expandExpressTimetable(
-  expressTimetable: z.infer<typeof expressTimetableSchema>,
+  expressTimetable: v.InferOutput<typeof expressTimetableSchema>,
 ): ExpressTimetableEntry[] {
   const entries: ExpressTimetableEntry[] = [];
   const idCounts = new Map<string, number>();
@@ -531,7 +531,7 @@ export function mergeTimetables({
   express,
 }: {
   regular: RegularTimetableEntry[];
-  express: z.infer<typeof expressTimetableSchema>;
+  express: v.InferOutput<typeof expressTimetableSchema>;
 }): TimetableEntry[] {
   return [...regular, ...expandExpressTimetable(express)].sort(
     (a, b) =>

@@ -1,5 +1,5 @@
 import { JSDOM } from "jsdom";
-import * as z from "zod";
+import * as v from "valibot";
 import fs from "fs";
 
 async function getKeioBusStops({ url }: { url: string }) {
@@ -8,7 +8,7 @@ async function getKeioBusStops({ url }: { url: string }) {
   const trs = [...document.querySelectorAll("#railroad-matrix>center>div")];
   const busStops = trs.map((tr) => {
     const hour = parseInt(
-      z.string().parse(
+      v.parse(v.string(), 
         tr
           .querySelector("span")
           ?.textContent?.match(/(\d{2}:)/)?.[0]
@@ -16,7 +16,7 @@ async function getKeioBusStops({ url }: { url: string }) {
       ),
     );
     const minute = parseInt(
-      z.string().parse(
+      v.parse(v.string(), 
         tr
           .querySelector("span")
           ?.textContent?.match(/(:\d{2})/)?.[0]
@@ -24,7 +24,7 @@ async function getKeioBusStops({ url }: { url: string }) {
       ),
     );
 
-    const busStop = z.string().parse(
+    const busStop = v.parse(v.string(), 
       tr
         .querySelector("strong")
         ?.textContent?.replace(/[\n\r\t]/g, "")
@@ -74,7 +74,7 @@ async function getKeioTimeTable({
           const time = item.querySelector("span[aria-hidden='true']");
           let leaveMinute = -1;
           if (time) {
-            leaveMinute = parseInt(z.string().parse(time?.textContent));
+            leaveMinute = parseInt(v.parse(v.string(), time?.textContent));
           }
           const url =
             "https://transfer.navitime.biz" +
@@ -162,7 +162,7 @@ async function getKanachuBusStops({ url }: { url: string }) {
         // throw new Error("Failed to parse time")
         continue;
       }
-      const busStop = z.string().parse(
+      const busStop = v.parse(v.string(), 
         li
           .querySelector("span.busStopPoint")
           ?.textContent?.replace(/[\n\r\t]/g, "")
@@ -429,12 +429,8 @@ export async function getEkitan({ url }: { url: string }) {
       });
       const document = dom.window.document;
       const directions = document.querySelectorAll("li.ek-direction_tab > a");
-      const line = z
-        .string()
-        .parse(document.querySelector("li.line-name a")?.textContent);
-      const station = z
-        .string()
-        .parse(
+      const line = v.parse(v.string(), document.querySelector("li.line-name a")?.textContent);
+      const station = v.parse(v.string(), 
           document
             .querySelector("div.station-name a")
             ?.textContent?.replace(/\(神奈川\)/, ""),
@@ -443,20 +439,14 @@ export async function getEkitan({ url }: { url: string }) {
         for (const el of d.querySelectorAll("li.ek-narrow")) {
           let time = "";
           try {
-            time = z
-              .string()
-              .parse(el.querySelector("span.dep-time")?.textContent);
+            time = v.parse(v.string(), el.querySelector("span.dep-time")?.textContent);
           } catch {
             break;
           }
           const [hour, minute] = time.split(":").map((item) => parseInt(item));
-          const trainType = z
-            .string()
-            .parse(el.querySelector("span.train-type")?.textContent);
-          const destination = z
-            .string()
-            .parse(el.querySelector("span.destination")?.textContent);
-          const direction = z.string().parse(directions[idx]?.textContent);
+          const trainType = v.parse(v.string(), el.querySelector("span.train-type")?.textContent);
+          const destination = v.parse(v.string(), el.querySelector("span.destination")?.textContent);
+          const direction = v.parse(v.string(), directions[idx]?.textContent);
           result.push({
             hour,
             minute,

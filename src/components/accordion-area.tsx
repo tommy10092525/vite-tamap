@@ -7,9 +7,9 @@ import { findFutureTrains, findPastTrains, msToTime } from '@/utils/timeHandlers
 import holidayData from "@/utils/Holidays.json"
 import { ekitanSchema, type Bus, type RegularBus } from '@/utils/types'
 import TrainSheet from './ui/TrainSheet'
-import * as z from "zod/v4"
+import * as v from "valibot"
 
-type EkitanData = z.infer<typeof ekitanSchema>
+type EkitanData = v.InferOutput<typeof ekitanSchema>
 
 // 急行・直行便は経由バス停がわからないので種別と行き先だけ表示する
 const expressLabel = (bus: Exclude<Bus, { kind: "regular" }>) =>
@@ -62,11 +62,11 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
   useEffect(() => {
     import("@/utils/ekitan.json").then(ekitan => {
       // 電車データが壊れていてもバス停一覧は表示したいので、失敗はログだけ残す
-      const result = ekitanSchema.safeParse(ekitan.default)
+      const result = v.safeParse(ekitanSchema, ekitan.default)
       if (result.success) {
-        setEkitanData(result.data)
+        setEkitanData(result.output)
       } else {
-        console.error("ekitan.jsonの形式が正しくありません", result.error)
+        console.error("ekitan.jsonの形式が正しくありません", result.issues)
       }
     })
   }, [])

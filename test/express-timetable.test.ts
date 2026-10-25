@@ -1,4 +1,4 @@
-import * as z from "zod/v4";
+import * as v from "valibot";
 import { describe, expect, it } from "vitest";
 
 import regularJSON from "../src/utils/TimeTable.json";
@@ -17,7 +17,7 @@ import {
   type TimetableEntry,
 } from "../src/utils/types";
 
-type ExpressJSON = z.infer<typeof expressTimetableSchema>;
+type ExpressJSON = v.InferOutput<typeof expressTimetableSchema>;
 
 const regularBus = (
   leaveHour: number,
@@ -50,7 +50,7 @@ const expressGroup = (overrides: Partial<ExpressJSON[number]> = {}): ExpressJSON
 });
 
 describe("ExpressTimetable.json の形式", () => {
-  const data = expressTimetableSchema.parse(expressJSON);
+  const data = v.parse(expressTimetableSchema, expressJSON);
 
   it("スキーマに一致する", () => {
     expect(data.length).toBeGreaterThan(0);
@@ -83,7 +83,7 @@ describe("ExpressTimetable.json の形式", () => {
 
 describe("TimeTable.json のパース", () => {
   it("kind が無くても regular として読み込まれる", () => {
-    const timetable = timetableSchema.parse(regularJSON);
+    const timetable = v.parse(timetableSchema, regularJSON);
     expect(timetable.every((bus) => bus.kind === "regular")).toBe(true);
   });
 });
