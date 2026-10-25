@@ -36,7 +36,7 @@ const TamapHowToInstall = () => {
             <li>「インストール」を選択<br />（※ショートカットにしないでください！）</li>
           </ul>
           <a
-            href="https://codemates123.github.io/homepage/tamap.html"
+            href="https://codemates123.github.io/homepage/tamap"
             className="text-lg underline font-semibold text-center text-blue-600 dark:text-blue-300"
           >詳細はこちら</a>
         </div>
