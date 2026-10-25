@@ -108,9 +108,10 @@ export function parseKeioBusStopList(html: string): BusStop[] {
   const document = dom.window.document;
   const trs = [...document.querySelectorAll("#railroad-matrix>center>div")];
   const parsedScheduleEntries = trs.map((tr) => {
-    const timeString = tr
-      .querySelector("span")
-      ?.textContent?.match(/(\d{2}:\d{2})/)?.[0] as string;
+    const timeString = v.parse(
+      v.string(),
+      tr.querySelector("span")?.textContent?.match(/(\d{2}:\d{2})/)?.[0],
+    );
     const [hour, minute] = timeString.split(":").map((item) => parseInt(item));
     const name = v.parse(v.string(), 
       tr
@@ -132,6 +133,7 @@ export const getKeioBusUrls = async ({
   ignoreMejirodaiOnly: boolean;
 }) => {
   const wkDict = { wkd: "Weekday", std: "Saturday", snd: "Sunday" } as const;
+  const weekSchema = v.picklist(["wkd", "std", "snd"]);
   const data = await fetch(url);
   const text = await data.text();
   const dom = new JSDOM(text);
@@ -139,7 +141,8 @@ export const getKeioBusUrls = async ({
   const trs = [...document.querySelectorAll("tr.l2")];
   const urls: { day: (typeof wkDict)[keyof typeof wkDict]; url: string }[] = [];
   trs.map((tr) => {
-    Object.keys(wkDict).map((week) => {
+    Object.keys(wkDict).map((key) => {
+      const week = v.parse(weekSchema, key);
       const day = tr.querySelector(`td.${week}`);
       const items = [...(day?.querySelectorAll("div.diagram-item") || [])];
       items.map((item) => {
@@ -150,7 +153,7 @@ export const getKeioBusUrls = async ({
         if (!isGreenHill && !(ignoreMejirodaiOnly && onlyMejirodai)) {
           const url = `https://transfer.navitime.biz${item.querySelector("a")?.getAttribute("href")}`;
           urls.push({
-            day: wkDict[week as keyof typeof wkDict],
+            day: wkDict[week],
             url,
           });
         }

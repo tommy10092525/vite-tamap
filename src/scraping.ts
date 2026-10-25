@@ -62,7 +62,8 @@ async function getKeioTimeTable({
     }
     // } else {
     // }
-    for (const week in wkDict) {
+    for (const key in wkDict) {
+      const week = v.parse(v.picklist(["wkd", "std", "snd"]), key);
       const day = tr.querySelector(`td.${week}`);
       const items = [...(day?.querySelectorAll("div.diagram-item") || [])];
       for (const item of items) {
@@ -83,7 +84,7 @@ async function getKeioTimeTable({
             url,
             leaveHour,
             leaveMinute,
-            day: wkDict[week as keyof typeof wkDict],
+            day: wkDict[week],
           });
         }
       }
