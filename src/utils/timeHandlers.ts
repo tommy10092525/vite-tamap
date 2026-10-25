@@ -190,6 +190,7 @@ export const getDateAddedBus = ({
 };
 
 // 次のバスを検索
+// timetableは出発時刻順にソート済みであること（mergeTimetablesの戻り値）
 export function findNextBuses({
   timetable,
   holidayData,
@@ -216,16 +217,7 @@ export function findNextBuses({
   // 現在の曜日のバスを取得
 
   const newTimetable:typeof timetable = filterByConditions({
-    timetable: timetable.sort((a, b) => {
-      if (
-        a.leaveHour * 60 + a.leaveMinute >=
-        b.leaveHour * 60 + b.leaveMinute
-      ) {
-        return 1;
-      } else {
-        return -1;
-      }
-    }),
+    timetable,
     isComingToHosei,
     station,
   });

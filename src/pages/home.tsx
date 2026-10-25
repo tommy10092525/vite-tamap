@@ -40,7 +40,8 @@ const Card = ({ children, className }: { children: ReactNode, className?: string
 }
 
 export default function Home() {
-  const {now}=useNow()
+  // バスの検索は分単位で十分なので、毎秒の再描画を避ける
+  const {now}=useNow("minute")
 
   const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   useEffect(() => {
@@ -163,23 +164,23 @@ export default function Home() {
     sport: "--:--",
     gym: "--:--",
   };
-  const previousBuses = findNextBuses({
+  const previousBuses = useMemo(() => findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
     length: -2,
-  });
+  }), [timetable, state.station, state.isComingToHosei, holidayData, now]);
 
-  const futureBuses = findNextBuses({
+  const futureBuses = useMemo(() => findNextBuses({
     timetable,
     station: state.station,
     isComingToHosei: state.isComingToHosei,
     holidayData: holidayData,
     currentDate: now,
     length: 3,
-  });
+  }), [timetable, state.station, state.isComingToHosei, holidayData, now]);
 
   const [nextBus] = futureBuses;
   departure = stationNames[state.station];
