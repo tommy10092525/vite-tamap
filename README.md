@@ -19,7 +19,7 @@
 - **スタイリング**: Tailwind CSS, shadcn/ui
 - **アニメーション**: GSAP (GreenSock Animation Platform)
 - **SEO対策**: React Helmet Async
-- **型検証**: Zod
+- **型検証**: Valibot
 
 ## ファイル構成
 

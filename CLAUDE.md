@@ -48,16 +48,16 @@ The main logic lives in `src/utils/timeHandlers.ts`:
 
 ### State Management
 
-User preferences (selected station + direction) are stored in `localStorage` and managed by the `useUserInput` hook (`src/utils/useUserInput.ts`). State is validated with Zod on read.
+User preferences (selected station + direction) are stored in `localStorage` and managed by the `useUserInput` hook (`src/utils/useUserInput.ts`). State is validated with Valibot on read.
 
-### Types and Zod Schemas
+### Types and Valibot Schemas
 
-All JSON data shapes and user state are validated with Zod v4 (`zod/v4`). Schemas and derived types are defined in `src/utils/types.ts`. Import as `import * as z from "zod/v4"`.
+All JSON data shapes and user state are validated with Valibot. Schemas and derived types are defined in `src/utils/types.ts`. Import as `import * as v from "valibot"`, validate with `v.parse(schema, data)` / `v.safeParse(schema, data)`, and derive types with `v.InferOutput<typeof schema>`.
 
 Key exported types (prefer these over redeclaring inline):
-- `Bus` — a timetable entry after `getDateAddedBus()` processing; includes `date: Date` on both the bus and each `stList` item
+- `Bus` — a timetable entry after `getDateAddedBus()` processing; includes `date: Date` on both the bus and each `stopList` item
 - `TrainWithDate` — an ekitan entry with `date: Date` appended; returned by `findFutureTrains` / `findPastTrains`
-- `BusSchema` — Zod schema for `Bus` (derived via `timetableSchema.element.extend(...)`)
+- `BusSchema` — Valibot schema for `Bus` (a `v.variant("kind", ...)` built by spreading `regularBusSchema.entries` / `expressBusSchema.entries` and adding `date`)
 
 ### UI Stack
 
