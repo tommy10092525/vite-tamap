@@ -4,45 +4,98 @@ const holidayDataSchema = z.record(
   z.string(),
   z.string())
 
-const timetableSchema = z.array(
+const daySchema = z.union([
+  z.literal("Weekday"),
+  z.literal("Sunday"),
+  z.literal("Saturday"),
+]);
+
+const stationSchema = z.union([
+  z.literal("nishihachioji"),
+  z.literal("mejirodai"),
+  z.literal("aihara"),
+]);
+
+const busBaseSchema = z.object({
+  id: z.string(),
+  day: daySchema,
+  isComingToHosei: z.boolean(),
+  station: stationSchema,
+  leaveHour: z.number(),
+  leaveMinute: z.number(),
+});
+
+// HPから取得できる通常のバス。到着時刻と経由バス停が必ずある。
+// TimeTable.jsonにはkindが無いので、パース時に"regular"を補う。
+const regularBusSchema = busBaseSchema.extend({
+  kind: z.literal("regular").default("regular"),
+  arriveHour: z.number(),
+  arriveMinute: z.number(),
+  stopList: z.array(
+    z.object({
+      hour: z.number(),
+      minute: z.number(),
+      name: z.string()
+    })
+  ),
+});
+
+// 大学のPDFでのみ時刻がわかる急行・直行便。発車時刻しかわからない。
+// validFrom/validToは"YYYY-MM-DD"（両端を含む）。validToが無い場合は終わりなし。
+const expressBusSchema = busBaseSchema.extend({
+  kind: z.union([z.literal("express"), z.literal("direct")]),
+  destination: z.union([z.literal("campus"), z.literal("gym")]),
+  validFrom: z.string(),
+  validTo: z.string().optional(),
+});
+
+const timetableEntrySchema = z.discriminatedUnion("kind", [
+  regularBusSchema,
+  expressBusSchema,
+]);
+
+// TimeTable.json（通常便のみ）
+const timetableSchema = z.array(regularBusSchema);
+
+const timeStringSchema = z.string().regex(/^\d{1,2}:\d{2}$/);
+
+// ExpressTimetable.json
+const expressTimetableSchema = z.array(
   z.object({
-    id: z.string(),
-    day: z.union([
-      z.literal("Weekday"),
-      z.literal("Sunday"),
-      z.literal("Saturday"),
-    ]),
+    kind: z.union([z.literal("express"), z.literal("direct")]),
+    station: stationSchema,
     isComingToHosei: z.boolean(),
-    station: z.union([
-      z.literal("nishihachioji"),
-      z.literal("mejirodai"),
-      z.literal("aihara"),
-    ]),
-    leaveHour: z.number(),
-    leaveMinute: z.number(),
-    arriveHour: z.number().optional(),
-    arriveMinute: z.number().optional(),
-    stopList: z.array(
-      z.object({
-        hour: z.number(),
-        minute: z.number(),
-        name: z.string()
-      })
+    day: daySchema,
+    validFrom: z.string(),
+    validTo: z.string().optional(),
+    departures: z.array(
+      z.union([
+        timeStringSchema,
+        z.object({
+          time: timeStringSchema,
+          destination: z.union([z.literal("campus"), z.literal("gym")]),
+        }),
+      ])
     ),
-    gym:z.boolean().optional()
   })
-)
+);
 
-
-const BusSchema = timetableSchema.element.extend({
+const datedStopSchema = z.object({
   date: z.date(),
-  stopList: z.array(z.object({
+  hour: z.number(),
+  minute: z.number(),
+  name: z.string(),
+});
+
+const BusSchema = z.discriminatedUnion("kind", [
+  regularBusSchema.extend({
     date: z.date(),
-    hour: z.number(),
-    minute: z.number(),
-    name: z.string(),
-  })),
-})
+    stopList: z.array(datedStopSchema),
+  }),
+  expressBusSchema.extend({
+    date: z.date(),
+  }),
+])
 
 
 
@@ -64,8 +117,8 @@ const ekitanSchema=z.array(
     destination:z.string(),
     direction:z.string(),
     line:z.string(),
-    h: z.number(),
-    m: z.number(),
+    hour: z.number(),
+    minute: z.number(),
   })
 )
 
@@ -78,15 +131,20 @@ const stateSchema = z.object({
   isComingToHosei: z.boolean(),
 })
 
-const stationSchema = z.union([
-  z.literal("nishihachioji"),
-  z.literal("mejirodai"),
-  z.literal("aihara"),
-]);
-
-
-
 export type Bus = z.infer<typeof BusSchema>
+export type RegularBus = Extract<Bus, { kind: "regular" }>
+export type TimetableEntry = z.infer<typeof timetableEntrySchema>
+export type RegularTimetableEntry = z.infer<typeof regularBusSchema>
+export type ExpressTimetableEntry = z.infer<typeof expressBusSchema>
 export type TrainWithDate = z.infer<typeof ekitanSchema>[number] & { date: Date }
 
-export { holidayDataSchema, timetableSchema, stationSchema, stateSchema, ekitanSchema, BusSchema };
+export {
+  holidayDataSchema,
+  timetableSchema,
+  timetableEntrySchema,
+  expressTimetableSchema,
+  stationSchema,
+  stateSchema,
+  ekitanSchema,
+  BusSchema,
+};

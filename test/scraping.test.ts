@@ -46,7 +46,6 @@ describe.skip("時刻表取得関数の挙動が正しいかどうか検証し�
     await Promise.all(busRouteURLs.kanachu.aiharaTo.map(async url=>{
       const urls=await getKanachuBusUrls(url)
       expect(urls.length).toBeGreaterThan(0)
-      console.log(urls.length)
       urls.map(({url})=>{
         const result=getKanachuBusStopList(url)
         result.then(data=>{

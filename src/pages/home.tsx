@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import { findNextBuses, keioRapid, msToTime } from "@/utils/timeHandlers";
+import { findNextBuses, mergeTimetables, msToTime } from "@/utils/timeHandlers";
 import { buildings, stationNames } from "@/utils/constants";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -7,9 +7,11 @@ import holidayDataJSON from "@/utils/Holidays.json";
 import Menu from "@/components/menu";
 import {
   timetableSchema,
+  expressTimetableSchema,
   holidayDataSchema,
   stateSchema,
   stationSchema,
+  type TimetableEntry,
 } from "@/utils/types";
 
 import tamapLogo from "@/images/tamap_logo.webp";
@@ -40,12 +42,18 @@ const Card = ({ children, className }: { children: ReactNode, className?: string
 export default function Home() {
   const {now}=useNow()
 
-  const [timetable, setTimetable] = useState<z.infer<typeof timetableSchema>>(
-    [],
-  );
+  const [timetable, setTimetable] = useState<TimetableEntry[]>([]);
   useEffect(() => {
-    import("@/utils/TimeTable.json").then((timetable) => {
-      setTimetable(keioRapid({ now, timetable: timetableSchema.parse(timetable.default) }));
+    Promise.all([
+      import("@/utils/TimeTable.json"),
+      import("@/utils/ExpressTimetable.json"),
+    ]).then(([regular, express]) => {
+      setTimetable(
+        mergeTimetables({
+          regular: timetableSchema.parse(regular.default),
+          express: expressTimetableSchema.parse(express.default),
+        }),
+      );
     });
   }, []);
 
@@ -173,15 +181,13 @@ export default function Home() {
     length: 3,
   });
 
-  console.log(futureBuses)
-
   const [nextBus] = futureBuses;
   departure = stationNames[state.station];
   destination = "法政大学";
   if (!state.isComingToHosei) {
     [departure, destination] = [destination, departure];
   }
-  if (state.isComingToHosei && nextBus && nextBus.arriveHour && nextBus.arriveMinute) {
+  if (state.isComingToHosei && nextBus && nextBus.kind === "regular") {
     overlay.economics = msToTime(
       nextBus.arriveHour * 60 + nextBus.arriveMinute + buildings.economics,
     );

@@ -9,6 +9,10 @@ import { ekitanSchema, type Bus } from '@/utils/types'
 import TrainSheet from './ui/TrainSheet'
 import * as z from "zod/v4"
 
+// 急行・直行便は経由バス停がわからないので種別と行き先だけ表示する
+const expressLabel = (bus: Exclude<Bus, { kind: "regular" }>) =>
+  `${bus.kind === "express" ? "急行" : "直行"}${bus.destination === "gym" ? " 体育館行き" : ""}`
+
 type Props = {
   previousBuses: Bus[],
   futureBuses: Bus[],
@@ -19,7 +23,13 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
   const [ekitanData, setEkitanData] = useState<z.infer<typeof ekitanSchema>>([])
   useEffect(() => {
     import("@/utils/ekitan.json").then(ekitan => {
-      setEkitanData(ekitanSchema.parse(ekitan.default))
+      // 電車データが壊れていてもバス停一覧は表示したいので、失敗はログだけ残す
+      const result = ekitanSchema.safeParse(ekitan.default)
+      if (result.success) {
+        setEkitanData(result.data)
+      } else {
+        console.error("ekitan.jsonの形式が正しくありません", result.error)
+      }
     })
   }, [])
   return (
@@ -31,11 +41,11 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
               <AccordionTrigger className="p-2 text-xl">
                 <div className="grid grid-cols-2 w-full">
                   <p className="mx-auto">{item ? msToTime(item.leaveHour * 60 + item.leaveMinute) : "?"}</p>
-                  <p className="mx-auto">{typeof item.arriveHour!=="undefined" && typeof item.arriveMinute!=="undefined" ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
+                  <p className="mx-auto">{item.kind === "regular" ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="">
-                {ekitanData.length !== 0 && typeof item.arriveHour!=="undefined" && typeof item.arriveMinute!=="undefined" ? <>
+                {item.kind === "regular" ? <>
                   {item.stopList.map((stop, idx) => {
                     const trains = [...findPastTrains({
                       date: stop.date, ekitanData: ekitanData, holidayData, station: resolveStationName(stop.name)
@@ -45,8 +55,8 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                     })]
                     return (
                       <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
-                        majorStations.find(j => j === stop.name) ? "p-1 text-lg" : "pt-1 justify-between")} key={idx}>
-                        {majorStations.find(mjrSta => mjrSta === stop.name) ? <TrainSheet
+                        trains.length !== 0 && majorStations.find(j => j === stop.name) ? "p-1 text-lg" : "pt-1 justify-between")} key={idx}>
+                        {trains.length !== 0 && majorStations.find(mjrSta => mjrSta === stop.name) ? <TrainSheet
                           trains={trains}
                           h={stop.hour}
                           m={stop.minute}
@@ -58,11 +68,7 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                       </div>
                     )
                   })}</>
-                  : <>
-                    {item.gym ? <>
-                      <p className='text-lg'>急行　体育館行き</p>
-                    </>:<p className='text-lg'>急行</p>}
-                  </>}
+                  : <p className='text-lg'>{expressLabel(item)}</p>}
                 
               </AccordionContent>
             </AccordionItem>)
@@ -73,11 +79,11 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
               <AccordionTrigger className="p-2">
                 <div className="grid grid-cols-2 w-full">
                   <p className="mx-auto text-3xl">{item ? msToTime(item.leaveHour * 60 + item.leaveMinute) : "?"}</p>
-                  <p className="mx-auto text-3xl">{item.arriveHour && item.arriveMinute ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
+                  <p className="mx-auto text-3xl">{item.kind === "regular" ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="">
-                {ekitanData.length !== 0 && typeof item.arriveHour!=="undefined" && typeof item.arriveMinute!=="undefined"　? <>{item.stopList.map((st, idx) => {
+                {item.kind === "regular" ? <>{item.stopList.map((st, idx) => {
                   const trains = [...findPastTrains({
                       date: st.date, ekitanData: ekitanData, holidayData, station: resolveStationName(st.name)
                     }),
@@ -86,19 +92,15 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
                     })]
                   return (
                     <div className={cn("border-t last:border-b dark:border-white/20 not-dark:border-black/20",
-                      majorStations.find(j => j === st.name) ? "p-1 text-lg" : "pt-1")} key={idx}>
-                      {majorStations.find(mjrSta => mjrSta === st.name) ? <TrainSheet trains={trains} h={st.hour} m={st.minute} stName={st.name} /> :
+                      trains.length !== 0 && majorStations.find(j => j === st.name) ? "p-1 text-lg" : "pt-1")} key={idx}>
+                      {trains.length !== 0 && majorStations.find(mjrSta => mjrSta === st.name) ? <TrainSheet trains={trains} h={st.hour} m={st.minute} stName={st.name} /> :
                         <div className='grid grid-cols-3'>
                           <p className="col-span-2">{st.name}</p>
                           <p className="">{msToTime(st.hour * 60 + st.minute)}</p>
                         </div>}
                     </div>
                   )
-                })}</> : <>
-                    {item.gym ? <>
-                      <p className='text-lg'>急行　体育館行き</p>
-                    </>:<p className='text-lg'>急行</p>}
-                  </>}
+                })}</> : <p className='text-lg'>{expressLabel(item)}</p>}
 
               </AccordionContent>
             </AccordionItem>

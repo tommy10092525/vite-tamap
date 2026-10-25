@@ -38,7 +38,7 @@ const TrainSheet = (props: Props) => {
         <ScrollArea className="">
           <div className="h-[calc(100vh-80px)]">
           {props.trains.map((train, i) => (
-            <TrainDetail key={i} idx={i} destination={train.destination} direction={train.direction} h={train.h} m={train.m} line={train.line} trainType={train.trainType} />
+            <TrainDetail key={i} idx={i} destination={train.destination} direction={train.direction} h={train.hour} m={train.minute} line={train.line} trainType={train.trainType} />
           ))}
 
           </div>

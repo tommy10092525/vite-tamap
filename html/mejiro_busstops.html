@@ -1,0 +1,1553 @@
+
+
+
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ja">
+
+
+
+
+
+<script type="text/javascript" src="/blt-storage/pc/js/common/nt-namespace.js"></script>
+<script type="text/javascript" src="/blt-storage/pc/js/common/nt-date.js"></script>
+
+<script type="text/javascript" src="/blt-storage/pc/js/jquery-4.0.0.min.js"></script>
+<script type="text/javascript">
+<!--
+	jQuery.noConflict();
+	var j$ = jQuery;
+
+	//-->
+</script>
+
+<head>
+	
+<meta charset="UTF-8">
+<meta http-equiv="Pragma" content="no-cache"/>
+<meta http-equiv="Cache-Control" content="no-cache"/>
+<meta http-equiv="Expires" content="0"/>
+
+
+
+	
+
+	<link rel="icon" href="/blt-storage/pc/img/bus-navi/favicon.ico?v=3.7.5">
+
+	<meta name="robots" content="noindex" />
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/ntbase2.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/list1.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/diagram/diagram-common.css?v=3.10.50" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/area-match3.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/ntauth1.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/bus-navi/bus-navi.css?v=3.10.50" type="text/css" media="all"/>
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/bustimetable-default.css" type="text/css" media="all"/>
+	<link rel="stylesheet" href="/blt-storage/pc/css/default/disclaimer.css" type="text/css" media="all">
+	<link rel="stylesheet" href="/blt-storage/pc/css/bus-navi/bustimetable-bus-navi.css?v=3.10.50" type="text/css" media="all"/>
+	<title>
+		
+			西５６[京王] 法政大学行
+			
+				
+					路線時刻表
+				
+				
+			
+			
+				06:25
+				分発
+			
+			|
+			バスナビ.com ｜京王バス・西東京バス
+		
+		
+	</title>
+
+	
+	
+
+
+	
+		
+			
+		
+		
+		
+		
+	
+	
+	<script type="text/javascript" src="/blt-storage/pc/js/common/nt-cookie.js"></script>
+	<script type="text/javascript">
+		<!--
+		var FONT_SIZE = {
+				"SMALL" : "11px",
+				"MEDIUM": "14px",
+				"LARGE" : "17px"
+		}
+		var changeFontSize = function(fontSize, elemnt) {
+			navitime.blt.util.cookie.setCookieWithDetail("font-size-prop", fontSize, "", "/", 365, false);
+			document.getElementsByTagName("body")[0].style.fontSize = FONT_SIZE[fontSize];
+			
+			document.getElementById('#switch-s').classList.remove('checked');
+			document.getElementById('#switch-m').classList.remove('checked');
+			document.getElementById('#switch-l').classList.remove('checked');
+			elemnt.classList.add('checked');
+		}
+		
+		// -->
+	</script>
+	
+	<style>
+		#font-size-switch-area {
+			text-align: right;
+		}
+		#font-size-switch-area .title {
+			display: inline-block;
+			vertical-align: top;
+			line-height: 25px;
+			margin-right: 5px;
+			font-size: 90%;
+		}
+		#font-size-switch-button {
+			display: inline-block;
+			width: 192px;
+			border: 1px solid #aaa;
+			border-radius: 3px;
+			-ms-border-radius: 3px;
+			-webkit-border-radius: 3px;
+			-moz-border-radius: 3px;
+			-o-border-radius: 3px;
+			font-size: 90%;
+		}
+		#font-size-switch-button a {
+			display: table-cell;
+			width: 64px;
+			height: 100%;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 23px;
+			text-decoration: none !important;
+		}
+		#font-size-switch-button a.checked {
+			background-color: #4361D9;
+			color: #fff !important;
+		}
+		#font-size-switch-button a:not(:first-of-type) {
+			border-left: 1px solid #aaa;
+		}
+	</style>
+
+</head>
+<body style="font-size:14px;">
+<script type="text/javascript"></script>
+<center>
+
+	
+	
+
+
+
+<script language="JavaScript"><!--
+function openUrl(url) {
+	location.href = url;
+}
+
+j$(document).ready(function(){
+	var dispWidth = window.innerWidth;
+	j$('#induce-sp-site')
+		.css("width", dispWidth * 0.95)
+		.css("height", dispWidth * 0.13)
+		.css("margin-left", dispWidth * 0.02)
+		.css("margin-top", dispWidth * 0.03)
+		.css("margin-bottom", dispWidth * 0.03);
+ 	
+	j$('#induce-sp-site-msg')
+		.css("font-size", (dispWidth * 0.05) + "px");
+	
+	j$('#induc-sp-site-disclosure')
+	.css("height", dispWidth * 0.05);
+	
+});
+// --></script>
+
+
+
+<link rel="stylesheet" href="/blt-storage/pc/css/default/header.css" type="text/css" media="all">
+
+	
+	
+	<div id="header-main-container" style="#002663;border-bottom: 1px solid #d5d5d5;">
+	
+	
+	
+	
+		<div id="header-main-box">
+			<h1 id="header-logo-box">
+				<a id="header-logo-link" href="https://www.bus-navi.com/">
+					<img src="/blt-storage/pc/img/bus-navi/header.png?v=3.10.50" width="500px" height="49px" alt="バスナビ.com ｜京王バス・西東京バス"/>
+				</a>
+				
+			</h1>
+			<div id="header-link-box">
+				<ul>
+					
+					
+					
+					
+						
+							<li>
+								<a class="header-link-box" href="https://www.keio-bus.com/">
+									<span class="header-link-text">京王バス</span>
+								</a>
+							</li>
+						
+					
+						
+							<li>
+								<a class="header-link-box" href="https://www.nisitokyobus.co.jp/">
+									<span class="header-link-text">西東京バス</span>
+								</a>
+							</li>
+						
+					
+						
+							<li>
+								<a class="header-link-box" href="https://www.bus-navi.com/">
+									<span class="header-link-text">バスナビ.com</span>
+								</a>
+							</li>
+						
+					
+						
+							<li>
+								<a class="header-link-box" href="/bus-navi-eng/pc/map/Top">
+									<span class="header-link-text">English</span>
+								</a>
+							</li>
+						
+					
+						
+							<li>
+								<a class="header-link-box" href="/bus-navi/pc/map/Top">
+									<span class="header-link-text">乗換・時刻表検索トップ</span>
+								</a>
+							</li>
+						
+					
+					
+				</ul>
+
+				
+			</div>
+			<div class="clear"></div>
+		</div>
+	
+	</div>
+<div id="data-base" class="display-none">bus-navi</div>
+
+	
+
+	<div id="mainframe" class="f">
+		
+		
+			
+			
+				
+					
+					
+					
+					
+					
+					
+					
+					
+				
+				
+			
+
+			
+			
+				<div style="margin-bottom: 10px; text-align: center;">
+					<script async src="https://static.media.cld.navitime.jp/scripts/media/biz/panel/location/tag.bundle.js?client_id=00000001&unit_id=00013&lat=35.643644&lon=139.30719"></script>
+				</div>
+			
+
+			<div id="bread-crumb-area">
+				<ul id="bread-crumb">
+					
+						
+							<li class="crumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+								<a href="https://www.bus-navi.com/" itemprop="url"><span itemprop="title">バスナビ.com</span></a>&nbsp;&nbsp;＞&nbsp;&nbsp;
+							</li>
+						
+					
+					<li class="crumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+						<a href="/bus-navi/pc/map/Top" itemprop="url"><span itemprop="title">乗換・時刻表検索</span></a>&nbsp;&nbsp;＞&nbsp;&nbsp;
+					</li>
+					<li class="crumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+						<a href="/bus-navi/pc/diagram/BusCourseSearch?busstopId=00020064" itemprop="url"><span itemprop="title">めじろ台駅  系統一覧</span></a>&nbsp;&nbsp;＞&nbsp;&nbsp;
+					</li>
+					<li class="crumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+						<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020064&course=0000456019&stopNo=7&date=2026-10-26" itemprop="url"><span itemprop="title">めじろ台駅  時刻表</span></a>&nbsp;&nbsp;＞&nbsp;&nbsp;
+					</li>
+					<li class="crumb" itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+						<a href="/bus-navi/pc/diagram/BusRouteTimetable?operation=822b0030&node=00020064&course=0000456019&stop-no=7&datetime=2026-10-26T06:36:00" itemprop="url"><span itemprop="title">西５６[京王] 法政大学行 06:25出発  停車時刻表</span></a>
+					</li>
+				</ul>
+			</div>
+		
+
+			
+
+
+
+
+
+
+
+
+
+
+		
+		
+
+
+	<div id="font-size-switch-area">
+		<span class="title">文字サイズ変更</span>
+		<div id="font-size-switch-button">
+			<a id="#switch-s" href="javascript:void(0);" onclick="changeFontSize('SMALL',this);" >小</a>
+			<a id="#switch-m" href="javascript:void(0);" onclick="changeFontSize('MEDIUM',this);" class="checked">中</a>
+			<a id="#switch-l" href="javascript:void(0);" onclick="changeFontSize('LARGE',this);" >大</a>
+		</div>
+
+		
+	</div>
+
+
+		
+		
+	
+	
+		<h1 id="subject">
+			バス時刻表
+			<span aria-hidden="true">西５６[京王] 法政大学行
+				06:25
+				分発
+			</span>
+			<span class="speech-only">西５６[京王] 法政大学行
+				6じ25分はつ
+			</span>
+		</h1>
+	
+
+
+		
+		
+		
+		
+
+		
+			
+			<div id="diagram_return">
+				<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020064&course=0000456019&stopNo=7" class="sDEF"><span aria-hidden="true">時刻表へ戻る</span><span class="speech-only">じこくひょうへもどる</span></a>
+			</div>
+			
+		
+
+		
+		
+		
+
+		
+			
+	
+	
+		<div id="PrimaryContent" class="p0">
+			<br><br>
+			<div id="railroad-matrix">
+				<center>
+					
+					
+					
+						
+							
+							
+								
+								
+									
+										
+											
+											
+												<div>
+											
+										
+									
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										06:25発
+										
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+											6じ25ふん発
+										
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								西八王子駅南口
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020677&course=0000456019&stopNo=1&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:25着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ25ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								西八王子駅南入口
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020678&course=0000456019&stopNo=2&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:26着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ26ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								散田三丁目
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020411&course=0000456019&stopNo=3&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:27着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ27ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								散田四丁目
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020412&course=0000456019&stopNo=4&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:28着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ28ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								横山中学
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020164&course=0000456019&stopNo=5&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:30着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ30ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								めじろ台一丁目
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020063&course=0000456019&stopNo=6&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+												<div class="btm_target">
+											
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:36着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ36ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								めじろ台駅
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020064&course=0000456019&stopNo=7&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:36着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ36ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								めじろ台南
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020065&course=0000456019&stopNo=8&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:37着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ37ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								椚田北
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00021420&course=0000456019&stopNo=9&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:38着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ38ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								椚田
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00021419&course=0000456019&stopNo=10&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:38着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ38ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								下寺田
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020170&course=0000456019&stopNo=11&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:39着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ39ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								榛名橋
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020602&course=0000456019&stopNo=12&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:41着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ41ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								寺田東
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020447&course=0000456019&stopNo=13&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:42着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ42ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								寺田センター
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020445&course=0000456019&stopNo=14&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:43着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ43ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								グリーンヒル寺田
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020015&course=0000456019&stopNo=15&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:44着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ44ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								上寺田
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00020543&course=0000456019&stopNo=16&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+							
+								
+								
+									
+									
+										
+											
+											
+												<div class="btm">
+											
+										
+									
+								
+								
+
+								<span class="arv-time" aria-hidden="true">
+									
+										
+										
+										06:44着
+									
+								</span>
+								<span class="speech-only">
+									
+										
+										
+										
+											6じ44ふん着
+										
+									
+								</span>
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								東京秋田霊園
+								
+							</strong>
+							
+								<a href="/bus-navi/pc/diagram/BusDiagram?orvCode=00049514&course=0000456019&stopNo=17&date=2026-10-26" class="sDEF">[時刻表]</a>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+						
+							
+								
+								
+									
+									
+										<div class="btm">
+									
+									
+									
+									<span>
+										
+											
+											
+												06:52着
+											
+										
+									</span>
+									<span class="speech-only">
+										
+											
+											
+												6じ52ふん着
+											
+										
+									</span>
+							
+							
+						
+						<span class="point-and-diagram-link">
+							<strong>
+								法政大学
+								
+							</strong>
+							
+						</span>
+						
+						
+						<span class="fare">
+							
+						</span>
+						</div>
+						
+						
+						
+						
+						
+						
+						
+					
+				</center>
+			</div>
+		</div>
+	
+
+
+		
+	</div>
+
+	<div class="clear">
+		<p>
+		</p>
+	</div>
+
+
+
+
+	
+<link rel="stylesheet" href="/blt-storage/pc/css/default/footer.css" type="text/css" media="all">
+
+	<div id="footer-container">
+		
+		
+			<div id="footer-top-powered-box">
+				<div id="footer-top-powered-logo">
+					<a href="http://www.navitime.co.jp/" target="_blank">
+						<img src="/blt-storage/pc/img/default/img_footer_logo.png" alt="Powered by NAVITIME" title="NAVITIME">
+					</a>
+				</div>
+			</div>
+		
+
+		
+		<div id="footer-top-to-top-box">
+			<a id="footer-top-to-top-link" href="#">
+				ページの先頭へ
+			</a>
+		</div>
+
+	</div>
+
+	<div id="footer-bottom-container">
+		<div id="footer-link-container">
+			<ul>
+				
+					<li>
+						<a class="footer-bottom-link-item" href="/bus-navi/pc/disclaimer/DisclaimerInformation"  target="_blank">
+							<span class="footer-bottom-link-text">ご利用にあたって</span>
+						</a>
+					</li>
+				
+			</ul>
+		</div>
+		<div id="footer-bottom-copyright-box">
+			<div id="footer-bottom-copyright-disp"></div>
+			<div id="footer-bottom-copyright-text" class="hide">Copyright © 京王バス・西東京バス</div>
+			<div id="footer-bottom-copyright-year" class="hide"></div>
+		</div>
+	</div>
+
+<script type="text/javascript" src="/blt-storage/pc/js/common/nt-footer.js"></script>
+
+</center>
+
+
+
+
+
+
+
+
+<img src="/blt-storage/counter/bus-navi/null.gif?p=pc.diagram.stops.index&amp;operation=822b0030&amp;datetime=2026-10-26T06%3A36%3A00&amp;node=00020064&amp;course=0000456019&amp;stop-no=7&amp;t=1792923460477" width="0" height="0" style="display: none;" alt=""/>
+
+
+
+
+	
+
+
+
+
+
+
+
+
+	<!-- 全社共通で入れるNAVITIME管理のGA4タグ (gtag.js) -->
+	<script async src="https://www.googletagmanager.com/gtag/js?id=G-ERE9M72P1S"></script>
+	<script>
+		window.dataLayer = window.dataLayer || [];
+		function gtag(){dataLayer.push(arguments);}
+		gtag('js', new Date());
+
+		gtag('config', 'G-ERE9M72P1S');
+	</script>
+
+	<!-- NAVITIME管理のUAタグ（TODO：2023年7月以降に消す） -->
+	<script type="text/javascript">
+
+	  var _gaq = _gaq || [];
+	  _gaq.push(['_setAccount', "UA-31915090-5"]);
+	  _gaq.push(['_trackPageview']);
+
+	  (function() {
+	    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+	    ga.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'stats.g.doubleclick.net/dc.js';
+	    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	  })();
+
+	</script>
+	
+
+	
+
+
+
+
+
+
+<script type="text/javascript">
+	function trackEvent(category, action, lavel, value){
+
+		_gaq.push([ '_trackEvent', category, action, lavel, value ]);
+
+	}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+</body>
+
+
+</html>
+
