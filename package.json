@@ -63,7 +63,7 @@
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
     "rollup-plugin-visualizer": "^7.0.1",
-    "sharp": "^0.34.2",
+    "sharp": "^0.35.5",
     "tw-animate-css": "^1.3.2",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",
@@ -73,5 +73,10 @@
     "vitest": "^4.0.18",
     "wrangler": "^4.77.0"
   },
-  "packageManager": "npm@11.11.1"
+  "packageManager": "npm@11.11.1",
+  "overrides": {
+    "miniflare": {
+      "undici": "^7.30.1"
+    }
+  }
 }
