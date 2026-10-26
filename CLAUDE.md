@@ -75,6 +75,14 @@ Key exported types (prefer these over redeclaring inline):
 
 `src/lib/supabase.ts` exports a Supabase client. The anon key is committed directly (it's public-safe for anon access).
 
+### PWA
+
+`vite-plugin-pwa` (generateSW) precaches the whole build so the app works offline. To avoid users being stuck on an old version:
+- `registerType: "autoUpdate"` with `skipWaiting` / `clientsClaim`: a new Service Worker activates at once and the page reloads.
+- `src/register-sw.ts` checks for updates when the app becomes visible again and every hour, because an installed PWA is often resumed without a reload.
+- `public/_headers` (Cloudflare Pages) and `public/.htaccess` (Apache) send `Cache-Control: no-cache` for `sw.js`, `index.html` and the manifest.
+Keep the Service Worker file name `sw.js`; it replaces the one from the earlier PWA setup on users' devices.
+
 ### Analytics
 
 Google Analytics 4 is initialized in `src/App.tsx` with `react-ga4`. Page views are tracked via `TrackPageViews` component on every route change.
