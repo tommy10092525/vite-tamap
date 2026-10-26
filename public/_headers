@@ -1,0 +1,7 @@
+# Service Workerと入口のHTMLは毎回サーバーに確認させ、更新がすぐ届くようにする
+/sw.js
+  Cache-Control: no-cache
+/index.html
+  Cache-Control: no-cache
+/manifest.webmanifest
+  Cache-Control: no-cache
