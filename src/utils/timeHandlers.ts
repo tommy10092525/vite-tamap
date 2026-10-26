@@ -331,6 +331,26 @@ export function msToTime(ms: number) {
   return `${hs}:${mins}`;
 }
 
+// 発車までの残り時間を分単位で返す。nowは秒以下を切り捨てて比べる
+export function minutesUntil({ now, date }: { now: Date; date: Date }) {
+  const nowMinute = Math.floor(now.getTime() / 60000);
+  const dateMinute = Math.floor(date.getTime() / 60000);
+  return dateMinute - nowMinute;
+}
+
+// 「あと○分」の表示用文字列。1分以内は「まもなく」、60分以上は時間も付ける
+export function countdownLabel(minutes: number) {
+  if (minutes <= 1) {
+    return "まもなく";
+  }
+  if (minutes < 60) {
+    return `あと${minutes}分`;
+  }
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest === 0 ? `あと${hours}時間` : `あと${hours}時間${rest}分`;
+}
+
 export function getDateString(now: Date) {
   return `${now.getFullYear().toString().padStart(4, "0")}/${(now.getMonth() + 1).toString().padStart(2, "0")}/${now.getDate().toString().padStart(2, "0")}`;
 }
