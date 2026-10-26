@@ -3,7 +3,7 @@ import { ScrollArea } from './ui/scroll-area'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion'
 import { cn, resolveStationName } from '@/lib/utils'
 import { majorStations } from '@/utils/constants'
-import { findFutureTrains, findPastTrains, msToTime } from '@/utils/timeHandlers'
+import { countdownLabel, findFutureTrains, findPastTrains, minutesUntil, msToTime } from '@/utils/timeHandlers'
 import holidayData from "@/utils/Holidays.json"
 import { ekitanSchema, type Bus, type RegularBus } from '@/utils/types'
 import TrainSheet from './ui/TrainSheet'
@@ -51,13 +51,25 @@ const BusDetail = ({ bus, ekitanByStation }: { bus: Bus, ekitanByStation: Map<st
     ? <>{bus.stopList.map((stop, idx) => <StopRow stop={stop} ekitanByStation={ekitanByStation} key={idx} />)}</>
     : <p className='text-lg'>{expressLabel(bus)}</p>
 
+// 5分を切ったら急ぐ必要があるので色を変える
+const Countdown = ({ bus, now }: { bus: Bus, now: Date }) => {
+  const minutes = minutesUntil({ now, date: bus.date })
+  return (
+    <span className={cn("block text-base font-medium",
+      minutes <= 5 ? "text-red-700 dark:text-red-300" : "text-black/60 dark:text-white/60")}>
+      {countdownLabel(minutes)}
+    </span>
+  )
+}
+
 type Props = {
+  now: Date,
   previousBuses: Bus[],
   futureBuses: Bus[],
   timesContainer: React.RefObject<HTMLDivElement | null>
 }
 
-const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) => {
+const AccordionArea = ({ now, previousBuses, futureBuses, timesContainer }: Props) => {
   const [ekitanData, setEkitanData] = useState<EkitanData>([])
   useEffect(() => {
     import("@/utils/ekitan.json").then(ekitan => {
@@ -105,8 +117,11 @@ const AccordionArea = ({ previousBuses, futureBuses, timesContainer }: Props) =>
             <AccordionItem value={item.id} className="-my-1 dark:border-white/50 border-black/20 font-sans font-semibold text-3xl md:text-4xl text-center" key={i}>
               <AccordionTrigger className="p-2">
                 <div className="grid grid-cols-2 w-full">
-                  <p className="mx-auto text-3xl">{item ? msToTime(item.leaveHour * 60 + item.leaveMinute) : "?"}</p>
-                  <p className="mx-auto text-3xl">{item.kind === "regular" ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
+                  <div className="mx-auto">
+                    <p className="text-3xl">{item ? msToTime(item.leaveHour * 60 + item.leaveMinute) : "?"}</p>
+                    <Countdown bus={item} now={now} />
+                  </div>
+                  <p className="mx-auto my-auto text-3xl">{item.kind === "regular" ? msToTime(item.arriveHour * 60 + item.arriveMinute) : "?"}</p>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="">
