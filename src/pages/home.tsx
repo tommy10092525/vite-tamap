@@ -228,6 +228,11 @@ export default function Home() {
           className="gap-3 flex items-center flex-col mx-auto p-3 max-w-2xl touch-manipulation"
           data-main
         >
+          
+        <Card>
+          <a href="https://tamap.codemates.org" className="underline text-center">たまっぷは新しいURLに移ります</a>
+        </Card>
+
         {/* <HoseiLink /> */}
         {/* <Tamasai2026/> */}
         <img
