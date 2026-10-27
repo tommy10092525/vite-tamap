@@ -1,0 +1,4 @@
+# Service Workerと入口のHTMLは毎回サーバーに確認させ、更新がすぐ届くようにする
+<FilesMatch "^(sw\.js|index\.html|manifest\.webmanifest)$">
+  Header set Cache-Control "no-cache"
+</FilesMatch>

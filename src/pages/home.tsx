@@ -260,6 +260,7 @@ export default function Home() {
             </div>
             {/* 時刻一覧 */}
             <AccordionArea
+              now={now}
               previousBuses={previousBuses}
               futureBuses={futureBuses}
               timesContainer={timesContainer}
