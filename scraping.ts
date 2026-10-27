@@ -171,7 +171,16 @@ export const getKanachuBusUrls = async (url: string) => {
     }
   });
   const text = await data.text();
-  const dom = new JSDOM(text);
+  return parseKanachuBusUrls(text);
+};
+
+/**
+ * 神奈中の時刻表ページのHTMLから、便ごとのバス停ページのURLを取り出します。
+ * 1つのセル（1時間×曜日）に複数の便があるので、セル内のリンクをすべて読みます。
+ * ◎の付いた便（法政大学を経由しない便）は除外します。
+ */
+export function parseKanachuBusUrls(html: string) {
+  const dom = new JSDOM(html);
   const document = dom.window.document;
   const trs = document.querySelectorAll("tr");
   const urls: { url: string; day: string }[] = [];
@@ -179,21 +188,46 @@ export const getKanachuBusUrls = async (url: string) => {
   [...trs].map((tr) => {
     const tds = [...tr.querySelectorAll("td")];
     tds.map((td, index) => {
-      const aTag = td.querySelector("a");
-      const hrefAttribute=aTag?.getAttribute("href")
-
-      const nextUrl = `https://transfer-cloud.navitime.biz${hrefAttribute}`;
-      const sup = td.querySelector("sup")?.textContent;
-      if (hrefAttribute!==undefined && sup !== "◎") {
+      const aTags = [...td.querySelectorAll("a")];
+      aTags.map((aTag) => {
+        const hrefAttribute = aTag.getAttribute("href");
+        if (hrefAttribute === null || getKanachuMark(aTag, td) === "◎") {
+          return;
+        }
         urls.push({
           day: days[index],
-          url: nextUrl,
+          url: `https://transfer-cloud.navitime.biz${hrefAttribute}`,
         });
-      }
+      });
     });
   });
   return urls;
-};
+}
+
+/** 便のリンクに付いている記号（supの中身）を返します。リンクの中・直後・便ごとの囲み要素の順に探します。 */
+function getKanachuMark(aTag: Element, td: Element) {
+  const inner = aTag.querySelector("sup");
+  if (inner) {
+    return inner.textContent?.trim();
+  }
+  const next = aTag.nextElementSibling;
+  if (next?.tagName === "SUP") {
+    return next.textContent?.trim();
+  }
+  // 便ごとにリンクとsupを囲む要素がある場合（囲みの中のリンクが1つだけのとき）
+  let parent = aTag.parentElement;
+  while (parent && parent !== td) {
+    if (parent.querySelectorAll("a").length > 1) {
+      break;
+    }
+    const sup = parent.querySelector("sup");
+    if (sup) {
+      return sup.textContent?.trim();
+    }
+    parent = parent.parentElement;
+  }
+  return undefined;
+}
 
 /** バス停の一覧を取得します（神奈中バス） */
 export async function getKanachuBusStopList(url: string) {
