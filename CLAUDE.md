@@ -6,7 +6,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **たまっぷ** is a real-time bus timetable web app for students at Hosei University's Tama Campus. It shows the next buses between the campus and the nearest stations (西八王子・めじろ台・相原), and estimates arrival times to each faculty building.
 
-Deployed as static files on a shared hosting server (ロリポップ). Built as a PWA.
+Deployed as static assets on the Cloudflare Worker `tamap` (`wrangler.jsonc`, `npm run deploy` builds and deploys). Built as a PWA.
 
 ## Commands
 
@@ -16,6 +16,7 @@ npm run build     # Type-check + build to dist/
 npm run lint      # ESLint
 npm run test      # Run all tests with vitest
 npm run preview   # Preview production build
+npm run deploy    # Build and deploy to Cloudflare Workers (wrangler)
 ```
 
 Run a single test file:

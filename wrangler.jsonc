@@ -1,0 +1,17 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  // ダッシュボードからアップロードしていたWorker「tamap」と同じ設定にしてある
+  "name": "tamap",
+
+  // hosei.codematesアカウントのID
+  "account_id": "a1493d56b302a2e4a067e067eca39d6f/home",
+  "compatibility_date": "2026-10-25",
+  "assets": {
+    "directory": "./dist",
+    "html_handling": "auto-trailing-slash",
+    // HashRouterなのでSPA用のフォールバックは不要
+    "not_found_handling": "none"
+  },
+  "workers_dev": true,
+  "preview_urls": false
+}

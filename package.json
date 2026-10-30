@@ -9,7 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",
-    "deploy": "wrangler pages deploy ./dist",
+    "deploy": "npm run build && wrangler deploy",
     "scrape": "npx tsx scraping.ts"
   },
   "dependencies": {
