@@ -103,4 +103,5 @@
 
 ## デプロイ
 
-現在利用しているロリポップサーバーでは、`dist`フォルダの中身をそのままアップロードすることで公開できます。
+`npx wrangler login`でWrangler CLIでCloudflareアカウントにログインします。  
+`npm run deploy`でWrangler CLI経由でビルドが実行され、ファイルがアップロードされます。
