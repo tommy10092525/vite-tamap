@@ -14,7 +14,7 @@ export default defineConfig({
       // 登録と更新確認は src/register-sw.ts で行う
       registerType: "autoUpdate",
       injectRegister: false,
-      includeAssets: ["icon_144x144.png", "robots.txt"],
+      includeAssets: ["favicon.ico", "apple-touch-icon.png", "robots.txt"],
       workbox: {
         globPatterns: ["**/*.{js,css,html,png,webp,svg,ico}"],
         // SNS共有用の画像はアプリでは使わない
@@ -44,6 +44,13 @@ export default defineConfig({
             src: "icon_512x512.png",
             sizes: "512x512",
             type: "image/png",
+          },
+          {
+            // Androidのホーム画面で円や角丸に切り抜かれても欠けないよう余白を取った版
+            src: "icon_maskable_512x512.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "maskable",
           },
         ],
       },
